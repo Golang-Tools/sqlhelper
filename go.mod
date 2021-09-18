@@ -1,4 +1,4 @@
-module sqlhelper
+module github.com/Golang-Tools/sqlhelper
 
 go 1.16
 
