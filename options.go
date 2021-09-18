@@ -8,13 +8,14 @@ import (
 //@attribute MaxTTL time.Duration 为0则不设置过期
 //@attribute AutoRefresh string 需要为crontab格式的字符串,否则不会自动定时刷新
 type Options struct {
-	URL              string
-	Parallelcallback bool
-	QueryTimeout     time.Duration
-	MaxOpenConns     int
-	ConnMaxLifetime  time.Duration
-	MaxIdleConns     int
-	ConnMaxIdleTime  time.Duration
+	URL                   string
+	Parallelcallback      bool
+	QueryTimeout          time.Duration
+	MaxOpenConns          int
+	ConnMaxLifetime       time.Duration
+	MaxIdleConns          int
+	ConnMaxIdleTime       time.Duration
+	DiscardUnknownColumns bool
 }
 
 var DefaultOpts = Options{
@@ -87,5 +88,12 @@ func WithMaxIdleConns(MaxIdleConns int) Option {
 func WithConnMaxIdleTimeMS(ConnMaxIdleTimeMS int) Option {
 	return newFuncOption(func(o *Options) {
 		o.ConnMaxIdleTime = time.Duration(ConnMaxIdleTimeMS) * time.Millisecond
+	})
+}
+
+//WithDiscardUnknownColumns 设置当有未知列时不报错
+func WithDiscardUnknownColumns() Option {
+	return newFuncOption(func(o *Options) {
+		o.DiscardUnknownColumns = true
 	})
 }

@@ -101,7 +101,11 @@ func (proxy *Proxy) Init(opts ...Option) error {
 		{
 			sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(proxy.opts.URL)))
 			proxy.SetPool(sqldb)
-			cli = bun.NewDB(sqldb, pgdialect.New())
+			if proxy.opts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, pgdialect.New())
+			}
 		}
 	case "mysql":
 		{
@@ -110,7 +114,11 @@ func (proxy *Proxy) Init(opts ...Option) error {
 				return err
 			}
 			proxy.SetPool(sqldb)
-			cli = bun.NewDB(sqldb, mysqldialect.New())
+			if proxy.opts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, mysqldialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, mysqldialect.New())
+			}
 		}
 	case "sqlite":
 		{
@@ -124,7 +132,11 @@ func (proxy *Proxy) Init(opts ...Option) error {
 				sqldb.SetMaxIdleConns(1000)
 				sqldb.SetConnMaxLifetime(0)
 			}
-			cli = bun.NewDB(sqldb, sqlitedialect.New())
+			if proxy.opts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, sqlitedialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, sqlitedialect.New())
+			}
 		}
 	default:
 		{
