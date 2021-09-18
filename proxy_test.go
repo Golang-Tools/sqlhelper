@@ -1,0 +1,86 @@
+package sqlhelper
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/uptrace/bun"
+)
+
+const WRONGURL = "sqlserver://fadfsa"
+
+func TestProxyWithWrongURL(t *testing.T) {
+	proxy := New()
+	err := proxy.Init(WithURL(WRONGURL))
+	assert.NotNil(t, err)
+}
+func TestProxyExecSQL(t *testing.T) {
+	proxy := New()
+	err := proxy.Init()
+	if err != nil {
+		assert.FailNow(t, err.Error(), "init get error")
+	}
+	ctx, cancel := proxy.NewCtx()
+	defer cancel()
+	rows, err := proxy.QueryContext(ctx, "select 1")
+	if err != nil {
+		assert.FailNow(t, err.Error(), "query get error")
+	}
+	defer rows.Close()
+	names := make([]string, 0)
+	for rows.Next() {
+		var name string
+		err := rows.Scan(&name)
+		if err != nil {
+			assert.FailNow(t, err.Error(), "scan get error")
+		}
+		names = append(names, name)
+	}
+	err = rows.Err()
+	if err != nil {
+		assert.FailNow(t, err.Error(), "rows get error")
+	}
+	result := strings.Join(names, ", ")
+	assert.Equal(t, "1", result)
+}
+
+type User struct {
+	bun.BaseModel `bun:"users,alias:u"`
+	ID            int    `bun:"id,pk"`
+	Name          string `bun:"name,unique,notnull"`
+	Age           int    `bun:"age,notnull"`
+}
+
+func TestProxORM(t *testing.T) {
+	proxy := New()
+	err := proxy.Init()
+	if err != nil {
+		assert.FailNow(t, err.Error(), "init get error")
+	}
+	ctx, cancel := proxy.NewCtx()
+	defer cancel()
+	_, err = proxy.NewCreateTable().
+		Model(&User{}).
+		IfNotExists().
+		Exec(ctx)
+	if err != nil {
+		assert.FailNow(t, err.Error(), "create table get error")
+	}
+	users := []User{{Name: "a", Age: 11}, {Name: "b", Age: 11}}
+	_, err = proxy.NewInsert().Model(&users).Exec(ctx)
+	if err != nil {
+		assert.FailNow(t, err.Error(), "insert get error")
+	}
+	a := User{}
+	err = proxy.NewSelect().Model(&a).Where("name = ?", "a").Scan(ctx)
+	if err != nil {
+		assert.FailNow(t, err.Error(), "select get error")
+	}
+	assert.Equal(t, 11, a.Age)
+	c, err := proxy.NewSelect().Model(&a).Where("age = ?", 11).Count(ctx)
+	if err != nil {
+		assert.FailNow(t, err.Error(), "count get error")
+	}
+	assert.Equal(t, 2, c)
+}
