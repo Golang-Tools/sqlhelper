@@ -95,7 +95,6 @@ func (proxy *Proxy) Init(opts ...Option) error {
 	if err != nil {
 		return err
 	}
-	dataSourceName := strings.ReplaceAll(proxy.opts.URL, fmt.Sprintf("%s://", U.Scheme), "")
 	switch U.Scheme {
 	case "postgres":
 		{
@@ -109,6 +108,7 @@ func (proxy *Proxy) Init(opts ...Option) error {
 		}
 	case "mysql":
 		{
+			dataSourceName := fmt.Sprintf("%s@tcp(%s)%s?%s", U.User.String(), U.Host, U.Path, U.RawQuery)
 			sqldb, err := sql.Open("mysql", dataSourceName)
 			if err != nil {
 				return err
@@ -122,6 +122,7 @@ func (proxy *Proxy) Init(opts ...Option) error {
 		}
 	case "sqlite":
 		{
+			dataSourceName := strings.ReplaceAll(proxy.opts.URL, fmt.Sprintf("%s://", U.Scheme), "")
 			sqldb, err := sql.Open(sqliteshim.ShimName, fmt.Sprintf("file:%s", dataSourceName))
 			if err != nil {
 				return err
