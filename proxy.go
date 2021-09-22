@@ -108,7 +108,17 @@ func (proxy *Proxy) Init(opts ...Option) error {
 		}
 	case "mysql":
 		{
-			dataSourceName := fmt.Sprintf("%s@tcp(%s)%s?%s", U.User.String(), U.Host, U.Path, U.RawQuery)
+			userinfo := ""
+			username := U.User.Username()
+			pwd, ok := U.User.Password()
+			if ok && username != "" {
+				userinfo = fmt.Sprintf("%s:%s@", username, pwd)
+			} else if ok && username == "" {
+				userinfo = fmt.Sprintf(":%s@", pwd)
+			} else if !ok && username != "" {
+				userinfo = fmt.Sprintf("%s@", username)
+			}
+			dataSourceName := fmt.Sprintf("%stcp(%s)%s?%s", userinfo, U.Host, U.Path, U.RawQuery)
 			sqldb, err := sql.Open("mysql", dataSourceName)
 			if err != nil {
 				return err
