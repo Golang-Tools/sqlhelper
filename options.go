@@ -2,6 +2,8 @@ package sqlhelper
 
 import (
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 //Option 设置key行为的选项
@@ -16,6 +18,7 @@ type Options struct {
 	MaxIdleConns          int
 	ConnMaxIdleTime       time.Duration
 	DiscardUnknownColumns bool
+	Logger                logrus.FieldLogger
 }
 
 var DefaultOpts = Options{
@@ -42,10 +45,10 @@ func newFuncOption(f func(*Options)) *funcOption {
 	}
 }
 
-//WithQueryTimeout 设置最大请求超时,单位ms
-func WithQueryTimeout(QueryTimeout time.Duration) Option {
+//WithQueryTimeoutMS 设置最大请求超时,单位ms
+func WithQueryTimeoutMS(QueryTimeout int) Option {
 	return newFuncOption(func(o *Options) {
-		o.QueryTimeout = QueryTimeout
+		o.QueryTimeout = time.Duration(QueryTimeout) * time.Millisecond
 	})
 }
 
@@ -95,5 +98,12 @@ func WithConnMaxIdleTimeMS(ConnMaxIdleTimeMS int) Option {
 func WithDiscardUnknownColumns() Option {
 	return newFuncOption(func(o *Options) {
 		o.DiscardUnknownColumns = true
+	})
+}
+
+//WithLogger 用于添加logger方便debug
+func WithLogger(logger logrus.FieldLogger) Option {
+	return newFuncOption(func(o *Options) {
+		o.Logger = logger
 	})
 }

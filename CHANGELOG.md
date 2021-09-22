@@ -1,3 +1,21 @@
+# v0.0.5
+
+## bug修复
+
+修复mysql的url解析后密码有特殊字符时无法连接的问题
+
+## 接口优化
+
+参数`WithQueryTimeout`改为`WithQueryTimeoutMS`以明确单位为ms
+
+## 新增接口
+
+新增参数`WithLogger`用于为请求添加log用于debug
+
+## 更新依赖
+
+`github.com/uptrace/bun`更新至1.0.8
+
 # v0.0.4
 
 ## bug修复

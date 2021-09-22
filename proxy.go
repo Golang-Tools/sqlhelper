@@ -10,6 +10,7 @@ import (
 	log "github.com/Golang-Tools/loggerhelper"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/oiime/logrusbun"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -154,6 +155,10 @@ func (proxy *Proxy) Init(opts ...Option) error {
 			return ErrUnSupportSchema
 		}
 	}
+	if proxy.opts.Logger != nil {
+		cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: proxy.opts.Logger}))
+	}
+
 	return proxy.SetConnect(cli)
 }
 
