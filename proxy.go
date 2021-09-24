@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 
 	log "github.com/Golang-Tools/loggerhelper"
 
@@ -39,6 +40,12 @@ func New() *Proxy {
 // IsOk 检查代理是否已经可用
 func (proxy *Proxy) IsOk() bool {
 	return proxy.DB != nil
+}
+
+//SetQueryTimeout 设置连接的请求超时
+//@params timeout time.Duration
+func (proxy *Proxy) SetQueryTimeout(timeout time.Duration) {
+	proxy.opts.QueryTimeout = timeout
 }
 
 //SetConnect 设置连接的客户端

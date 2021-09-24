@@ -1,3 +1,9 @@
+# v0.0.6
+
+## 新增接口
+
+新增接口`SetQueryTimeout(timeout time.Duration) `用于为请求修改默认请求超时
+
 # v0.0.5
 
 ## bug修复
