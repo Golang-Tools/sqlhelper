@@ -26,14 +26,13 @@ type Callback func(cli *bun.DB) error
 //Proxy bun客户端的代理
 type Proxy struct {
 	*bun.DB
-	opts      Options
-	callBacks []Callback
+	callBacks    []Callback
+	queryTimeout time.Duration
 }
 
 // New 创建一个新的数据库客户端代理
 func New() *Proxy {
 	proxy := new(Proxy)
-	proxy.opts = DefaultOpts
 	return proxy
 }
 
@@ -45,17 +44,17 @@ func (proxy *Proxy) IsOk() bool {
 //SetQueryTimeout 设置连接的请求超时
 //@params timeout time.Duration
 func (proxy *Proxy) SetQueryTimeout(timeout time.Duration) {
-	proxy.opts.QueryTimeout = timeout
+	proxy.queryTimeout = timeout
 }
 
 //SetConnect 设置连接的客户端
 //@params cli *bun.DB bun的DB对象
-func (proxy *Proxy) SetConnect(cli *bun.DB) error {
+func (proxy *Proxy) SetConnect(cli *bun.DB, parallelcallback bool) error {
 	if proxy.IsOk() {
 		return ErrProxyAllreadySettedUniversalClient
 	}
 	proxy.DB = cli
-	if proxy.opts.Parallelcallback {
+	if parallelcallback {
 		for _, cb := range proxy.callBacks {
 			go func(cb Callback) {
 				err := cb(proxy.DB)
@@ -79,94 +78,101 @@ func (proxy *Proxy) SetConnect(cli *bun.DB) error {
 	return nil
 }
 
-func (proxy *Proxy) SetPool(sqldb *sql.DB) {
-	if proxy.opts.MaxIdleConns > 0 {
-		sqldb.SetMaxIdleConns(proxy.opts.MaxIdleConns)
+// SetPool 设置连接池信息
+func (proxy *Proxy) SetPool(sqldb *sql.DB, opts *Options) {
+	if opts.MaxIdleConns > 0 {
+		sqldb.SetMaxIdleConns(opts.MaxIdleConns)
 	}
-	if proxy.opts.ConnMaxIdleTime > 0 {
-		sqldb.SetConnMaxIdleTime(proxy.opts.ConnMaxIdleTime)
+	if opts.ConnMaxIdleTime > 0 {
+		sqldb.SetConnMaxIdleTime(opts.ConnMaxIdleTime)
 	}
-	if proxy.opts.MaxOpenConns > 0 {
-		sqldb.SetMaxOpenConns(proxy.opts.MaxOpenConns)
+	if opts.MaxOpenConns > 0 {
+		sqldb.SetMaxOpenConns(opts.MaxOpenConns)
 	}
-	if proxy.opts.ConnMaxLifetime > 0 {
-		sqldb.SetConnMaxLifetime(proxy.opts.ConnMaxLifetime)
+	if opts.ConnMaxLifetime > 0 {
+		sqldb.SetConnMaxLifetime(opts.ConnMaxLifetime)
 	}
 }
 
+// Init 初始化代理对象
 func (proxy *Proxy) Init(opts ...Option) error {
+	dopts := DefaultOpts
 	for _, opt := range opts {
-		opt.Apply(&proxy.opts)
+		opt.Apply(&dopts)
 	}
 	var cli *bun.DB
-	U, err := url.Parse(proxy.opts.URL)
-	if err != nil {
-		return err
+	if dopts.Cli != nil {
+		cli = dopts.Cli
+	} else {
+		U, err := url.Parse(dopts.URL)
+		if err != nil {
+			return err
+		}
+		switch U.Scheme {
+		case "postgres":
+			{
+				sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dopts.URL)))
+				proxy.SetPool(sqldb, &dopts)
+				if dopts.DiscardUnknownColumns {
+					cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
+				} else {
+					cli = bun.NewDB(sqldb, pgdialect.New())
+				}
+			}
+		case "mysql":
+			{
+				userinfo := ""
+				username := U.User.Username()
+				pwd, ok := U.User.Password()
+				if ok && username != "" {
+					userinfo = fmt.Sprintf("%s:%s@", username, pwd)
+				} else if ok && username == "" {
+					userinfo = fmt.Sprintf(":%s@", pwd)
+				} else if !ok && username != "" {
+					userinfo = fmt.Sprintf("%s@", username)
+				}
+				dataSourceName := fmt.Sprintf("%stcp(%s)%s?%s", userinfo, U.Host, U.Path, U.RawQuery)
+				sqldb, err := sql.Open("mysql", dataSourceName)
+				if err != nil {
+					return err
+				}
+				proxy.SetPool(sqldb, &dopts)
+				if dopts.DiscardUnknownColumns {
+					cli = bun.NewDB(sqldb, mysqldialect.New(), bun.WithDiscardUnknownColumns())
+				} else {
+					cli = bun.NewDB(sqldb, mysqldialect.New())
+				}
+			}
+		case "sqlite":
+			{
+				dataSourceName := strings.ReplaceAll(dopts.URL, fmt.Sprintf("%s://", U.Scheme), "")
+				sqldb, err := sql.Open(sqliteshim.ShimName, fmt.Sprintf("file:%s", dataSourceName))
+				if err != nil {
+					return err
+				}
+				if !strings.Contains(dataSourceName, ":memory:") {
+					proxy.SetPool(sqldb, &dopts)
+				} else {
+					sqldb.SetMaxIdleConns(1000)
+					sqldb.SetConnMaxLifetime(0)
+				}
+				if dopts.DiscardUnknownColumns {
+					cli = bun.NewDB(sqldb, sqlitedialect.New(), bun.WithDiscardUnknownColumns())
+				} else {
+					cli = bun.NewDB(sqldb, sqlitedialect.New())
+				}
+			}
+		default:
+			{
+				return ErrUnSupportSchema
+			}
+		}
 	}
-	switch U.Scheme {
-	case "postgres":
-		{
-			sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(proxy.opts.URL)))
-			proxy.SetPool(sqldb)
-			if proxy.opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, pgdialect.New())
-			}
-		}
-	case "mysql":
-		{
-			userinfo := ""
-			username := U.User.Username()
-			pwd, ok := U.User.Password()
-			if ok && username != "" {
-				userinfo = fmt.Sprintf("%s:%s@", username, pwd)
-			} else if ok && username == "" {
-				userinfo = fmt.Sprintf(":%s@", pwd)
-			} else if !ok && username != "" {
-				userinfo = fmt.Sprintf("%s@", username)
-			}
-			dataSourceName := fmt.Sprintf("%stcp(%s)%s?%s", userinfo, U.Host, U.Path, U.RawQuery)
-			sqldb, err := sql.Open("mysql", dataSourceName)
-			if err != nil {
-				return err
-			}
-			proxy.SetPool(sqldb)
-			if proxy.opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, mysqldialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, mysqldialect.New())
-			}
-		}
-	case "sqlite":
-		{
-			dataSourceName := strings.ReplaceAll(proxy.opts.URL, fmt.Sprintf("%s://", U.Scheme), "")
-			sqldb, err := sql.Open(sqliteshim.ShimName, fmt.Sprintf("file:%s", dataSourceName))
-			if err != nil {
-				return err
-			}
-			if !strings.Contains(dataSourceName, ":memory:") {
-				proxy.SetPool(sqldb)
-			} else {
-				sqldb.SetMaxIdleConns(1000)
-				sqldb.SetConnMaxLifetime(0)
-			}
-			if proxy.opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, sqlitedialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, sqlitedialect.New())
-			}
-		}
-	default:
-		{
-			return ErrUnSupportSchema
-		}
-	}
-	if proxy.opts.Logger != nil {
-		cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: proxy.opts.Logger}))
+	if dopts.Logger != nil {
+		cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: dopts.Logger}))
 	}
 
-	return proxy.SetConnect(cli)
+	return proxy.SetConnect(cli, dopts.Parallelcallback)
 }
 
 // Regist 注册回调函数,在init执行后执行回调函数
@@ -181,8 +187,8 @@ func (proxy *Proxy) Regist(cb Callback) error {
 
 // NewCtx 根据注册的超时时间构造一个上下文
 func (proxy *Proxy) NewCtx() (ctx context.Context, cancel context.CancelFunc) {
-	if proxy.opts.QueryTimeout > 0 {
-		ctx, cancel = context.WithTimeout(context.Background(), proxy.opts.QueryTimeout)
+	if proxy.queryTimeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), proxy.queryTimeout)
 	} else {
 		ctx, cancel = context.WithCancel(context.Background())
 	}

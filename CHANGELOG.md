@@ -1,8 +1,15 @@
+# v0.0.7
+
+## 接口优化
+
++ 增加参数`WithInstance(cli bun.IDB)`可以直接设置连接对象
++ 不再保存`Init`的参数
+
 # v0.0.6
 
 ## 新增接口
 
-新增接口`SetQueryTimeout(timeout time.Duration) `用于为请求修改默认请求超时
+新增接口`SetQueryTimeout(timeout time.Duration)`用于为请求修改默认请求超时
 
 # v0.0.5
 

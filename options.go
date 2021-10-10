@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"github.com/uptrace/bun"
 )
 
 //Option 设置key行为的选项
@@ -19,6 +20,7 @@ type Options struct {
 	ConnMaxIdleTime       time.Duration
 	DiscardUnknownColumns bool
 	Logger                logrus.FieldLogger
+	Cli                   *bun.DB
 }
 
 var DefaultOpts = Options{
@@ -105,5 +107,11 @@ func WithDiscardUnknownColumns() Option {
 func WithLogger(logger logrus.FieldLogger) Option {
 	return newFuncOption(func(o *Options) {
 		o.Logger = logger
+	})
+}
+
+func WithInstance(cli *bun.DB) Option {
+	return newFuncOption(func(o *Options) {
+		o.Cli = cli
 	})
 }
