@@ -79,7 +79,7 @@ func (proxy *Proxy) SetConnect(cli *bun.DB, parallelcallback bool) error {
 }
 
 // SetPool 设置连接池信息
-func (proxy *Proxy) SetPool(sqldb *sql.DB, opts *Options) {
+func SetPool(sqldb *sql.DB, opts *Options) {
 	if opts.MaxIdleConns > 0 {
 		sqldb.SetMaxIdleConns(opts.MaxIdleConns)
 	}
@@ -94,6 +94,77 @@ func (proxy *Proxy) SetPool(sqldb *sql.DB, opts *Options) {
 	}
 }
 
+func NewDB(URL string, dopts *Options) (*bun.DB, error) {
+	U, err := url.Parse(URL)
+	if err != nil {
+		return nil, err
+	}
+	var cli *bun.DB
+	switch U.Scheme {
+	case "postgres":
+		{
+			sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dopts.URL)))
+			SetPool(sqldb, dopts)
+			if dopts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, pgdialect.New())
+			}
+		}
+	case "mysql":
+		{
+			userinfo := ""
+			username := U.User.Username()
+			pwd, ok := U.User.Password()
+			if ok && username != "" {
+				userinfo = fmt.Sprintf("%s:%s@", username, pwd)
+			} else if ok && username == "" {
+				userinfo = fmt.Sprintf(":%s@", pwd)
+			} else if !ok && username != "" {
+				userinfo = fmt.Sprintf("%s@", username)
+			}
+			dataSourceName := fmt.Sprintf("%stcp(%s)%s?%s", userinfo, U.Host, U.Path, U.RawQuery)
+			sqldb, err := sql.Open("mysql", dataSourceName)
+			if err != nil {
+				return nil, err
+			}
+			SetPool(sqldb, dopts)
+			if dopts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, mysqldialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, mysqldialect.New())
+			}
+		}
+	case "sqlite":
+		{
+			dataSourceName := strings.ReplaceAll(dopts.URL, fmt.Sprintf("%s://", U.Scheme), "")
+			sqldb, err := sql.Open(sqliteshim.ShimName, fmt.Sprintf("file:%s", dataSourceName))
+			if err != nil {
+				return nil, err
+			}
+			if !strings.Contains(dataSourceName, ":memory:") {
+				SetPool(sqldb, dopts)
+			} else {
+				sqldb.SetMaxIdleConns(1000)
+				sqldb.SetConnMaxLifetime(0)
+			}
+			if dopts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, sqlitedialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, sqlitedialect.New())
+			}
+		}
+	default:
+		{
+			return nil, ErrUnSupportSchema
+		}
+	}
+	if dopts.Logger != nil {
+		cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: dopts.Logger}))
+	}
+	return cli, nil
+}
+
 // Init 初始化代理对象
 func (proxy *Proxy) Init(opts ...Option) error {
 	dopts := DefaultOpts
@@ -104,74 +175,12 @@ func (proxy *Proxy) Init(opts ...Option) error {
 	if dopts.Cli != nil {
 		cli = dopts.Cli
 	} else {
-		U, err := url.Parse(dopts.URL)
+		_cli, err := NewDB(dopts.URL, &dopts)
 		if err != nil {
 			return err
 		}
-		switch U.Scheme {
-		case "postgres":
-			{
-				sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dopts.URL)))
-				proxy.SetPool(sqldb, &dopts)
-				if dopts.DiscardUnknownColumns {
-					cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
-				} else {
-					cli = bun.NewDB(sqldb, pgdialect.New())
-				}
-			}
-		case "mysql":
-			{
-				userinfo := ""
-				username := U.User.Username()
-				pwd, ok := U.User.Password()
-				if ok && username != "" {
-					userinfo = fmt.Sprintf("%s:%s@", username, pwd)
-				} else if ok && username == "" {
-					userinfo = fmt.Sprintf(":%s@", pwd)
-				} else if !ok && username != "" {
-					userinfo = fmt.Sprintf("%s@", username)
-				}
-				dataSourceName := fmt.Sprintf("%stcp(%s)%s?%s", userinfo, U.Host, U.Path, U.RawQuery)
-				sqldb, err := sql.Open("mysql", dataSourceName)
-				if err != nil {
-					return err
-				}
-				proxy.SetPool(sqldb, &dopts)
-				if dopts.DiscardUnknownColumns {
-					cli = bun.NewDB(sqldb, mysqldialect.New(), bun.WithDiscardUnknownColumns())
-				} else {
-					cli = bun.NewDB(sqldb, mysqldialect.New())
-				}
-			}
-		case "sqlite":
-			{
-				dataSourceName := strings.ReplaceAll(dopts.URL, fmt.Sprintf("%s://", U.Scheme), "")
-				sqldb, err := sql.Open(sqliteshim.ShimName, fmt.Sprintf("file:%s", dataSourceName))
-				if err != nil {
-					return err
-				}
-				if !strings.Contains(dataSourceName, ":memory:") {
-					proxy.SetPool(sqldb, &dopts)
-				} else {
-					sqldb.SetMaxIdleConns(1000)
-					sqldb.SetConnMaxLifetime(0)
-				}
-				if dopts.DiscardUnknownColumns {
-					cli = bun.NewDB(sqldb, sqlitedialect.New(), bun.WithDiscardUnknownColumns())
-				} else {
-					cli = bun.NewDB(sqldb, sqlitedialect.New())
-				}
-			}
-		default:
-			{
-				return ErrUnSupportSchema
-			}
-		}
+		cli = _cli
 	}
-	if dopts.Logger != nil {
-		cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: dopts.Logger}))
-	}
-
 	return proxy.SetConnect(cli, dopts.Parallelcallback)
 }
 

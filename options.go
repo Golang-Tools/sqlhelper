@@ -11,16 +11,17 @@ import (
 //@attribute MaxTTL time.Duration 为0则不设置过期
 //@attribute AutoRefresh string 需要为crontab格式的字符串,否则不会自动定时刷新
 type Options struct {
-	URL                   string
-	Parallelcallback      bool
-	QueryTimeout          time.Duration
+	URL              string        // 只在Init方法中生效
+	Cli              *bun.DB       // 只在Init方法中生效
+	Parallelcallback bool          // 只在Init方法中生效
+	QueryTimeout     time.Duration // 只在Init方法中生效
+
 	MaxOpenConns          int
 	ConnMaxLifetime       time.Duration
 	MaxIdleConns          int
 	ConnMaxIdleTime       time.Duration
 	DiscardUnknownColumns bool
 	Logger                logrus.FieldLogger
-	Cli                   *bun.DB
 }
 
 var DefaultOpts = Options{
