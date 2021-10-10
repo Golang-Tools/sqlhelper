@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: sqliteshim.go in package github.com/uptrace/bun/driver/sqliteshim</title>
+<link href="../../../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	sqliteshim.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html">github.com/uptrace/bun/driver/sqliteshim</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+input[id=r0]:checked ~pre label[for=r0],
+input[id=r1]:checked ~pre label[for=r1],
+input[id=r2]:checked ~pre label[for=r2],
+input[id=r3]:checked ~pre label[for=r3],
+input[id=r4]:checked ~pre label[for=r4],
+input[id=r5]:checked ~pre label[for=r5]
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0,
+input[id=i1]:checked ~pre .i1
+{background: brown; color: #eed;}
+</style><input id="r0" type="radio" name="g"/>
+<input id="r1" type="radio" name="g"/>
+<input id="r2" type="radio" name="g"/>
+<input id="r3" type="radio" name="g"/>
+<input id="r4" type="radio" name="g"/>
+<input id="r5" type="radio" name="g"/>
+<input id="i0" type="radio" name="i"/>
+<input id="i1" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<div class="anchor" id="doc"><span class="codeline" id="line-1"><code><span class="comment">// Package sqliteshim is a shim package that imports an appropriate sqlite</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// driver for the build target and registers it under ShimName.</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-4"><code><span class="comment">// Currently it uses packages in the following order:</span></code></span>
+<span class="codeline" id="line-5"><code><span class="comment">//  • modernc.org/sqlite on supported platforms,</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">//  • github.com/mattn/go-sqlite3 if Cgo is enabled,</span></code></span>
+<span class="codeline" id="line-7"><code><span class="comment">// Otherwise registers a driver that returns an error on unsupported platforms.</span></code></span>
+<span class="codeline" id="line-8"><code><span class="comment">//</span></code></span></div><span class="codeline" id="line-9"><code><span class="keyword">package</span> sqliteshim</code></span>
+<span class="codeline" id="line-10"><code></code></span>
+<span class="codeline" id="line-11"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-12"><code>	<label for="i0"><span class="lit-string i0">"database/sql"</span></label></code></span>
+<span class="codeline" id="line-13"><code>	<label for="i1"><span class="lit-string i1">"database/sql/driver"</span></label></code></span>
+<span class="codeline" id="line-14"><code>)</code></span>
+<span class="codeline" id="line-15"><code></code></span>
+<span class="codeline" id="line-16"><code><span class="keyword">func</span> <label for="r0" class="ident"><a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html#name-init" class="ident">init</a></label>() {</code></span>
+<span class="codeline" id="line-17"><code>	<a href="../../../../../../pkg/database/sql.html" class="ident i0">sql</a>.<a href="../../../../../database/sql/sql.go.html#line-44" class="ident">Register</a>(<a href="#line-21" class="ident">ShimName</a>, <a href="modernc.go.html#line-18" class="ident">shimDriver</a>)</code></span>
+<span class="codeline" id="line-18"><code>}</code></span>
+<span class="codeline" id="line-19"><code></code></span>
+<span class="codeline" id="line-20"><code><span class="comment">// ShimName is the name of the shim database/sql driver registration.</span></code></span>
+<span class="codeline" id="line-21"><code><span class="keyword">const</span> <a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html#name-ShimName" class="ident">ShimName</a> = <span class="lit-string">"sqliteshim"</span></code></span>
+<span class="codeline" id="line-22"><code></code></span>
+<span class="codeline" id="line-23"><code><span class="comment">// UnsupportedError is returned from driver on unsupported platforms.</span></code></span>
+<span class="codeline" id="line-24"><code><span class="keyword">type</span> <a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html#name-UnsupportedError" class="ident">UnsupportedError</a> <span class="keyword">struct</span>{}</code></span>
+<span class="codeline" id="line-25"><code></code></span>
+<span class="codeline" id="line-26"><code><span class="keyword">func</span> (<label for="r1" class="ident">e</label> *<a href="#line-24" class="ident">UnsupportedError</a>) <label for="r2" class="ident"><a href="../../../../../../imp/github.com/uptrace/bun/driver/sqliteshim.UnsupportedError.html#name-.Error" class="ident">Error</a></label>() <a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a> {</code></span>
+<span class="codeline" id="line-27"><code>	<span class="keyword">return</span> <span class="lit-string">"sqlite driver is not available on the current platform"</span></code></span>
+<span class="codeline" id="line-28"><code>}</code></span>
+<span class="codeline" id="line-29"><code></code></span>
+<span class="codeline" id="line-30"><code><span class="comment">// HasDriver indicates that SQLite driver implementation is available.</span></code></span>
+<span class="codeline" id="line-31"><code><span class="keyword">func</span> <label for="r3" class="ident"><a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html#name-HasDriver" class="ident">HasDriver</a></label>() <a href="../../../../../../pkg/builtin.html#name-bool" class="ident">bool</a> {</code></span>
+<span class="codeline" id="line-32"><code>	<span class="keyword">return</span> <a href="modernc.go.html#line-14" class="ident">hasDriver</a></code></span>
+<span class="codeline" id="line-33"><code>}</code></span>
+<span class="codeline" id="line-34"><code></code></span>
+<span class="codeline" id="line-35"><code><span class="comment">// Driver returns the shim driver registered under ShimName name.</span></code></span>
+<span class="codeline" id="line-36"><code><span class="keyword">func</span> <label for="r4" class="ident"><a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html#name-Driver" class="ident">Driver</a></label>() <a href="../../../../../../pkg/database/sql/driver.html" class="ident i1">driver</a>.<a href="../../../../../database/sql/driver/driver.go.html#line-84" class="ident">Driver</a> {</code></span>
+<span class="codeline" id="line-37"><code>	<span class="keyword">return</span> <a href="modernc.go.html#line-18" class="ident">shimDriver</a></code></span>
+<span class="codeline" id="line-38"><code>}</code></span>
+<span class="codeline" id="line-39"><code></code></span>
+<span class="codeline" id="line-40"><code><span class="comment">// DriverName is the name of the database/sql driver. Note that unlike ShimName</span></code></span>
+<span class="codeline" id="line-41"><code><span class="comment">// the value depends on the build target. That is, DriverName returns the name</span></code></span>
+<span class="codeline" id="line-42"><code><span class="comment">// of the underlying database driver.</span></code></span>
+<span class="codeline" id="line-43"><code><span class="keyword">func</span> <label for="r5" class="ident"><a href="../../../../../../pkg/github.com/uptrace/bun/driver/sqliteshim.html#name-DriverName" class="ident">DriverName</a></label>() <a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a> {</code></span>
+<span class="codeline" id="line-44"><code>	<span class="keyword">return</span> <a href="modernc.go.html#line-15" class="ident">driverName</a></code></span>
+<span class="codeline" id="line-45"><code>}</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

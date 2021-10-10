@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: doc.go in package modernc.org/sqlite</title>
+<link href="../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	doc.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../pkg/modernc.org/sqlite.html">modernc.org/sqlite</a>
+</code></pre>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Copyright 2017 The Sqlite Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// Use of this source code is governed by a BSD-style</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// license that can be found in the LICENSE file.</span></code></span>
+<span class="codeline" id="line-4"><code></code></span>
+<div class="anchor" id="doc"><span class="codeline" id="line-5"><code><span class="comment">// Package sqlite is a CGo-free port of SQLite.</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-7"><code><span class="comment">// SQLite is an in-process implementation of a self-contained, serverless,</span></code></span>
+<span class="codeline" id="line-8"><code><span class="comment">// zero-configuration, transactional SQL database engine.</span></code></span>
+<span class="codeline" id="line-9"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-10"><code><span class="comment">// Builders</span></code></span>
+<span class="codeline" id="line-11"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-12"><code><span class="comment">// Builder results available at</span></code></span>
+<span class="codeline" id="line-13"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-14"><code><span class="comment">//	https://modern-c.appspot.com/-/builder/?importpath=modernc.org%2fsqlite</span></code></span>
+<span class="codeline" id="line-15"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-16"><code><span class="comment">// Changelog</span></code></span>
+<span class="codeline" id="line-17"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-18"><code><span class="comment">// 2021-06-23 v1.11.0:</span></code></span>
+<span class="codeline" id="line-19"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-20"><code><span class="comment">// Upgrade to use sqlite 3.36.0, release notes at https://www.sqlite.org/releaselog/3_36_0.html.</span></code></span>
+<span class="codeline" id="line-21"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-22"><code><span class="comment">// 2021-05-06 v1.10.6:</span></code></span>
+<span class="codeline" id="line-23"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-24"><code><span class="comment">// Fixes a memory corruption issue</span></code></span>
+<span class="codeline" id="line-25"><code><span class="comment">// (https://gitlab.com/cznic/sqlite/-/issues/53).  Versions since v1.8.6 were</span></code></span>
+<span class="codeline" id="line-26"><code><span class="comment">// affected and should be updated to v1.10.6.</span></code></span>
+<span class="codeline" id="line-27"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-28"><code><span class="comment">// 2021-03-14 v1.10.0:</span></code></span>
+<span class="codeline" id="line-29"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-30"><code><span class="comment">// Update to use sqlite 3.35.0, release notes at https://www.sqlite.org/releaselog/3_35_0.html.</span></code></span>
+<span class="codeline" id="line-31"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-32"><code><span class="comment">// 2021-03-11 v1.9.0:</span></code></span>
+<span class="codeline" id="line-33"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-34"><code><span class="comment">// Support darwin/arm64.</span></code></span>
+<span class="codeline" id="line-35"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-36"><code><span class="comment">// 2021-01-08 v1.8.0:</span></code></span>
+<span class="codeline" id="line-37"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-38"><code><span class="comment">// Support darwin/amd64.</span></code></span>
+<span class="codeline" id="line-39"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-40"><code><span class="comment">// 2020-09-13 v1.7.0:</span></code></span>
+<span class="codeline" id="line-41"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-42"><code><span class="comment">// Support linux/arm and linux/arm64.</span></code></span>
+<span class="codeline" id="line-43"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-44"><code><span class="comment">// 2020-09-08 v1.6.0:</span></code></span>
+<span class="codeline" id="line-45"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-46"><code><span class="comment">// Support linux/386.</span></code></span>
+<span class="codeline" id="line-47"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-48"><code><span class="comment">// 2020-09-03 v1.5.0:</span></code></span>
+<span class="codeline" id="line-49"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-50"><code><span class="comment">// This project is now completely CGo-free, including the Tcl tests.</span></code></span>
+<span class="codeline" id="line-51"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-52"><code><span class="comment">// 2020-08-26 v1.4.0:</span></code></span>
+<span class="codeline" id="line-53"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-54"><code><span class="comment">// First stable release for linux/amd64.  The database/sql driver and its tests</span></code></span>
+<span class="codeline" id="line-55"><code><span class="comment">// are CGo free.  Tests of the translated sqlite3.c library still require CGo.</span></code></span>
+<span class="codeline" id="line-56"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-57"><code><span class="comment">//	$ make full</span></code></span>
+<span class="codeline" id="line-58"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-59"><code><span class="comment">//	...</span></code></span>
+<span class="codeline" id="line-60"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-61"><code><span class="comment">//	SQLite 2020-08-14 13:23:32 fca8dc8b578f215a969cd899336378966156154710873e68b3d9ac5881b0ff3f</span></code></span>
+<span class="codeline" id="line-62"><code><span class="comment">//	0 errors out of 928271 tests on 3900x Linux 64-bit little-endian</span></code></span>
+<span class="codeline" id="line-63"><code><span class="comment">//	WARNING: Multi-threaded tests skipped: Linked against a non-threadsafe Tcl build</span></code></span>
+<span class="codeline" id="line-64"><code><span class="comment">//	All memory allocations freed - no leaks</span></code></span>
+<span class="codeline" id="line-65"><code><span class="comment">//	Maximum memory usage: 9156360 bytes</span></code></span>
+<span class="codeline" id="line-66"><code><span class="comment">//	Current memory usage: 0 bytes</span></code></span>
+<span class="codeline" id="line-67"><code><span class="comment">//	Number of malloc()  : -1 calls</span></code></span>
+<span class="codeline" id="line-68"><code><span class="comment">//	--- PASS: TestTclTest (1785.04s)</span></code></span>
+<span class="codeline" id="line-69"><code><span class="comment">//	PASS</span></code></span>
+<span class="codeline" id="line-70"><code><span class="comment">//	ok  	modernc.org/sqlite	1785.041s</span></code></span>
+<span class="codeline" id="line-71"><code><span class="comment">//	$</span></code></span>
+<span class="codeline" id="line-72"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-73"><code><span class="comment">// 2020-07-26 v1.4.0-beta1:</span></code></span>
+<span class="codeline" id="line-74"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-75"><code><span class="comment">// The project has reached beta status while supporting linux/amd64 only at the</span></code></span>
+<span class="codeline" id="line-76"><code><span class="comment">// moment. The 'extraquick' Tcl testsuite reports</span></code></span>
+<span class="codeline" id="line-77"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-78"><code><span class="comment">//	630 errors out of 200177 tests on  Linux 64-bit little-endian</span></code></span>
+<span class="codeline" id="line-79"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-80"><code><span class="comment">// and some memory leaks</span></code></span>
+<span class="codeline" id="line-81"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-82"><code><span class="comment">//	Unfreed memory: 698816 bytes in 322 allocations</span></code></span>
+<span class="codeline" id="line-83"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-84"><code><span class="comment">// 2019-12-28 v1.2.0-alpha.3: Third alpha fixes issue #19.</span></code></span>
+<span class="codeline" id="line-85"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-86"><code><span class="comment">// It also bumps the minor version as the repository was wrongly already tagged</span></code></span>
+<span class="codeline" id="line-87"><code><span class="comment">// with v1.1.0 before.  Even though the tag was deleted there are proxies that</span></code></span>
+<span class="codeline" id="line-88"><code><span class="comment">// cached that tag. Thanks /u/garaktailor for detecting the problem and</span></code></span>
+<span class="codeline" id="line-89"><code><span class="comment">// suggesting this solution.</span></code></span>
+<span class="codeline" id="line-90"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-91"><code><span class="comment">// 2019-12-26 v1.1.0-alpha.2: Second alpha release adds support for accessing a</span></code></span>
+<span class="codeline" id="line-92"><code><span class="comment">// database concurrently by multiple goroutines and/or processes. v1.1.0 is now</span></code></span>
+<span class="codeline" id="line-93"><code><span class="comment">// considered feature-complete. Next planed release should be a beta with a</span></code></span>
+<span class="codeline" id="line-94"><code><span class="comment">// proper test suite.</span></code></span>
+<span class="codeline" id="line-95"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-96"><code><span class="comment">// 2019-12-18 v1.1.0-alpha.1: First alpha release using the new cc/v3, gocc,</span></code></span>
+<span class="codeline" id="line-97"><code><span class="comment">// qbe toolchain. Some primitive tests pass on linux_{amd64,386}. Not yet safe</span></code></span>
+<span class="codeline" id="line-98"><code><span class="comment">// for concurrent access by multiple goroutines. Next alpha release is planed</span></code></span>
+<span class="codeline" id="line-99"><code><span class="comment">// to arrive before the end of this year.</span></code></span>
+<span class="codeline" id="line-100"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-101"><code><span class="comment">// 2017-06-10 Windows/Intel no more uses the VM (thanks Steffen Butzer).</span></code></span>
+<span class="codeline" id="line-102"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-103"><code><span class="comment">// 2017-06-05 Linux/Intel no more uses the VM (cznic/virtual).</span></code></span>
+<span class="codeline" id="line-104"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-105"><code><span class="comment">// Connecting to a database</span></code></span>
+<span class="codeline" id="line-106"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-107"><code><span class="comment">// To access a Sqlite database do something like</span></code></span>
+<span class="codeline" id="line-108"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-109"><code><span class="comment">//	import (</span></code></span>
+<span class="codeline" id="line-110"><code><span class="comment">//		"database/sql"</span></code></span>
+<span class="codeline" id="line-111"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-112"><code><span class="comment">//		_ "modernc.org/sqlite"</span></code></span>
+<span class="codeline" id="line-113"><code><span class="comment">//	)</span></code></span>
+<span class="codeline" id="line-114"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-115"><code><span class="comment">//	...</span></code></span>
+<span class="codeline" id="line-116"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-117"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-118"><code><span class="comment">//	db, err := sql.Open("sqlite", dsnURI)</span></code></span>
+<span class="codeline" id="line-119"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-120"><code><span class="comment">//	...</span></code></span>
+<span class="codeline" id="line-121"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-122"><code><span class="comment">// Supported platforms and architectures</span></code></span>
+<span class="codeline" id="line-123"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-124"><code><span class="comment">// These combinations of GOOS and GOARCH are currently supported</span></code></span>
+<span class="codeline" id="line-125"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-126"><code><span class="comment">// 	darwin	amd64</span></code></span>
+<span class="codeline" id="line-127"><code><span class="comment">// 	darwin	arm64</span></code></span>
+<span class="codeline" id="line-128"><code><span class="comment">// 	linux	386</span></code></span>
+<span class="codeline" id="line-129"><code><span class="comment">// 	linux	amd64</span></code></span>
+<span class="codeline" id="line-130"><code><span class="comment">// 	linux	arm</span></code></span>
+<span class="codeline" id="line-131"><code><span class="comment">// 	linux	arm64</span></code></span>
+<span class="codeline" id="line-132"><code><span class="comment">// 	windows	amd64</span></code></span>
+<span class="codeline" id="line-133"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-134"><code><span class="comment">// Planned platforms and architectures</span></code></span>
+<span class="codeline" id="line-135"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-136"><code><span class="comment">// 	windows	386</span></code></span>
+<span class="codeline" id="line-137"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-138"><code><span class="comment">// Debug and development versions</span></code></span>
+<span class="codeline" id="line-139"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-140"><code><span class="comment">// A comma separated list of options can be passed to `go generate` via the</span></code></span>
+<span class="codeline" id="line-141"><code><span class="comment">// environment variable GO_GENERATE. Some useful options include for example:</span></code></span>
+<span class="codeline" id="line-142"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-143"><code><span class="comment">//	-DSQLITE_DEBUG</span></code></span>
+<span class="codeline" id="line-144"><code><span class="comment">//	-DSQLITE_MEM_DEBUG</span></code></span>
+<span class="codeline" id="line-145"><code><span class="comment">//	-ccgo-verify-structs</span></code></span>
+<span class="codeline" id="line-146"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-147"><code><span class="comment">// To create a debug/development version, issue for example:</span></code></span>
+<span class="codeline" id="line-148"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-149"><code><span class="comment">//	$ GO_GENERATE=-DSQLITE_DEBUG,-DSQLITE_MEM_DEBUG go generate</span></code></span>
+<span class="codeline" id="line-150"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-151"><code><span class="comment">// Note: To run `go generate` you need to have modernc.org/ccgo/v3 installed.</span></code></span>
+<span class="codeline" id="line-152"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-153"><code><span class="comment">// Sqlite documentation</span></code></span>
+<span class="codeline" id="line-154"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-155"><code><span class="comment">// See https://sqlite.org/docs.html</span></code></span></div><span class="codeline" id="line-156"><code><span class="keyword">package</span> sqlite <span class="comment">// import "modernc.org/sqlite"</span></code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

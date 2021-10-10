@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: nulltime_go113.go in package github.com/go-sql-driver/mysql</title>
+<link href="../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	nulltime_go113.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html">github.com/go-sql-driver/mysql</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0
+{background: brown; color: #eed;}
+</style><input id="i0" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Go MySQL Driver - A MySQL-Driver for Go's database/sql package</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// Copyright 2013 The Go-MySQL-Driver Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-4"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-5"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">// License, v. 2.0. If a copy of the MPL was not distributed with this file,</span></code></span>
+<span class="codeline" id="line-7"><code><span class="comment">// You can obtain one at http://mozilla.org/MPL/2.0/.</span></code></span>
+<span class="codeline" id="line-8"><code></code></span>
+<span class="codeline" id="line-9"><code><span class="comment">// +build go1.13</span></code></span>
+<span class="codeline" id="line-10"><code></code></span>
+<span class="codeline" id="line-11"><code><span class="keyword">package</span> mysql</code></span>
+<span class="codeline" id="line-12"><code></code></span>
+<span class="codeline" id="line-13"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-14"><code>	<label for="i0"><span class="lit-string i0">"database/sql"</span></label></code></span>
+<span class="codeline" id="line-15"><code>)</code></span>
+<span class="codeline" id="line-16"><code></code></span>
+<span class="codeline" id="line-17"><code><span class="comment">// NullTime represents a time.Time that may be NULL.</span></code></span>
+<span class="codeline" id="line-18"><code><span class="comment">// NullTime implements the Scanner interface so</span></code></span>
+<span class="codeline" id="line-19"><code><span class="comment">// it can be used as a scan destination:</span></code></span>
+<span class="codeline" id="line-20"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-21"><code><span class="comment">//  var nt NullTime</span></code></span>
+<span class="codeline" id="line-22"><code><span class="comment">//  err := db.QueryRow("SELECT time FROM foo WHERE id=?", id).Scan(&amp;nt)</span></code></span>
+<span class="codeline" id="line-23"><code><span class="comment">//  ...</span></code></span>
+<span class="codeline" id="line-24"><code><span class="comment">//  if nt.Valid {</span></code></span>
+<span class="codeline" id="line-25"><code><span class="comment">//     // use nt.Time</span></code></span>
+<span class="codeline" id="line-26"><code><span class="comment">//  } else {</span></code></span>
+<span class="codeline" id="line-27"><code><span class="comment">//     // NULL value</span></code></span>
+<span class="codeline" id="line-28"><code><span class="comment">//  }</span></code></span>
+<span class="codeline" id="line-29"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-30"><code><span class="comment">// This NullTime implementation is not driver-specific</span></code></span>
+<span class="codeline" id="line-31"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-32"><code><span class="comment">// Deprecated: NullTime doesn't honor the loc DSN parameter.</span></code></span>
+<span class="codeline" id="line-33"><code><span class="comment">// NullTime.Scan interprets a time as UTC, not the loc DSN parameter.</span></code></span>
+<span class="codeline" id="line-34"><code><span class="comment">// Use sql.NullTime instead.</span></code></span>
+<span class="codeline" id="line-35"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-NullTime" class="ident">NullTime</a> <a href="../../../../pkg/database/sql.html" class="ident i0">sql</a>.<a href="../../../database/sql/sql.go.html#line-318" class="ident">NullTime</a></code></span>
+<span class="codeline" id="line-36"><code></code></span>
+<span class="codeline" id="line-37"><code><span class="comment">// for internal use.</span></code></span>
+<span class="codeline" id="line-38"><code><span class="comment">// the mysql package uses sql.NullTime if it is available.</span></code></span>
+<span class="codeline" id="line-39"><code><span class="comment">// if not, the package uses mysql.NullTime.</span></code></span>
+<span class="codeline" id="line-40"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-nullTime" class="ident">nullTime</a> = <a href="../../../../pkg/database/sql.html" class="ident i0">sql</a>.<a href="../../../database/sql/sql.go.html#line-318" class="ident">NullTime</a> <span class="comment">// sql.NullTime is available</span></code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

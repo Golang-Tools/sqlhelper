@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: const.go in package github.com/go-sql-driver/mysql</title>
+<link href="../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	const.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html">github.com/go-sql-driver/mysql</a>
+</code></pre>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Go MySQL Driver - A MySQL-Driver for Go's database/sql package</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// Copyright 2012 The Go-MySQL-Driver Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-4"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-5"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">// License, v. 2.0. If a copy of the MPL was not distributed with this file,</span></code></span>
+<span class="codeline" id="line-7"><code><span class="comment">// You can obtain one at http://mozilla.org/MPL/2.0/.</span></code></span>
+<span class="codeline" id="line-8"><code></code></span>
+<span class="codeline" id="line-9"><code><span class="keyword">package</span> mysql</code></span>
+<span class="codeline" id="line-10"><code></code></span>
+<span class="codeline" id="line-11"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-12"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-defaultAuthPlugin" class="ident">defaultAuthPlugin</a>       = <span class="lit-string">"mysql_native_password"</span></code></span>
+<span class="codeline" id="line-13"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-defaultMaxAllowedPacket" class="ident">defaultMaxAllowedPacket</a> = <span class="lit-number">4</span> &lt;&lt; <span class="lit-number">20</span> <span class="comment">// 4 MiB</span></code></span>
+<span class="codeline" id="line-14"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-minProtocolVersion" class="ident">minProtocolVersion</a>      = <span class="lit-number">10</span></code></span>
+<span class="codeline" id="line-15"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-maxPacketSize" class="ident">maxPacketSize</a>           = <span class="lit-number">1</span>&lt;&lt;<span class="lit-number">24</span> - <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-16"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-timeFormat" class="ident">timeFormat</a>              = <span class="lit-string">"2006-01-02 15:04:05.999999"</span></code></span>
+<span class="codeline" id="line-17"><code>)</code></span>
+<span class="codeline" id="line-18"><code></code></span>
+<span class="codeline" id="line-19"><code><span class="comment">// MySQL constants documentation:</span></code></span>
+<span class="codeline" id="line-20"><code><span class="comment">// http://dev.mysql.com/doc/internals/en/client-server-protocol.html</span></code></span>
+<span class="codeline" id="line-21"><code></code></span>
+<span class="codeline" id="line-22"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-23"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-iOK" class="ident">iOK</a>           <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a> = <span class="lit-number">0x00</span></code></span>
+<span class="codeline" id="line-24"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-iAuthMoreData" class="ident">iAuthMoreData</a> <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a> = <span class="lit-number">0x01</span></code></span>
+<span class="codeline" id="line-25"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-iLocalInFile" class="ident">iLocalInFile</a>  <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a> = <span class="lit-number">0xfb</span></code></span>
+<span class="codeline" id="line-26"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-iEOF" class="ident">iEOF</a>          <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a> = <span class="lit-number">0xfe</span></code></span>
+<span class="codeline" id="line-27"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-iERR" class="ident">iERR</a>          <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a> = <span class="lit-number">0xff</span></code></span>
+<span class="codeline" id="line-28"><code>)</code></span>
+<span class="codeline" id="line-29"><code></code></span>
+<span class="codeline" id="line-30"><code><span class="comment">// https://dev.mysql.com/doc/internals/en/capability-flags.html#packet-Protocol::CapabilityFlags</span></code></span>
+<span class="codeline" id="line-31"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientFlag" class="ident">clientFlag</a> <a href="../../../../pkg/builtin.html#name-uint32" class="ident">uint32</a></code></span>
+<span class="codeline" id="line-32"><code></code></span>
+<span class="codeline" id="line-33"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-34"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientLongPassword" class="ident">clientLongPassword</a> <a href="#line-31" class="ident">clientFlag</a> = <span class="lit-number">1</span> &lt;&lt; <a href="../../../../pkg/builtin.html#name-iota" class="ident">iota</a></code></span>
+<span class="codeline" id="line-35"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientFoundRows" class="ident">clientFoundRows</a></code></span>
+<span class="codeline" id="line-36"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientLongFlag" class="ident">clientLongFlag</a></code></span>
+<span class="codeline" id="line-37"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientConnectWithDB" class="ident">clientConnectWithDB</a></code></span>
+<span class="codeline" id="line-38"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientNoSchema" class="ident">clientNoSchema</a></code></span>
+<span class="codeline" id="line-39"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientCompress" class="ident">clientCompress</a></code></span>
+<span class="codeline" id="line-40"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientODBC" class="ident">clientODBC</a></code></span>
+<span class="codeline" id="line-41"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientLocalFiles" class="ident">clientLocalFiles</a></code></span>
+<span class="codeline" id="line-42"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientIgnoreSpace" class="ident">clientIgnoreSpace</a></code></span>
+<span class="codeline" id="line-43"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientProtocol41" class="ident">clientProtocol41</a></code></span>
+<span class="codeline" id="line-44"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientInteractive" class="ident">clientInteractive</a></code></span>
+<span class="codeline" id="line-45"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientSSL" class="ident">clientSSL</a></code></span>
+<span class="codeline" id="line-46"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientIgnoreSIGPIPE" class="ident">clientIgnoreSIGPIPE</a></code></span>
+<span class="codeline" id="line-47"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientTransactions" class="ident">clientTransactions</a></code></span>
+<span class="codeline" id="line-48"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientReserved" class="ident">clientReserved</a></code></span>
+<span class="codeline" id="line-49"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientSecureConn" class="ident">clientSecureConn</a></code></span>
+<span class="codeline" id="line-50"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientMultiStatements" class="ident">clientMultiStatements</a></code></span>
+<span class="codeline" id="line-51"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientMultiResults" class="ident">clientMultiResults</a></code></span>
+<span class="codeline" id="line-52"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientPSMultiResults" class="ident">clientPSMultiResults</a></code></span>
+<span class="codeline" id="line-53"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientPluginAuth" class="ident">clientPluginAuth</a></code></span>
+<span class="codeline" id="line-54"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientConnectAttrs" class="ident">clientConnectAttrs</a></code></span>
+<span class="codeline" id="line-55"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientPluginAuthLenEncClientData" class="ident">clientPluginAuthLenEncClientData</a></code></span>
+<span class="codeline" id="line-56"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientCanHandleExpiredPasswords" class="ident">clientCanHandleExpiredPasswords</a></code></span>
+<span class="codeline" id="line-57"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientSessionTrack" class="ident">clientSessionTrack</a></code></span>
+<span class="codeline" id="line-58"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-clientDeprecateEOF" class="ident">clientDeprecateEOF</a></code></span>
+<span class="codeline" id="line-59"><code>)</code></span>
+<span class="codeline" id="line-60"><code></code></span>
+<span class="codeline" id="line-61"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-62"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comQuit" class="ident">comQuit</a> <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a> = <a href="../../../../pkg/builtin.html#name-iota" class="ident">iota</a> + <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-63"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comInitDB" class="ident">comInitDB</a></code></span>
+<span class="codeline" id="line-64"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comQuery" class="ident">comQuery</a></code></span>
+<span class="codeline" id="line-65"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comFieldList" class="ident">comFieldList</a></code></span>
+<span class="codeline" id="line-66"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comCreateDB" class="ident">comCreateDB</a></code></span>
+<span class="codeline" id="line-67"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comDropDB" class="ident">comDropDB</a></code></span>
+<span class="codeline" id="line-68"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comRefresh" class="ident">comRefresh</a></code></span>
+<span class="codeline" id="line-69"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comShutdown" class="ident">comShutdown</a></code></span>
+<span class="codeline" id="line-70"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStatistics" class="ident">comStatistics</a></code></span>
+<span class="codeline" id="line-71"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comProcessInfo" class="ident">comProcessInfo</a></code></span>
+<span class="codeline" id="line-72"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comConnect" class="ident">comConnect</a></code></span>
+<span class="codeline" id="line-73"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comProcessKill" class="ident">comProcessKill</a></code></span>
+<span class="codeline" id="line-74"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comDebug" class="ident">comDebug</a></code></span>
+<span class="codeline" id="line-75"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comPing" class="ident">comPing</a></code></span>
+<span class="codeline" id="line-76"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comTime" class="ident">comTime</a></code></span>
+<span class="codeline" id="line-77"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comDelayedInsert" class="ident">comDelayedInsert</a></code></span>
+<span class="codeline" id="line-78"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comChangeUser" class="ident">comChangeUser</a></code></span>
+<span class="codeline" id="line-79"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comBinlogDump" class="ident">comBinlogDump</a></code></span>
+<span class="codeline" id="line-80"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comTableDump" class="ident">comTableDump</a></code></span>
+<span class="codeline" id="line-81"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comConnectOut" class="ident">comConnectOut</a></code></span>
+<span class="codeline" id="line-82"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comRegisterSlave" class="ident">comRegisterSlave</a></code></span>
+<span class="codeline" id="line-83"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStmtPrepare" class="ident">comStmtPrepare</a></code></span>
+<span class="codeline" id="line-84"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStmtExecute" class="ident">comStmtExecute</a></code></span>
+<span class="codeline" id="line-85"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStmtSendLongData" class="ident">comStmtSendLongData</a></code></span>
+<span class="codeline" id="line-86"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStmtClose" class="ident">comStmtClose</a></code></span>
+<span class="codeline" id="line-87"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStmtReset" class="ident">comStmtReset</a></code></span>
+<span class="codeline" id="line-88"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comSetOption" class="ident">comSetOption</a></code></span>
+<span class="codeline" id="line-89"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-comStmtFetch" class="ident">comStmtFetch</a></code></span>
+<span class="codeline" id="line-90"><code>)</code></span>
+<span class="codeline" id="line-91"><code></code></span>
+<span class="codeline" id="line-92"><code><span class="comment">// https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnType</span></code></span>
+<span class="codeline" id="line-93"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldType" class="ident">fieldType</a> <a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a></code></span>
+<span class="codeline" id="line-94"><code></code></span>
+<span class="codeline" id="line-95"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-96"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeDecimal" class="ident">fieldTypeDecimal</a> <a href="#line-93" class="ident">fieldType</a> = <a href="../../../../pkg/builtin.html#name-iota" class="ident">iota</a></code></span>
+<span class="codeline" id="line-97"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeTiny" class="ident">fieldTypeTiny</a></code></span>
+<span class="codeline" id="line-98"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeShort" class="ident">fieldTypeShort</a></code></span>
+<span class="codeline" id="line-99"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeLong" class="ident">fieldTypeLong</a></code></span>
+<span class="codeline" id="line-100"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeFloat" class="ident">fieldTypeFloat</a></code></span>
+<span class="codeline" id="line-101"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeDouble" class="ident">fieldTypeDouble</a></code></span>
+<span class="codeline" id="line-102"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeNULL" class="ident">fieldTypeNULL</a></code></span>
+<span class="codeline" id="line-103"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeTimestamp" class="ident">fieldTypeTimestamp</a></code></span>
+<span class="codeline" id="line-104"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeLongLong" class="ident">fieldTypeLongLong</a></code></span>
+<span class="codeline" id="line-105"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeInt24" class="ident">fieldTypeInt24</a></code></span>
+<span class="codeline" id="line-106"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeDate" class="ident">fieldTypeDate</a></code></span>
+<span class="codeline" id="line-107"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeTime" class="ident">fieldTypeTime</a></code></span>
+<span class="codeline" id="line-108"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeDateTime" class="ident">fieldTypeDateTime</a></code></span>
+<span class="codeline" id="line-109"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeYear" class="ident">fieldTypeYear</a></code></span>
+<span class="codeline" id="line-110"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeNewDate" class="ident">fieldTypeNewDate</a></code></span>
+<span class="codeline" id="line-111"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeVarChar" class="ident">fieldTypeVarChar</a></code></span>
+<span class="codeline" id="line-112"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeBit" class="ident">fieldTypeBit</a></code></span>
+<span class="codeline" id="line-113"><code>)</code></span>
+<span class="codeline" id="line-114"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-115"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeJSON" class="ident">fieldTypeJSON</a> <a href="#line-93" class="ident">fieldType</a> = <a href="../../../../pkg/builtin.html#name-iota" class="ident">iota</a> + <span class="lit-number">0xf5</span></code></span>
+<span class="codeline" id="line-116"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeNewDecimal" class="ident">fieldTypeNewDecimal</a></code></span>
+<span class="codeline" id="line-117"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeEnum" class="ident">fieldTypeEnum</a></code></span>
+<span class="codeline" id="line-118"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeSet" class="ident">fieldTypeSet</a></code></span>
+<span class="codeline" id="line-119"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeTinyBLOB" class="ident">fieldTypeTinyBLOB</a></code></span>
+<span class="codeline" id="line-120"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeMediumBLOB" class="ident">fieldTypeMediumBLOB</a></code></span>
+<span class="codeline" id="line-121"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeLongBLOB" class="ident">fieldTypeLongBLOB</a></code></span>
+<span class="codeline" id="line-122"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeBLOB" class="ident">fieldTypeBLOB</a></code></span>
+<span class="codeline" id="line-123"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeVarString" class="ident">fieldTypeVarString</a></code></span>
+<span class="codeline" id="line-124"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeString" class="ident">fieldTypeString</a></code></span>
+<span class="codeline" id="line-125"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldTypeGeometry" class="ident">fieldTypeGeometry</a></code></span>
+<span class="codeline" id="line-126"><code>)</code></span>
+<span class="codeline" id="line-127"><code></code></span>
+<span class="codeline" id="line-128"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-fieldFlag" class="ident">fieldFlag</a> <a href="../../../../pkg/builtin.html#name-uint16" class="ident">uint16</a></code></span>
+<span class="codeline" id="line-129"><code></code></span>
+<span class="codeline" id="line-130"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-131"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagNotNULL" class="ident">flagNotNULL</a> <a href="#line-128" class="ident">fieldFlag</a> = <span class="lit-number">1</span> &lt;&lt; <a href="../../../../pkg/builtin.html#name-iota" class="ident">iota</a></code></span>
+<span class="codeline" id="line-132"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagPriKey" class="ident">flagPriKey</a></code></span>
+<span class="codeline" id="line-133"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagUniqueKey" class="ident">flagUniqueKey</a></code></span>
+<span class="codeline" id="line-134"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagMultipleKey" class="ident">flagMultipleKey</a></code></span>
+<span class="codeline" id="line-135"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagBLOB" class="ident">flagBLOB</a></code></span>
+<span class="codeline" id="line-136"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagUnsigned" class="ident">flagUnsigned</a></code></span>
+<span class="codeline" id="line-137"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagZeroFill" class="ident">flagZeroFill</a></code></span>
+<span class="codeline" id="line-138"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagBinary" class="ident">flagBinary</a></code></span>
+<span class="codeline" id="line-139"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagEnum" class="ident">flagEnum</a></code></span>
+<span class="codeline" id="line-140"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagAutoIncrement" class="ident">flagAutoIncrement</a></code></span>
+<span class="codeline" id="line-141"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagTimestamp" class="ident">flagTimestamp</a></code></span>
+<span class="codeline" id="line-142"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagSet" class="ident">flagSet</a></code></span>
+<span class="codeline" id="line-143"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagUnknown1" class="ident">flagUnknown1</a></code></span>
+<span class="codeline" id="line-144"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagUnknown2" class="ident">flagUnknown2</a></code></span>
+<span class="codeline" id="line-145"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagUnknown3" class="ident">flagUnknown3</a></code></span>
+<span class="codeline" id="line-146"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-flagUnknown4" class="ident">flagUnknown4</a></code></span>
+<span class="codeline" id="line-147"><code>)</code></span>
+<span class="codeline" id="line-148"><code></code></span>
+<span class="codeline" id="line-149"><code><span class="comment">// http://dev.mysql.com/doc/internals/en/status-flags.html</span></code></span>
+<span class="codeline" id="line-150"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusFlag" class="ident">statusFlag</a> <a href="../../../../pkg/builtin.html#name-uint16" class="ident">uint16</a></code></span>
+<span class="codeline" id="line-151"><code></code></span>
+<span class="codeline" id="line-152"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-153"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusInTrans" class="ident">statusInTrans</a> <a href="#line-150" class="ident">statusFlag</a> = <span class="lit-number">1</span> &lt;&lt; <a href="../../../../pkg/builtin.html#name-iota" class="ident">iota</a></code></span>
+<span class="codeline" id="line-154"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusInAutocommit" class="ident">statusInAutocommit</a></code></span>
+<span class="codeline" id="line-155"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusReserved" class="ident">statusReserved</a> <span class="comment">// Not in documentation</span></code></span>
+<span class="codeline" id="line-156"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusMoreResultsExists" class="ident">statusMoreResultsExists</a></code></span>
+<span class="codeline" id="line-157"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusNoGoodIndexUsed" class="ident">statusNoGoodIndexUsed</a></code></span>
+<span class="codeline" id="line-158"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusNoIndexUsed" class="ident">statusNoIndexUsed</a></code></span>
+<span class="codeline" id="line-159"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusCursorExists" class="ident">statusCursorExists</a></code></span>
+<span class="codeline" id="line-160"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusLastRowSent" class="ident">statusLastRowSent</a></code></span>
+<span class="codeline" id="line-161"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusDbDropped" class="ident">statusDbDropped</a></code></span>
+<span class="codeline" id="line-162"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusNoBackslashEscapes" class="ident">statusNoBackslashEscapes</a></code></span>
+<span class="codeline" id="line-163"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusMetadataChanged" class="ident">statusMetadataChanged</a></code></span>
+<span class="codeline" id="line-164"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusQueryWasSlow" class="ident">statusQueryWasSlow</a></code></span>
+<span class="codeline" id="line-165"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusPsOutParams" class="ident">statusPsOutParams</a></code></span>
+<span class="codeline" id="line-166"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusInTransReadonly" class="ident">statusInTransReadonly</a></code></span>
+<span class="codeline" id="line-167"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-statusSessionStateChanged" class="ident">statusSessionStateChanged</a></code></span>
+<span class="codeline" id="line-168"><code>)</code></span>
+<span class="codeline" id="line-169"><code></code></span>
+<span class="codeline" id="line-170"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-171"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-cachingSha2PasswordRequestPublicKey" class="ident">cachingSha2PasswordRequestPublicKey</a>          = <span class="lit-number">2</span></code></span>
+<span class="codeline" id="line-172"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-cachingSha2PasswordFastAuthSuccess" class="ident">cachingSha2PasswordFastAuthSuccess</a>           = <span class="lit-number">3</span></code></span>
+<span class="codeline" id="line-173"><code>	<a href="../../../../pkg/github.com/go-sql-driver/mysql.html#name-cachingSha2PasswordPerformFullAuthentication" class="ident">cachingSha2PasswordPerformFullAuthentication</a> = <span class="lit-number">4</span></code></span>
+<span class="codeline" id="line-174"><code>)</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

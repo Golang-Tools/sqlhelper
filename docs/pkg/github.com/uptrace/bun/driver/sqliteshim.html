@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Package: github.com/uptrace/bun/driver/sqliteshim</title>
+<link href="../../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="package-details"><code><span style="font-size:xx-large;">package <b>sqliteshim</b></span>
+
+<span class="title">Import Path</span>
+	<a href="../../../../../index.html#pkg-github.com/uptrace/bun/driver/sqliteshim">github.com/uptrace/bun/driver/sqliteshim</a><i> (on <a href="https://pkg.go.dev/github.com/uptrace/bun/driver/sqliteshim" target="_blank">go.dev</a>)</i>
+
+<span class="title">Dependency Relation</span>
+	imports <a href="../../../../../dep/github.com/uptrace/bun/driver/sqliteshim.html">3 packages</a>, and imported by <a href="../../../../../dep/github.com/uptrace/bun/driver/sqliteshim.html#imported-by">one package</a>
+
+<div id="files"><span class="title">Involved Source Files</span>
+
+	<span class="nodocs">      <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/modernc.go.html">modernc.go</a></span>
+	<input type='checkbox' checked class="fold" id="file-1-fold-content"><label for="file-1-fold-content">   <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#doc">#d</a> <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html">sqliteshim.go</a></label><span id='file-1-fold-content-items' class="fold-items">
+		Package sqliteshim is a shim package that imports an appropriate sqlite
+		driver for the build target and registers it under ShimName.
+
+		Currently it uses packages in the following order:
+		 • modernc.org/sqlite on supported platforms,
+		 • github.com/mattn/go-sqlite3 if Cgo is enabled,
+		Otherwise registers a driver that returns an error on unsupported platforms.</span></div>
+<div id="exported-types"><span class="title">Package-Level Type Names<span class="title-stat"><i> (only one, which is exported)</i></span></span>
+
+<div id="exported-types-buttons" class="js-on">	/* sort exporteds by: <label id="sort-types-by-alphabet" class="button">alphabet</label> | <label id="sort-types-by-popularity" class="button">popularity</label> */</div><div class="anchor type-res" id="name-UnsupportedError" data-popularity="100">	<input type='checkbox' class="fold" id="UnsupportedError-fold-content"><label for="UnsupportedError-fold-content"> type <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-24">UnsupportedError</a> <i>(struct)</i></label><span id='UnsupportedError-fold-content-docs' class="fold-docs">
+		UnsupportedError is returned from driver on unsupported platforms.
+
+		<input type='checkbox' class="fold" id="UnsupportedError-fold-methods"><label for="UnsupportedError-fold-methods">Methods (<i>only one, which is exported</i>)</label><span id='UnsupportedError-fold-methods-items' class="fold-items"><span>
+			<span class="nodocs">(*T) <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-26">Error</a>() <a href="../../../../builtin.html#name-string">string</a></span></span></span>
+		<input type='checkbox' class="fold" id="UnsupportedError-fold-impls"><label for="UnsupportedError-fold-impls">Implements (<i>at least one exported</i>)</label><span id='UnsupportedError-fold-impls-items' class="fold-items"><span>
+			*T : <a href="../../../../builtin.html#name-error">error</a></span></span>
+
+</span></div></div>
+<div id="exported-functions"><span class="title">Package-Level Functions<span class="title-stat"><i> (total 4, in which 3 are exported)</i></span></span>
+
+<div class="anchor value-res" id="name-Driver">	<input type='checkbox' class="fold" id="Driver-fold-content"><label for="Driver-fold-content"> func <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-36">Driver</a>() <a href="../../../../database/sql/driver.html">driver</a>.<a href="../../../../database/sql/driver.html#name-Driver">Driver</a></label><span id='Driver-fold-content-docs' class="fold-docs">
+		Driver returns the shim driver registered under ShimName name.
+
+</span></div><div class="anchor value-res" id="name-DriverName">	<input type='checkbox' class="fold" id="DriverName-fold-content"><label for="DriverName-fold-content"> func <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-43">DriverName</a>() <a href="../../../../builtin.html#name-string">string</a></label><span id='DriverName-fold-content-docs' class="fold-docs">
+		DriverName is the name of the database/sql driver. Note that unlike ShimName
+		the value depends on the build target. That is, DriverName returns the name
+		of the underlying database driver.
+
+</span></div><div class="anchor value-res" id="name-HasDriver">	<input type='checkbox' class="fold" id="HasDriver-fold-content"><label for="HasDriver-fold-content"> func <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-31">HasDriver</a>() <a href="../../../../builtin.html#name-bool">bool</a></label><span id='HasDriver-fold-content-docs' class="fold-docs">
+		HasDriver indicates that SQLite driver implementation is available.
+
+</span></div>	<input type='checkbox' class="showhide" id="unexported-functions-showhide"><i><label for="unexported-functions-showhide" class="show-inline">/* one unexported ... */</label><label for="unexported-functions-showhide" class="hide-inline">/* one unexported: */</label></i><div class="anchor value-res hidden" id="name-init"><i>	<span class="nodocs"> func <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-16">init</a>()</span></i></div></div>
+<div id="exported-variables"><span class="title">Package-Level Variables<span class="title-stat"><i> (only one, which is unexported)</i></span></span>
+
+	<input type='checkbox' class="showhide" id="unexported-variables-showhide"><i><label for="unexported-variables-showhide" class="show-inline">/* one unexported ... */</label><label for="unexported-variables-showhide" class="hide-inline">/* one unexported: */</label></i><div class="anchor value-res hidden" id="name-shimDriver"><i>	<span class="nodocs">  var <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/modernc.go.html#line-18">shimDriver</a> *<a href="../../../../modernc.org/sqlite.html">sqlite</a>.<a href="../../../../modernc.org/sqlite.html#name-Driver">Driver</a></span></i></div></div>
+<div id="exported-constants"><span class="title">Package-Level Constants<span class="title-stat"><i> (total 3, in which 1 are exported)</i></span></span>
+
+<div class="anchor value-res" id="name-ShimName">	<input type='checkbox' class="fold" id="ShimName-fold-content"><label for="ShimName-fold-content">const <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/sqliteshim.go.html#line-21">ShimName</a> = "sqliteshim"</label><span id='ShimName-fold-content-docs' class="fold-docs">
+		ShimName is the name of the shim database/sql driver registration.
+
+</span></div>	<input type='checkbox' class="showhide" id="unexported-constants-showhide"><i><label for="unexported-constants-showhide" class="show-inline">/* 2 unexporteds ... */</label><label for="unexported-constants-showhide" class="hide-inline">/* 2 unexporteds: */</label></i><div class="anchor value-res hidden" id="name-driverName"><i>	<span class="nodocs">const <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/modernc.go.html#line-15">driverName</a> = "sqlite"</span></i></div><div class="anchor value-res hidden" id="name-hasDriver"><i>	<span class="nodocs">const <a href="../../../../../src/github.com/uptrace/bun/driver/sqliteshim/modernc.go.html#line-14">hasDriver</a> = true</span></i></div></div></code></pre><pre id="footer">
+<table><tr><td><img src="../../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

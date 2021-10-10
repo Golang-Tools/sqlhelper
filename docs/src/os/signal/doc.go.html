@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: doc.go in package os/signal</title>
+<link href="../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	doc.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../pkg/os/signal.html">os/signal</a>
+</code></pre>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Copyright 2015 The Go Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// Use of this source code is governed by a BSD-style</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// license that can be found in the LICENSE file.</span></code></span>
+<span class="codeline" id="line-4"><code></code></span>
+<div class="anchor" id="doc"><span class="codeline" id="line-5"><code><span class="comment">/*</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">Package signal implements access to incoming signals.</span></code></span>
+<span class="codeline" id="line-7"><code></code></span>
+<span class="codeline" id="line-8"><code><span class="comment">Signals are primarily used on Unix-like systems. For the use of this</span></code></span>
+<span class="codeline" id="line-9"><code><span class="comment">package on Windows and Plan 9, see below.</span></code></span>
+<span class="codeline" id="line-10"><code></code></span>
+<span class="codeline" id="line-11"><code><span class="comment">Types of signals</span></code></span>
+<span class="codeline" id="line-12"><code></code></span>
+<span class="codeline" id="line-13"><code><span class="comment">The signals SIGKILL and SIGSTOP may not be caught by a program, and</span></code></span>
+<span class="codeline" id="line-14"><code><span class="comment">therefore cannot be affected by this package.</span></code></span>
+<span class="codeline" id="line-15"><code></code></span>
+<span class="codeline" id="line-16"><code><span class="comment">Synchronous signals are signals triggered by errors in program</span></code></span>
+<span class="codeline" id="line-17"><code><span class="comment">execution: SIGBUS, SIGFPE, and SIGSEGV. These are only considered</span></code></span>
+<span class="codeline" id="line-18"><code><span class="comment">synchronous when caused by program execution, not when sent using</span></code></span>
+<span class="codeline" id="line-19"><code><span class="comment">os.Process.Kill or the kill program or some similar mechanism. In</span></code></span>
+<span class="codeline" id="line-20"><code><span class="comment">general, except as discussed below, Go programs will convert a</span></code></span>
+<span class="codeline" id="line-21"><code><span class="comment">synchronous signal into a run-time panic.</span></code></span>
+<span class="codeline" id="line-22"><code></code></span>
+<span class="codeline" id="line-23"><code><span class="comment">The remaining signals are asynchronous signals. They are not</span></code></span>
+<span class="codeline" id="line-24"><code><span class="comment">triggered by program errors, but are instead sent from the kernel or</span></code></span>
+<span class="codeline" id="line-25"><code><span class="comment">from some other program.</span></code></span>
+<span class="codeline" id="line-26"><code></code></span>
+<span class="codeline" id="line-27"><code><span class="comment">Of the asynchronous signals, the SIGHUP signal is sent when a program</span></code></span>
+<span class="codeline" id="line-28"><code><span class="comment">loses its controlling terminal. The SIGINT signal is sent when the</span></code></span>
+<span class="codeline" id="line-29"><code><span class="comment">user at the controlling terminal presses the interrupt character,</span></code></span>
+<span class="codeline" id="line-30"><code><span class="comment">which by default is ^C (Control-C). The SIGQUIT signal is sent when</span></code></span>
+<span class="codeline" id="line-31"><code><span class="comment">the user at the controlling terminal presses the quit character, which</span></code></span>
+<span class="codeline" id="line-32"><code><span class="comment">by default is ^\ (Control-Backslash). In general you can cause a</span></code></span>
+<span class="codeline" id="line-33"><code><span class="comment">program to simply exit by pressing ^C, and you can cause it to exit</span></code></span>
+<span class="codeline" id="line-34"><code><span class="comment">with a stack dump by pressing ^\.</span></code></span>
+<span class="codeline" id="line-35"><code></code></span>
+<span class="codeline" id="line-36"><code><span class="comment">Default behavior of signals in Go programs</span></code></span>
+<span class="codeline" id="line-37"><code></code></span>
+<span class="codeline" id="line-38"><code><span class="comment">By default, a synchronous signal is converted into a run-time panic. A</span></code></span>
+<span class="codeline" id="line-39"><code><span class="comment">SIGHUP, SIGINT, or SIGTERM signal causes the program to exit. A</span></code></span>
+<span class="codeline" id="line-40"><code><span class="comment">SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGSTKFLT, SIGEMT, or SIGSYS signal</span></code></span>
+<span class="codeline" id="line-41"><code><span class="comment">causes the program to exit with a stack dump. A SIGTSTP, SIGTTIN, or</span></code></span>
+<span class="codeline" id="line-42"><code><span class="comment">SIGTTOU signal gets the system default behavior (these signals are</span></code></span>
+<span class="codeline" id="line-43"><code><span class="comment">used by the shell for job control). The SIGPROF signal is handled</span></code></span>
+<span class="codeline" id="line-44"><code><span class="comment">directly by the Go runtime to implement runtime.CPUProfile. Other</span></code></span>
+<span class="codeline" id="line-45"><code><span class="comment">signals will be caught but no action will be taken.</span></code></span>
+<span class="codeline" id="line-46"><code></code></span>
+<span class="codeline" id="line-47"><code><span class="comment">If the Go program is started with either SIGHUP or SIGINT ignored</span></code></span>
+<span class="codeline" id="line-48"><code><span class="comment">(signal handler set to SIG_IGN), they will remain ignored.</span></code></span>
+<span class="codeline" id="line-49"><code></code></span>
+<span class="codeline" id="line-50"><code><span class="comment">If the Go program is started with a non-empty signal mask, that will</span></code></span>
+<span class="codeline" id="line-51"><code><span class="comment">generally be honored. However, some signals are explicitly unblocked:</span></code></span>
+<span class="codeline" id="line-52"><code><span class="comment">the synchronous signals, SIGILL, SIGTRAP, SIGSTKFLT, SIGCHLD, SIGPROF,</span></code></span>
+<span class="codeline" id="line-53"><code><span class="comment">and, on GNU/Linux, signals 32 (SIGCANCEL) and 33 (SIGSETXID)</span></code></span>
+<span class="codeline" id="line-54"><code><span class="comment">(SIGCANCEL and SIGSETXID are used internally by glibc). Subprocesses</span></code></span>
+<span class="codeline" id="line-55"><code><span class="comment">started by os.Exec, or by the os/exec package, will inherit the</span></code></span>
+<span class="codeline" id="line-56"><code><span class="comment">modified signal mask.</span></code></span>
+<span class="codeline" id="line-57"><code></code></span>
+<span class="codeline" id="line-58"><code><span class="comment">Changing the behavior of signals in Go programs</span></code></span>
+<span class="codeline" id="line-59"><code></code></span>
+<span class="codeline" id="line-60"><code><span class="comment">The functions in this package allow a program to change the way Go</span></code></span>
+<span class="codeline" id="line-61"><code><span class="comment">programs handle signals.</span></code></span>
+<span class="codeline" id="line-62"><code></code></span>
+<span class="codeline" id="line-63"><code><span class="comment">Notify disables the default behavior for a given set of asynchronous</span></code></span>
+<span class="codeline" id="line-64"><code><span class="comment">signals and instead delivers them over one or more registered</span></code></span>
+<span class="codeline" id="line-65"><code><span class="comment">channels. Specifically, it applies to the signals SIGHUP, SIGINT,</span></code></span>
+<span class="codeline" id="line-66"><code><span class="comment">SIGQUIT, SIGABRT, and SIGTERM. It also applies to the job control</span></code></span>
+<span class="codeline" id="line-67"><code><span class="comment">signals SIGTSTP, SIGTTIN, and SIGTTOU, in which case the system</span></code></span>
+<span class="codeline" id="line-68"><code><span class="comment">default behavior does not occur. It also applies to some signals that</span></code></span>
+<span class="codeline" id="line-69"><code><span class="comment">otherwise cause no action: SIGUSR1, SIGUSR2, SIGPIPE, SIGALRM,</span></code></span>
+<span class="codeline" id="line-70"><code><span class="comment">SIGCHLD, SIGCONT, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGWINCH,</span></code></span>
+<span class="codeline" id="line-71"><code><span class="comment">SIGIO, SIGPWR, SIGSYS, SIGINFO, SIGTHR, SIGWAITING, SIGLWP, SIGFREEZE,</span></code></span>
+<span class="codeline" id="line-72"><code><span class="comment">SIGTHAW, SIGLOST, SIGXRES, SIGJVM1, SIGJVM2, and any real time signals</span></code></span>
+<span class="codeline" id="line-73"><code><span class="comment">used on the system. Note that not all of these signals are available</span></code></span>
+<span class="codeline" id="line-74"><code><span class="comment">on all systems.</span></code></span>
+<span class="codeline" id="line-75"><code></code></span>
+<span class="codeline" id="line-76"><code><span class="comment">If the program was started with SIGHUP or SIGINT ignored, and Notify</span></code></span>
+<span class="codeline" id="line-77"><code><span class="comment">is called for either signal, a signal handler will be installed for</span></code></span>
+<span class="codeline" id="line-78"><code><span class="comment">that signal and it will no longer be ignored. If, later, Reset or</span></code></span>
+<span class="codeline" id="line-79"><code><span class="comment">Ignore is called for that signal, or Stop is called on all channels</span></code></span>
+<span class="codeline" id="line-80"><code><span class="comment">passed to Notify for that signal, the signal will once again be</span></code></span>
+<span class="codeline" id="line-81"><code><span class="comment">ignored. Reset will restore the system default behavior for the</span></code></span>
+<span class="codeline" id="line-82"><code><span class="comment">signal, while Ignore will cause the system to ignore the signal</span></code></span>
+<span class="codeline" id="line-83"><code><span class="comment">entirely.</span></code></span>
+<span class="codeline" id="line-84"><code></code></span>
+<span class="codeline" id="line-85"><code><span class="comment">If the program is started with a non-empty signal mask, some signals</span></code></span>
+<span class="codeline" id="line-86"><code><span class="comment">will be explicitly unblocked as described above. If Notify is called</span></code></span>
+<span class="codeline" id="line-87"><code><span class="comment">for a blocked signal, it will be unblocked. If, later, Reset is</span></code></span>
+<span class="codeline" id="line-88"><code><span class="comment">called for that signal, or Stop is called on all channels passed to</span></code></span>
+<span class="codeline" id="line-89"><code><span class="comment">Notify for that signal, the signal will once again be blocked.</span></code></span>
+<span class="codeline" id="line-90"><code></code></span>
+<span class="codeline" id="line-91"><code><span class="comment">SIGPIPE</span></code></span>
+<span class="codeline" id="line-92"><code></code></span>
+<span class="codeline" id="line-93"><code><span class="comment">When a Go program writes to a broken pipe, the kernel will raise a</span></code></span>
+<span class="codeline" id="line-94"><code><span class="comment">SIGPIPE signal.</span></code></span>
+<span class="codeline" id="line-95"><code></code></span>
+<span class="codeline" id="line-96"><code><span class="comment">If the program has not called Notify to receive SIGPIPE signals, then</span></code></span>
+<span class="codeline" id="line-97"><code><span class="comment">the behavior depends on the file descriptor number. A write to a</span></code></span>
+<span class="codeline" id="line-98"><code><span class="comment">broken pipe on file descriptors 1 or 2 (standard output or standard</span></code></span>
+<span class="codeline" id="line-99"><code><span class="comment">error) will cause the program to exit with a SIGPIPE signal. A write</span></code></span>
+<span class="codeline" id="line-100"><code><span class="comment">to a broken pipe on some other file descriptor will take no action on</span></code></span>
+<span class="codeline" id="line-101"><code><span class="comment">the SIGPIPE signal, and the write will fail with an EPIPE error.</span></code></span>
+<span class="codeline" id="line-102"><code></code></span>
+<span class="codeline" id="line-103"><code><span class="comment">If the program has called Notify to receive SIGPIPE signals, the file</span></code></span>
+<span class="codeline" id="line-104"><code><span class="comment">descriptor number does not matter. The SIGPIPE signal will be</span></code></span>
+<span class="codeline" id="line-105"><code><span class="comment">delivered to the Notify channel, and the write will fail with an EPIPE</span></code></span>
+<span class="codeline" id="line-106"><code><span class="comment">error.</span></code></span>
+<span class="codeline" id="line-107"><code></code></span>
+<span class="codeline" id="line-108"><code><span class="comment">This means that, by default, command line programs will behave like</span></code></span>
+<span class="codeline" id="line-109"><code><span class="comment">typical Unix command line programs, while other programs will not</span></code></span>
+<span class="codeline" id="line-110"><code><span class="comment">crash with SIGPIPE when writing to a closed network connection.</span></code></span>
+<span class="codeline" id="line-111"><code></code></span>
+<span class="codeline" id="line-112"><code><span class="comment">Go programs that use cgo or SWIG</span></code></span>
+<span class="codeline" id="line-113"><code></code></span>
+<span class="codeline" id="line-114"><code><span class="comment">In a Go program that includes non-Go code, typically C/C++ code</span></code></span>
+<span class="codeline" id="line-115"><code><span class="comment">accessed using cgo or SWIG, Go's startup code normally runs first. It</span></code></span>
+<span class="codeline" id="line-116"><code><span class="comment">configures the signal handlers as expected by the Go runtime, before</span></code></span>
+<span class="codeline" id="line-117"><code><span class="comment">the non-Go startup code runs. If the non-Go startup code wishes to</span></code></span>
+<span class="codeline" id="line-118"><code><span class="comment">install its own signal handlers, it must take certain steps to keep Go</span></code></span>
+<span class="codeline" id="line-119"><code><span class="comment">working well. This section documents those steps and the overall</span></code></span>
+<span class="codeline" id="line-120"><code><span class="comment">effect changes to signal handler settings by the non-Go code can have</span></code></span>
+<span class="codeline" id="line-121"><code><span class="comment">on Go programs. In rare cases, the non-Go code may run before the Go</span></code></span>
+<span class="codeline" id="line-122"><code><span class="comment">code, in which case the next section also applies.</span></code></span>
+<span class="codeline" id="line-123"><code></code></span>
+<span class="codeline" id="line-124"><code><span class="comment">If the non-Go code called by the Go program does not change any signal</span></code></span>
+<span class="codeline" id="line-125"><code><span class="comment">handlers or masks, then the behavior is the same as for a pure Go</span></code></span>
+<span class="codeline" id="line-126"><code><span class="comment">program.</span></code></span>
+<span class="codeline" id="line-127"><code></code></span>
+<span class="codeline" id="line-128"><code><span class="comment">If the non-Go code installs any signal handlers, it must use the</span></code></span>
+<span class="codeline" id="line-129"><code><span class="comment">SA_ONSTACK flag with sigaction. Failing to do so is likely to cause</span></code></span>
+<span class="codeline" id="line-130"><code><span class="comment">the program to crash if the signal is received. Go programs routinely</span></code></span>
+<span class="codeline" id="line-131"><code><span class="comment">run with a limited stack, and therefore set up an alternate signal</span></code></span>
+<span class="codeline" id="line-132"><code><span class="comment">stack. Also, the Go standard library expects that any signal handlers</span></code></span>
+<span class="codeline" id="line-133"><code><span class="comment">will use the SA_RESTART flag. Failing to do so may cause some library</span></code></span>
+<span class="codeline" id="line-134"><code><span class="comment">calls to return "interrupted system call" errors.</span></code></span>
+<span class="codeline" id="line-135"><code></code></span>
+<span class="codeline" id="line-136"><code><span class="comment">If the non-Go code installs a signal handler for any of the</span></code></span>
+<span class="codeline" id="line-137"><code><span class="comment">synchronous signals (SIGBUS, SIGFPE, SIGSEGV), then it should record</span></code></span>
+<span class="codeline" id="line-138"><code><span class="comment">the existing Go signal handler. If those signals occur while</span></code></span>
+<span class="codeline" id="line-139"><code><span class="comment">executing Go code, it should invoke the Go signal handler (whether the</span></code></span>
+<span class="codeline" id="line-140"><code><span class="comment">signal occurs while executing Go code can be determined by looking at</span></code></span>
+<span class="codeline" id="line-141"><code><span class="comment">the PC passed to the signal handler). Otherwise some Go run-time</span></code></span>
+<span class="codeline" id="line-142"><code><span class="comment">panics will not occur as expected.</span></code></span>
+<span class="codeline" id="line-143"><code></code></span>
+<span class="codeline" id="line-144"><code><span class="comment">If the non-Go code installs a signal handler for any of the</span></code></span>
+<span class="codeline" id="line-145"><code><span class="comment">asynchronous signals, it may invoke the Go signal handler or not as it</span></code></span>
+<span class="codeline" id="line-146"><code><span class="comment">chooses. Naturally, if it does not invoke the Go signal handler, the</span></code></span>
+<span class="codeline" id="line-147"><code><span class="comment">Go behavior described above will not occur. This can be an issue with</span></code></span>
+<span class="codeline" id="line-148"><code><span class="comment">the SIGPROF signal in particular.</span></code></span>
+<span class="codeline" id="line-149"><code></code></span>
+<span class="codeline" id="line-150"><code><span class="comment">The non-Go code should not change the signal mask on any threads</span></code></span>
+<span class="codeline" id="line-151"><code><span class="comment">created by the Go runtime. If the non-Go code starts new threads of</span></code></span>
+<span class="codeline" id="line-152"><code><span class="comment">its own, it may set the signal mask as it pleases.</span></code></span>
+<span class="codeline" id="line-153"><code></code></span>
+<span class="codeline" id="line-154"><code><span class="comment">If the non-Go code starts a new thread, changes the signal mask, and</span></code></span>
+<span class="codeline" id="line-155"><code><span class="comment">then invokes a Go function in that thread, the Go runtime will</span></code></span>
+<span class="codeline" id="line-156"><code><span class="comment">automatically unblock certain signals: the synchronous signals,</span></code></span>
+<span class="codeline" id="line-157"><code><span class="comment">SIGILL, SIGTRAP, SIGSTKFLT, SIGCHLD, SIGPROF, SIGCANCEL, and</span></code></span>
+<span class="codeline" id="line-158"><code><span class="comment">SIGSETXID. When the Go function returns, the non-Go signal mask will</span></code></span>
+<span class="codeline" id="line-159"><code><span class="comment">be restored.</span></code></span>
+<span class="codeline" id="line-160"><code></code></span>
+<span class="codeline" id="line-161"><code><span class="comment">If the Go signal handler is invoked on a non-Go thread not running Go</span></code></span>
+<span class="codeline" id="line-162"><code><span class="comment">code, the handler generally forwards the signal to the non-Go code, as</span></code></span>
+<span class="codeline" id="line-163"><code><span class="comment">follows. If the signal is SIGPROF, the Go handler does</span></code></span>
+<span class="codeline" id="line-164"><code><span class="comment">nothing. Otherwise, the Go handler removes itself, unblocks the</span></code></span>
+<span class="codeline" id="line-165"><code><span class="comment">signal, and raises it again, to invoke any non-Go handler or default</span></code></span>
+<span class="codeline" id="line-166"><code><span class="comment">system handler. If the program does not exit, the Go handler then</span></code></span>
+<span class="codeline" id="line-167"><code><span class="comment">reinstalls itself and continues execution of the program.</span></code></span>
+<span class="codeline" id="line-168"><code></code></span>
+<span class="codeline" id="line-169"><code><span class="comment">Non-Go programs that call Go code</span></code></span>
+<span class="codeline" id="line-170"><code></code></span>
+<span class="codeline" id="line-171"><code><span class="comment">When Go code is built with options like -buildmode=c-shared, it will</span></code></span>
+<span class="codeline" id="line-172"><code><span class="comment">be run as part of an existing non-Go program. The non-Go code may</span></code></span>
+<span class="codeline" id="line-173"><code><span class="comment">have already installed signal handlers when the Go code starts (that</span></code></span>
+<span class="codeline" id="line-174"><code><span class="comment">may also happen in unusual cases when using cgo or SWIG; in that case,</span></code></span>
+<span class="codeline" id="line-175"><code><span class="comment">the discussion here applies).  For -buildmode=c-archive the Go runtime</span></code></span>
+<span class="codeline" id="line-176"><code><span class="comment">will initialize signals at global constructor time.  For</span></code></span>
+<span class="codeline" id="line-177"><code><span class="comment">-buildmode=c-shared the Go runtime will initialize signals when the</span></code></span>
+<span class="codeline" id="line-178"><code><span class="comment">shared library is loaded.</span></code></span>
+<span class="codeline" id="line-179"><code></code></span>
+<span class="codeline" id="line-180"><code><span class="comment">If the Go runtime sees an existing signal handler for the SIGCANCEL or</span></code></span>
+<span class="codeline" id="line-181"><code><span class="comment">SIGSETXID signals (which are used only on GNU/Linux), it will turn on</span></code></span>
+<span class="codeline" id="line-182"><code><span class="comment">the SA_ONSTACK flag and otherwise keep the signal handler.</span></code></span>
+<span class="codeline" id="line-183"><code></code></span>
+<span class="codeline" id="line-184"><code><span class="comment">For the synchronous signals and SIGPIPE, the Go runtime will install a</span></code></span>
+<span class="codeline" id="line-185"><code><span class="comment">signal handler. It will save any existing signal handler. If a</span></code></span>
+<span class="codeline" id="line-186"><code><span class="comment">synchronous signal arrives while executing non-Go code, the Go runtime</span></code></span>
+<span class="codeline" id="line-187"><code><span class="comment">will invoke the existing signal handler instead of the Go signal</span></code></span>
+<span class="codeline" id="line-188"><code><span class="comment">handler.</span></code></span>
+<span class="codeline" id="line-189"><code></code></span>
+<span class="codeline" id="line-190"><code><span class="comment">Go code built with -buildmode=c-archive or -buildmode=c-shared will</span></code></span>
+<span class="codeline" id="line-191"><code><span class="comment">not install any other signal handlers by default. If there is an</span></code></span>
+<span class="codeline" id="line-192"><code><span class="comment">existing signal handler, the Go runtime will turn on the SA_ONSTACK</span></code></span>
+<span class="codeline" id="line-193"><code><span class="comment">flag and otherwise keep the signal handler. If Notify is called for an</span></code></span>
+<span class="codeline" id="line-194"><code><span class="comment">asynchronous signal, a Go signal handler will be installed for that</span></code></span>
+<span class="codeline" id="line-195"><code><span class="comment">signal. If, later, Reset is called for that signal, the original</span></code></span>
+<span class="codeline" id="line-196"><code><span class="comment">handling for that signal will be reinstalled, restoring the non-Go</span></code></span>
+<span class="codeline" id="line-197"><code><span class="comment">signal handler if any.</span></code></span>
+<span class="codeline" id="line-198"><code></code></span>
+<span class="codeline" id="line-199"><code><span class="comment">Go code built without -buildmode=c-archive or -buildmode=c-shared will</span></code></span>
+<span class="codeline" id="line-200"><code><span class="comment">install a signal handler for the asynchronous signals listed above,</span></code></span>
+<span class="codeline" id="line-201"><code><span class="comment">and save any existing signal handler. If a signal is delivered to a</span></code></span>
+<span class="codeline" id="line-202"><code><span class="comment">non-Go thread, it will act as described above, except that if there is</span></code></span>
+<span class="codeline" id="line-203"><code><span class="comment">an existing non-Go signal handler, that handler will be installed</span></code></span>
+<span class="codeline" id="line-204"><code><span class="comment">before raising the signal.</span></code></span>
+<span class="codeline" id="line-205"><code></code></span>
+<span class="codeline" id="line-206"><code><span class="comment">Windows</span></code></span>
+<span class="codeline" id="line-207"><code></code></span>
+<span class="codeline" id="line-208"><code><span class="comment">On Windows a ^C (Control-C) or ^BREAK (Control-Break) normally cause</span></code></span>
+<span class="codeline" id="line-209"><code><span class="comment">the program to exit. If Notify is called for os.Interrupt, ^C or ^BREAK</span></code></span>
+<span class="codeline" id="line-210"><code><span class="comment">will cause os.Interrupt to be sent on the channel, and the program will</span></code></span>
+<span class="codeline" id="line-211"><code><span class="comment">not exit. If Reset is called, or Stop is called on all channels passed</span></code></span>
+<span class="codeline" id="line-212"><code><span class="comment">to Notify, then the default behavior will be restored.</span></code></span>
+<span class="codeline" id="line-213"><code></code></span>
+<span class="codeline" id="line-214"><code><span class="comment">Additionally, if Notify is called, and Windows sends CTRL_CLOSE_EVENT,</span></code></span>
+<span class="codeline" id="line-215"><code><span class="comment">CTRL_LOGOFF_EVENT or CTRL_SHUTDOWN_EVENT to the process, Notify will</span></code></span>
+<span class="codeline" id="line-216"><code><span class="comment">return syscall.SIGTERM. Unlike Control-C and Control-Break, Notify does</span></code></span>
+<span class="codeline" id="line-217"><code><span class="comment">not change process behavior when either CTRL_CLOSE_EVENT,</span></code></span>
+<span class="codeline" id="line-218"><code><span class="comment">CTRL_LOGOFF_EVENT or CTRL_SHUTDOWN_EVENT is received - the process will</span></code></span>
+<span class="codeline" id="line-219"><code><span class="comment">still get terminated unless it exits. But receiving syscall.SIGTERM will</span></code></span>
+<span class="codeline" id="line-220"><code><span class="comment">give the process an opportunity to clean up before termination.</span></code></span>
+<span class="codeline" id="line-221"><code></code></span>
+<span class="codeline" id="line-222"><code><span class="comment">Plan 9</span></code></span>
+<span class="codeline" id="line-223"><code></code></span>
+<span class="codeline" id="line-224"><code><span class="comment">On Plan 9, signals have type syscall.Note, which is a string. Calling</span></code></span>
+<span class="codeline" id="line-225"><code><span class="comment">Notify with a syscall.Note will cause that value to be sent on the</span></code></span>
+<span class="codeline" id="line-226"><code><span class="comment">channel when that string is posted as a note.</span></code></span>
+<span class="codeline" id="line-227"><code></code></span>
+<span class="codeline" id="line-228"><code><span class="comment">*/</span></code></span></div><span class="codeline" id="line-229"><code><span class="keyword">package</span> signal</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

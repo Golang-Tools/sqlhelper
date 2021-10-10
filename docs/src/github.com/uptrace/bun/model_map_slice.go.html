@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: model_map_slice.go in package github.com/uptrace/bun</title>
+<link href="../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	model_map_slice.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../pkg/github.com/uptrace/bun.html">github.com/uptrace/bun</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+input[id=r0]:checked ~pre label[for=r0],
+input[id=r1]:checked ~pre label[for=r1],
+input[id=r2]:checked ~pre label[for=r2],
+input[id=r3]:checked ~pre label[for=r3],
+input[id=r4]:checked ~pre label[for=r4],
+input[id=r5]:checked ~pre label[for=r5],
+input[id=r6]:checked ~pre label[for=r6],
+input[id=r7]:checked ~pre label[for=r7],
+input[id=r8]:checked ~pre label[for=r8],
+input[id=r9]:checked ~pre label[for=r9],
+input[id=r10]:checked ~pre label[for=r10],
+input[id=r11]:checked ~pre label[for=r11],
+input[id=r12]:checked ~pre label[for=r12],
+input[id=r13]:checked ~pre label[for=r13],
+input[id=r14]:checked ~pre label[for=r14],
+input[id=r15]:checked ~pre label[for=r15],
+input[id=r16]:checked ~pre label[for=r16],
+input[id=r17]:checked ~pre label[for=r17],
+input[id=r18]:checked ~pre label[for=r18],
+input[id=r19]:checked ~pre label[for=r19],
+input[id=r20]:checked ~pre label[for=r20],
+input[id=r21]:checked ~pre label[for=r21],
+input[id=r22]:checked ~pre label[for=r22],
+input[id=r23]:checked ~pre label[for=r23],
+input[id=r24]:checked ~pre label[for=r24],
+input[id=r25]:checked ~pre label[for=r25],
+input[id=r26]:checked ~pre label[for=r26],
+input[id=r27]:checked ~pre label[for=r27],
+input[id=r28]:checked ~pre label[for=r28],
+input[id=r29]:checked ~pre label[for=r29],
+input[id=r30]:checked ~pre label[for=r30],
+input[id=r31]:checked ~pre label[for=r31],
+input[id=r32]:checked ~pre label[for=r32],
+input[id=r33]:checked ~pre label[for=r33],
+input[id=r34]:checked ~pre label[for=r34],
+input[id=r35]:checked ~pre label[for=r35],
+input[id=r36]:checked ~pre label[for=r36],
+input[id=r37]:checked ~pre label[for=r37],
+input[id=r38]:checked ~pre label[for=r38],
+input[id=r39]:checked ~pre label[for=r39],
+input[id=r40]:checked ~pre label[for=r40],
+input[id=r41]:checked ~pre label[for=r41],
+input[id=r42]:checked ~pre label[for=r42],
+input[id=r43]:checked ~pre label[for=r43],
+input[id=r44]:checked ~pre label[for=r44],
+input[id=r45]:checked ~pre label[for=r45],
+input[id=r46]:checked ~pre label[for=r46],
+input[id=r47]:checked ~pre label[for=r47]
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0,
+input[id=i1]:checked ~pre .i1,
+input[id=i2]:checked ~pre .i2,
+input[id=i3]:checked ~pre .i3,
+input[id=i4]:checked ~pre .i4,
+input[id=i5]:checked ~pre .i5
+{background: brown; color: #eed;}
+</style><input id="r0" type="radio" name="g"/>
+<input id="r1" type="radio" name="g"/>
+<input id="r2" type="radio" name="g"/>
+<input id="r3" type="radio" name="g"/>
+<input id="r4" type="radio" name="g"/>
+<input id="r5" type="radio" name="g"/>
+<input id="r6" type="radio" name="g"/>
+<input id="r7" type="radio" name="g"/>
+<input id="r8" type="radio" name="g"/>
+<input id="r9" type="radio" name="g"/>
+<input id="r10" type="radio" name="g"/>
+<input id="r11" type="radio" name="g"/>
+<input id="r12" type="radio" name="g"/>
+<input id="r13" type="radio" name="g"/>
+<input id="r14" type="radio" name="g"/>
+<input id="r15" type="radio" name="g"/>
+<input id="r16" type="radio" name="g"/>
+<input id="r17" type="radio" name="g"/>
+<input id="r18" type="radio" name="g"/>
+<input id="r19" type="radio" name="g"/>
+<input id="r20" type="radio" name="g"/>
+<input id="r21" type="radio" name="g"/>
+<input id="r22" type="radio" name="g"/>
+<input id="r23" type="radio" name="g"/>
+<input id="r24" type="radio" name="g"/>
+<input id="r25" type="radio" name="g"/>
+<input id="r26" type="radio" name="g"/>
+<input id="r27" type="radio" name="g"/>
+<input id="r28" type="radio" name="g"/>
+<input id="r29" type="radio" name="g"/>
+<input id="r30" type="radio" name="g"/>
+<input id="r31" type="radio" name="g"/>
+<input id="r32" type="radio" name="g"/>
+<input id="r33" type="radio" name="g"/>
+<input id="r34" type="radio" name="g"/>
+<input id="r35" type="radio" name="g"/>
+<input id="r36" type="radio" name="g"/>
+<input id="r37" type="radio" name="g"/>
+<input id="r38" type="radio" name="g"/>
+<input id="r39" type="radio" name="g"/>
+<input id="r40" type="radio" name="g"/>
+<input id="r41" type="radio" name="g"/>
+<input id="r42" type="radio" name="g"/>
+<input id="r43" type="radio" name="g"/>
+<input id="r44" type="radio" name="g"/>
+<input id="r45" type="radio" name="g"/>
+<input id="r46" type="radio" name="g"/>
+<input id="r47" type="radio" name="g"/>
+<input id="i0" type="radio" name="i"/>
+<input id="i1" type="radio" name="i"/>
+<input id="i2" type="radio" name="i"/>
+<input id="i3" type="radio" name="i"/>
+<input id="i4" type="radio" name="i"/>
+<input id="i5" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="keyword">package</span> bun</code></span>
+<span class="codeline" id="line-2"><code></code></span>
+<span class="codeline" id="line-3"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-4"><code>	<label for="i0"><span class="lit-string i0">"context"</span></label></code></span>
+<span class="codeline" id="line-5"><code>	<label for="i1"><span class="lit-string i1">"database/sql"</span></label></code></span>
+<span class="codeline" id="line-6"><code>	<label for="i2"><span class="lit-string i2">"errors"</span></label></code></span>
+<span class="codeline" id="line-7"><code>	<label for="i3"><span class="lit-string i3">"sort"</span></label></code></span>
+<span class="codeline" id="line-8"><code></code></span>
+<span class="codeline" id="line-9"><code>	<label for="i4"><span class="lit-string i4">"github.com/uptrace/bun/dialect/feature"</span></label></code></span>
+<span class="codeline" id="line-10"><code>	<label for="i5"><span class="lit-string i5">"github.com/uptrace/bun/schema"</span></label></code></span>
+<span class="codeline" id="line-11"><code>)</code></span>
+<span class="codeline" id="line-12"><code></code></span>
+<span class="codeline" id="line-13"><code><span class="keyword">type</span> <a href="../../../../pkg/github.com/uptrace/bun.html#name-mapSliceModel" class="ident">mapSliceModel</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-14"><code>	<a href="model_map.go.html#line-12" class="ident">mapModel</a></code></span>
+<span class="codeline" id="line-15"><code>	dest *[]<span class="keyword">map</span>[<a href="../../../../pkg/builtin.html#name-string" class="ident">string</a>]<span class="keyword">interface</span>{}</code></span>
+<span class="codeline" id="line-16"><code></code></span>
+<span class="codeline" id="line-17"><code>	keys []<a href="../../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-18"><code>}</code></span>
+<span class="codeline" id="line-19"><code></code></span>
+<span class="codeline" id="line-20"><code><span class="keyword">var</span> _ <a href="model.go.html#line-27" class="ident">model</a> = (*<a href="#line-13" class="ident">mapSliceModel</a>)(<a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a>)</code></span>
+<span class="codeline" id="line-21"><code></code></span>
+<span class="codeline" id="line-22"><code><span class="keyword">func</span> <label for="r0" class="ident"><a href="../../../../pkg/github.com/uptrace/bun.html#name-newMapSliceModel" class="ident">newMapSliceModel</a></label>(<label for="r1" class="ident">db</label> *<a href="db.go.html#line-33" class="ident">DB</a>, <label for="r2" class="ident">dest</label> *[]<span class="keyword">map</span>[<a href="../../../../pkg/builtin.html#name-string" class="ident">string</a>]<span class="keyword">interface</span>{}) *<a href="#line-13" class="ident">mapSliceModel</a> {</code></span>
+<span class="codeline" id="line-23"><code>	<span class="keyword">return</span> &amp;<a href="#line-13" class="ident">mapSliceModel</a>{</code></span>
+<span class="codeline" id="line-24"><code>		<a href="#line-14" class="ident">mapModel</a>: <a href="model_map.go.html#line-12" class="ident">mapModel</a>{</code></span>
+<span class="codeline" id="line-25"><code>			<a href="model_map.go.html#line-13" class="ident">db</a>: <label for="r1" class="ident">db</label>,</code></span>
+<span class="codeline" id="line-26"><code>		},</code></span>
+<span class="codeline" id="line-27"><code>		<a href="#line-15" class="ident">dest</a>: <label for="r2" class="ident">dest</label>,</code></span>
+<span class="codeline" id="line-28"><code>	}</code></span>
+<span class="codeline" id="line-29"><code>}</code></span>
+<span class="codeline" id="line-30"><code></code></span>
+<span class="codeline" id="line-31"><code><span class="keyword">func</span> (<label for="r3" class="ident">m</label> *<a href="#line-13" class="ident">mapSliceModel</a>) <label for="r4" class="ident"><a href="../../../../imp/github.com/uptrace/bun.mapSliceModel^a8159.html#name-.Value" class="ident">Value</a></label>() <span class="keyword">interface</span>{} {</code></span>
+<span class="codeline" id="line-32"><code>	<span class="keyword">return</span> <label for="r3" class="ident">m</label>.<a href="#line-15" class="ident">dest</a></code></span>
+<span class="codeline" id="line-33"><code>}</code></span>
+<span class="codeline" id="line-34"><code></code></span>
+<span class="codeline" id="line-35"><code><span class="keyword">func</span> (<label for="r5" class="ident">m</label> *<a href="#line-13" class="ident">mapSliceModel</a>) <label for="r6" class="ident">SetCap</label>(<label for="r7" class="ident">cap</label> <a href="../../../../pkg/builtin.html#name-int" class="ident">int</a>) {</code></span>
+<span class="codeline" id="line-36"><code>	<span class="keyword">if</span> <label for="r7" class="ident">cap</label> &gt; <span class="lit-number">100</span> {</code></span>
+<span class="codeline" id="line-37"><code>		<label for="r7" class="ident">cap</label> = <span class="lit-number">100</span></code></span>
+<span class="codeline" id="line-38"><code>	}</code></span>
+<span class="codeline" id="line-39"><code>	<span class="keyword">if</span> <label for="r8" class="ident">slice</label> := *<label for="r5" class="ident">m</label>.<a href="#line-15" class="ident">dest</a>; <a href="../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r8" class="ident">slice</label>) &lt; <label for="r7" class="ident">cap</label> {</code></span>
+<span class="codeline" id="line-40"><code>		*<label for="r5" class="ident">m</label>.<a href="#line-15" class="ident">dest</a> = <a href="../../../../pkg/builtin.html#name-make" class="ident">make</a>([]<span class="keyword">map</span>[<a href="../../../../pkg/builtin.html#name-string" class="ident">string</a>]<span class="keyword">interface</span>{}, <span class="lit-number">0</span>, <label for="r7" class="ident">cap</label>)</code></span>
+<span class="codeline" id="line-41"><code>	}</code></span>
+<span class="codeline" id="line-42"><code>}</code></span>
+<span class="codeline" id="line-43"><code></code></span>
+<span class="codeline" id="line-44"><code><span class="keyword">func</span> (<label for="r9" class="ident">m</label> *<a href="#line-13" class="ident">mapSliceModel</a>) <label for="r10" class="ident"><a href="../../../../imp/github.com/uptrace/bun.mapSliceModel^a8159.html#name-.ScanRows" class="ident">ScanRows</a></label>(<label for="r11" class="ident">ctx</label> <a href="../../../../pkg/context.html" class="ident i0">context</a>.<a href="../../../context/context.go.html#line-62" class="ident">Context</a>, <label for="r12" class="ident">rows</label> *<a href="../../../../pkg/database/sql.html" class="ident i1">sql</a>.<a href="../../../database/sql/sql.go.html#line-2773" class="ident">Rows</a>) (<a href="../../../../pkg/builtin.html#name-int" class="ident">int</a>, <a href="../../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-45"><code>	<label for="r13" class="ident">columns</label>, <label for="r14" class="ident">err</label> := <label for="r12" class="ident">rows</label>.<a href="../../../database/sql/sql.go.html#line-2941" class="ident">Columns</a>()</code></span>
+<span class="codeline" id="line-46"><code>	<span class="keyword">if</span> <label for="r14" class="ident">err</label> != <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-47"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r14" class="ident">err</label></code></span>
+<span class="codeline" id="line-48"><code>	}</code></span>
+<span class="codeline" id="line-49"><code></code></span>
+<span class="codeline" id="line-50"><code>	<label for="r9" class="ident">m</label>.<a href="model_map.go.html#line-18" class="ident">rows</a> = <label for="r12" class="ident">rows</label></code></span>
+<span class="codeline" id="line-51"><code>	<label for="r9" class="ident">m</label>.<a href="model_map.go.html#line-19" class="ident">columns</a> = <label for="r13" class="ident">columns</label></code></span>
+<span class="codeline" id="line-52"><code>	<label for="r15" class="ident">dest</label> := <a href="model_map.go.html#line-177" class="ident">makeDest</a>(<label for="r9" class="ident">m</label>, <a href="../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r13" class="ident">columns</label>))</code></span>
+<span class="codeline" id="line-53"><code></code></span>
+<span class="codeline" id="line-54"><code>	<label for="r16" class="ident">slice</label> := *<label for="r9" class="ident">m</label>.<a href="#line-15" class="ident">dest</a></code></span>
+<span class="codeline" id="line-55"><code>	<span class="keyword">if</span> <a href="../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r16" class="ident">slice</label>) &gt; <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-56"><code>		<label for="r16" class="ident">slice</label> = <label for="r16" class="ident">slice</label>[:<span class="lit-number">0</span>]</code></span>
+<span class="codeline" id="line-57"><code>	}</code></span>
+<span class="codeline" id="line-58"><code></code></span>
+<span class="codeline" id="line-59"><code>	<span class="keyword">var</span> <label for="r17" class="ident">n</label> <a href="../../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-60"><code></code></span>
+<span class="codeline" id="line-61"><code>	<span class="keyword">for</span> <label for="r12" class="ident">rows</label>.<a href="../../../database/sql/sql.go.html#line-2840" class="ident">Next</a>() {</code></span>
+<span class="codeline" id="line-62"><code>		<label for="r9" class="ident">m</label>.<a href="model_map.go.html#line-16" class="ident">m</a> = <a href="../../../../pkg/builtin.html#name-make" class="ident">make</a>(<span class="keyword">map</span>[<a href="../../../../pkg/builtin.html#name-string" class="ident">string</a>]<span class="keyword">interface</span>{}, <a href="../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r9" class="ident">m</label>.<a href="model_map.go.html#line-19" class="ident">columns</a>))</code></span>
+<span class="codeline" id="line-63"><code></code></span>
+<span class="codeline" id="line-64"><code>		<label for="r9" class="ident">m</label>.<a href="model_map.go.html#line-21" class="ident">scanIndex</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-65"><code>		<span class="keyword">if</span> <label for="r18" class="ident">err</label> := <label for="r12" class="ident">rows</label>.<a href="../../../database/sql/sql.go.html#line-3123" class="ident">Scan</a>(<label for="r15" class="ident">dest</label>...); <label for="r18" class="ident">err</label> != <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-66"><code>			<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r18" class="ident">err</label></code></span>
+<span class="codeline" id="line-67"><code>		}</code></span>
+<span class="codeline" id="line-68"><code></code></span>
+<span class="codeline" id="line-69"><code>		<label for="r16" class="ident">slice</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r16" class="ident">slice</label>, <label for="r9" class="ident">m</label>.<a href="model_map.go.html#line-16" class="ident">m</a>)</code></span>
+<span class="codeline" id="line-70"><code>		<label for="r17" class="ident">n</label>++</code></span>
+<span class="codeline" id="line-71"><code>	}</code></span>
+<span class="codeline" id="line-72"><code>	<span class="keyword">if</span> <label for="r19" class="ident">err</label> := <label for="r12" class="ident">rows</label>.<a href="../../../database/sql/sql.go.html#line-2930" class="ident">Err</a>(); <label for="r19" class="ident">err</label> != <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-73"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r19" class="ident">err</label></code></span>
+<span class="codeline" id="line-74"><code>	}</code></span>
+<span class="codeline" id="line-75"><code></code></span>
+<span class="codeline" id="line-76"><code>	*<label for="r9" class="ident">m</label>.<a href="#line-15" class="ident">dest</a> = <label for="r16" class="ident">slice</label></code></span>
+<span class="codeline" id="line-77"><code>	<span class="keyword">return</span> <label for="r17" class="ident">n</label>, <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-78"><code>}</code></span>
+<span class="codeline" id="line-79"><code></code></span>
+<span class="codeline" id="line-80"><code><span class="keyword">func</span> (<label for="r20" class="ident">m</label> *<a href="#line-13" class="ident">mapSliceModel</a>) <label for="r21" class="ident">appendColumns</label>(<label for="r22" class="ident">fmter</label> <a href="../../../../pkg/github.com/uptrace/bun/schema.html" class="ident i5">schema</a>.<a href="schema/formatter.go.html#line-18" class="ident">Formatter</a>, <label for="r23" class="ident">b</label> []<a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a>) (<label for="r24" class="ident">_</label> []<a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a>, <label for="r25" class="ident">err</label> <a href="../../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-81"><code>	<span class="keyword">if</span> <label for="r26" class="ident">err</label> := <label for="r20" class="ident">m</label>.<a href="#line-141" class="ident">initKeys</a>(); <label for="r26" class="ident">err</label> != <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-82"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r26" class="ident">err</label></code></span>
+<span class="codeline" id="line-83"><code>	}</code></span>
+<span class="codeline" id="line-84"><code></code></span>
+<span class="codeline" id="line-85"><code>	<span class="keyword">for</span> <label for="r27" class="ident">i</label>, <label for="r28" class="ident">k</label> := <span class="keyword">range</span> <label for="r20" class="ident">m</label>.<a href="#line-17" class="ident">keys</a> {</code></span>
+<span class="codeline" id="line-86"><code>		<span class="keyword">if</span> <label for="r27" class="ident">i</label> &gt; <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-87"><code>			<label for="r23" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r23" class="ident">b</label>, <span class="lit-string">", "</span>...)</code></span>
+<span class="codeline" id="line-88"><code>		}</code></span>
+<span class="codeline" id="line-89"><code>		<label for="r23" class="ident">b</label> = <label for="r22" class="ident">fmter</label>.<a href="schema/formatter.go.html#line-45" class="ident">AppendIdent</a>(<label for="r23" class="ident">b</label>, <label for="r28" class="ident">k</label>)</code></span>
+<span class="codeline" id="line-90"><code>	}</code></span>
+<span class="codeline" id="line-91"><code></code></span>
+<span class="codeline" id="line-92"><code>	<span class="keyword">return</span> <label for="r23" class="ident">b</label>, <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-93"><code>}</code></span>
+<span class="codeline" id="line-94"><code></code></span>
+<span class="codeline" id="line-95"><code><span class="keyword">func</span> (<label for="r29" class="ident">m</label> *<a href="#line-13" class="ident">mapSliceModel</a>) <label for="r30" class="ident">appendValues</label>(<label for="r31" class="ident">fmter</label> <a href="../../../../pkg/github.com/uptrace/bun/schema.html" class="ident i5">schema</a>.<a href="schema/formatter.go.html#line-18" class="ident">Formatter</a>, <label for="r32" class="ident">b</label> []<a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a>) (<label for="r33" class="ident">_</label> []<a href="../../../../pkg/builtin.html#name-byte" class="ident">byte</a>, <label for="r34" class="ident">err</label> <a href="../../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-96"><code>	<span class="keyword">if</span> <label for="r35" class="ident">err</label> := <label for="r29" class="ident">m</label>.<a href="#line-141" class="ident">initKeys</a>(); <label for="r35" class="ident">err</label> != <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-97"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r35" class="ident">err</label></code></span>
+<span class="codeline" id="line-98"><code>	}</code></span>
+<span class="codeline" id="line-99"><code>	<label for="r36" class="ident">slice</label> := *<label for="r29" class="ident">m</label>.<a href="#line-15" class="ident">dest</a></code></span>
+<span class="codeline" id="line-100"><code></code></span>
+<span class="codeline" id="line-101"><code>	<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-string">"VALUES "</span>...)</code></span>
+<span class="codeline" id="line-102"><code>	<span class="keyword">if</span> <label for="r29" class="ident">m</label>.<a href="model_map.go.html#line-13" class="ident">db</a>.<a href="db.go.html#line-36" class="ident">features</a>.<a href="internal/flag.go.html#line-5" class="ident">Has</a>(<a href="../../../../pkg/github.com/uptrace/bun/dialect/feature.html" class="ident i4">feature</a>.<a href="dialect/feature/feature.go.html#line-12" class="ident">ValuesRow</a>) {</code></span>
+<span class="codeline" id="line-103"><code>		<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-string">"ROW("</span>...)</code></span>
+<span class="codeline" id="line-104"><code>	} <span class="keyword">else</span> {</code></span>
+<span class="codeline" id="line-105"><code>		<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-number">'('</span>)</code></span>
+<span class="codeline" id="line-106"><code>	}</code></span>
+<span class="codeline" id="line-107"><code></code></span>
+<span class="codeline" id="line-108"><code>	<span class="keyword">if</span> <label for="r31" class="ident">fmter</label>.<a href="schema/formatter.go.html#line-33" class="ident">IsNop</a>() {</code></span>
+<span class="codeline" id="line-109"><code>		<span class="keyword">for</span> <label for="r37" class="ident">i</label> := <span class="keyword">range</span> <label for="r29" class="ident">m</label>.<a href="#line-17" class="ident">keys</a> {</code></span>
+<span class="codeline" id="line-110"><code>			<span class="keyword">if</span> <label for="r37" class="ident">i</label> &gt; <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-111"><code>				<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-string">", "</span>...)</code></span>
+<span class="codeline" id="line-112"><code>			}</code></span>
+<span class="codeline" id="line-113"><code>			<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-number">'?'</span>)</code></span>
+<span class="codeline" id="line-114"><code>		}</code></span>
+<span class="codeline" id="line-115"><code>		<span class="keyword">return</span> <label for="r32" class="ident">b</label>, <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-116"><code>	}</code></span>
+<span class="codeline" id="line-117"><code></code></span>
+<span class="codeline" id="line-118"><code>	<span class="keyword">for</span> <label for="r38" class="ident">i</label>, <label for="r39" class="ident">el</label> := <span class="keyword">range</span> <label for="r36" class="ident">slice</label> {</code></span>
+<span class="codeline" id="line-119"><code>		<span class="keyword">if</span> <label for="r38" class="ident">i</label> &gt; <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-120"><code>			<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-string">"), "</span>...)</code></span>
+<span class="codeline" id="line-121"><code>			<span class="keyword">if</span> <label for="r29" class="ident">m</label>.<a href="model_map.go.html#line-13" class="ident">db</a>.<a href="db.go.html#line-36" class="ident">features</a>.<a href="internal/flag.go.html#line-5" class="ident">Has</a>(<a href="../../../../pkg/github.com/uptrace/bun/dialect/feature.html" class="ident i4">feature</a>.<a href="dialect/feature/feature.go.html#line-12" class="ident">ValuesRow</a>) {</code></span>
+<span class="codeline" id="line-122"><code>				<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-string">"ROW("</span>...)</code></span>
+<span class="codeline" id="line-123"><code>			} <span class="keyword">else</span> {</code></span>
+<span class="codeline" id="line-124"><code>				<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-number">'('</span>)</code></span>
+<span class="codeline" id="line-125"><code>			}</code></span>
+<span class="codeline" id="line-126"><code>		}</code></span>
+<span class="codeline" id="line-127"><code></code></span>
+<span class="codeline" id="line-128"><code>		<span class="keyword">for</span> <label for="r40" class="ident">j</label>, <label for="r41" class="ident">key</label> := <span class="keyword">range</span> <label for="r29" class="ident">m</label>.<a href="#line-17" class="ident">keys</a> {</code></span>
+<span class="codeline" id="line-129"><code>			<span class="keyword">if</span> <label for="r40" class="ident">j</label> &gt; <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-130"><code>				<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-string">", "</span>...)</code></span>
+<span class="codeline" id="line-131"><code>			}</code></span>
+<span class="codeline" id="line-132"><code>			<label for="r32" class="ident">b</label> = <label for="r31" class="ident">fmter</label>.<a href="schema/formatter.go.html#line-37" class="ident">Dialect</a>().<a href="schema/dialect.go.html#line-22" class="ident">Append</a>(<label for="r31" class="ident">fmter</label>, <label for="r32" class="ident">b</label>, <label for="r39" class="ident">el</label>[<label for="r41" class="ident">key</label>])</code></span>
+<span class="codeline" id="line-133"><code>		}</code></span>
+<span class="codeline" id="line-134"><code>	}</code></span>
+<span class="codeline" id="line-135"><code></code></span>
+<span class="codeline" id="line-136"><code>	<label for="r32" class="ident">b</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r32" class="ident">b</label>, <span class="lit-number">')'</span>)</code></span>
+<span class="codeline" id="line-137"><code></code></span>
+<span class="codeline" id="line-138"><code>	<span class="keyword">return</span> <label for="r32" class="ident">b</label>, <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-139"><code>}</code></span>
+<span class="codeline" id="line-140"><code></code></span>
+<span class="codeline" id="line-141"><code><span class="keyword">func</span> (<label for="r42" class="ident">m</label> *<a href="#line-13" class="ident">mapSliceModel</a>) <label for="r43" class="ident">initKeys</label>() <a href="../../../../pkg/builtin.html#name-error" class="ident">error</a> {</code></span>
+<span class="codeline" id="line-142"><code>	<span class="keyword">if</span> <label for="r42" class="ident">m</label>.<a href="#line-17" class="ident">keys</a> != <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-143"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-144"><code>	}</code></span>
+<span class="codeline" id="line-145"><code></code></span>
+<span class="codeline" id="line-146"><code>	<label for="r44" class="ident">slice</label> := *<label for="r42" class="ident">m</label>.<a href="#line-15" class="ident">dest</a></code></span>
+<span class="codeline" id="line-147"><code>	<span class="keyword">if</span> <a href="../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r44" class="ident">slice</label>) == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-148"><code>		<span class="keyword">return</span> <a href="../../../../pkg/errors.html" class="ident i2">errors</a>.<a href="../../../errors/errors.go.html#line-58" class="ident">New</a>(<span class="lit-string">"bun: map slice is empty"</span>)</code></span>
+<span class="codeline" id="line-149"><code>	}</code></span>
+<span class="codeline" id="line-150"><code></code></span>
+<span class="codeline" id="line-151"><code>	<label for="r45" class="ident">first</label> := <label for="r44" class="ident">slice</label>[<span class="lit-number">0</span>]</code></span>
+<span class="codeline" id="line-152"><code>	<label for="r46" class="ident">keys</label> := <a href="../../../../pkg/builtin.html#name-make" class="ident">make</a>([]<a href="../../../../pkg/builtin.html#name-string" class="ident">string</a>, <span class="lit-number">0</span>, <a href="../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r45" class="ident">first</label>))</code></span>
+<span class="codeline" id="line-153"><code></code></span>
+<span class="codeline" id="line-154"><code>	<span class="keyword">for</span> <label for="r47" class="ident">k</label> := <span class="keyword">range</span> <label for="r45" class="ident">first</label> {</code></span>
+<span class="codeline" id="line-155"><code>		<label for="r46" class="ident">keys</label> = <a href="../../../../pkg/builtin.html#name-append" class="ident">append</a>(<label for="r46" class="ident">keys</label>, <label for="r47" class="ident">k</label>)</code></span>
+<span class="codeline" id="line-156"><code>	}</code></span>
+<span class="codeline" id="line-157"><code></code></span>
+<span class="codeline" id="line-158"><code>	<a href="../../../../pkg/sort.html" class="ident i3">sort</a>.<a href="../../../sort/sort.go.html#line-335" class="ident">Strings</a>(<label for="r46" class="ident">keys</label>)</code></span>
+<span class="codeline" id="line-159"><code>	<label for="r42" class="ident">m</label>.<a href="#line-17" class="ident">keys</a> = <label for="r46" class="ident">keys</label></code></span>
+<span class="codeline" id="line-160"><code></code></span>
+<span class="codeline" id="line-161"><code>	<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-162"><code>}</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

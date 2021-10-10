@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Method Implmentations: github.com/uptrace/bun/schema.QueryAppender</title>
+<link href="../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+<pre><code><span style="font-size:x-large;">type <a href="../../../../pkg/github.com/uptrace/bun/schema.html">github.com/uptrace/bun/schema</a>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-3">QueryAppender</a></b></span><span style="font-size:large;"> <b><i>(interface)</i></b></span>
+
+<code><span class="title">Method Implmentations<span class="title-stat"><i></i></span></span>
+
+<div class="anchor" id="name-AppendQuery">	<a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-4">AppendQuery</a>(fmter <a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-Formatter">Formatter</a>, b []<a href="../../../../pkg/builtin.html#name-byte">byte</a>) ([]<a href="../../../../pkg/builtin.html#name-byte">byte</a>, <a href="../../../../pkg/builtin.html#name-error">error</a>)
+		<a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-Ident">Ident</a>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-34">AppendQuery</a></b>
+		<a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-NullTime">NullTime</a>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqltype.go.html#line-98">AppendQuery</a></b>
+		<a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-Query">Query</a>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-4">AppendQuery</a></b>
+		<a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-QueryWithArgs">QueryWithArgs</a>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-62">AppendQuery</a></b>
+		<a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-QueryWithSep">QueryWithSep</a>.<i><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-72">QueryWithArgs</a></i>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-62">AppendQuery</a></b>
+		<a href="../../../../pkg/github.com/uptrace/bun/schema.html#name-Safe">Safe</a>.<b><a href="../../../../src/github.com/uptrace/bun/schema/sqlfmt.go.html#line-23">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-AddColumnQuery">AddColumnQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_column_add.go.html#line-68">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-CreateIndexQuery">CreateIndexQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_index_create.go.html#line-149">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-CreateTableQuery">CreateTableQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_table_create.go.html#line-92">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-DeleteQuery">DeleteQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_delete.go.html#line-136">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-DropColumnQuery">DropColumnQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_column_drop.go.html#line-75">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-DropIndexQuery">DropIndexQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_index_drop.go.html#line-69">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-DropTableQuery">DropTableQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_table_drop.go.html#line-75">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-InsertQuery">InsertQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_insert.go.html#line-149">AppendQuery</a></b>
+		 github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-InValues">InValues</a>.<b><a href="../../../../src/github.com/uptrace/bun/bun.go.html#line-97">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-SelectQuery">SelectQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_select.go.html#line-366">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-TruncateTableQuery">TruncateTableQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_table_truncate.go.html#line-71">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-UpdateQuery">UpdateQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_update.go.html#line-167">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-ValuesQuery">ValuesQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_values.go.html#line-101">AppendQuery</a></b>
+		*github.com/uptrace/bun/dialect/pgdialect.<a href="../../../../pkg/github.com/uptrace/bun/dialect/pgdialect.html#name-ArrayValue">ArrayValue</a>.<b><a href="../../../../src/github.com/uptrace/bun/dialect/pgdialect/array.go.html#line-43">AppendQuery</a></b>
+		 github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-countQuery">countQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_select.go.html#line-856">AppendQuery</a></b>
+		 github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-existsQuery">existsQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_select.go.html#line-866">AppendQuery</a></b>
+		*github.com/uptrace/bun.<a href="../../../../pkg/github.com/uptrace/bun.html#name-joinQuery">joinQuery</a>.<b><a href="../../../../src/github.com/uptrace/bun/query_select.go.html#line-823">AppendQuery</a></b></div></code></pre><pre id="footer">
+<table><tr><td><img src="../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

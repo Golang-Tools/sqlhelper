@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: mutex.go in package modernc.org/sqlite/lib</title>
+<link href="../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	mutex.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../pkg/modernc.org/sqlite/lib.html">modernc.org/sqlite/lib</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+input[id=r0]:checked ~pre label[for=r0],
+input[id=r1]:checked ~pre label[for=r1],
+input[id=r2]:checked ~pre label[for=r2],
+input[id=r3]:checked ~pre label[for=r3],
+input[id=r4]:checked ~pre label[for=r4],
+input[id=r5]:checked ~pre label[for=r5],
+input[id=r6]:checked ~pre label[for=r6],
+input[id=r7]:checked ~pre label[for=r7],
+input[id=r8]:checked ~pre label[for=r8],
+input[id=r9]:checked ~pre label[for=r9],
+input[id=r10]:checked ~pre label[for=r10],
+input[id=r11]:checked ~pre label[for=r11],
+input[id=r12]:checked ~pre label[for=r12],
+input[id=r13]:checked ~pre label[for=r13],
+input[id=r14]:checked ~pre label[for=r14],
+input[id=r15]:checked ~pre label[for=r15],
+input[id=r16]:checked ~pre label[for=r16],
+input[id=r17]:checked ~pre label[for=r17],
+input[id=r18]:checked ~pre label[for=r18],
+input[id=r19]:checked ~pre label[for=r19],
+input[id=r20]:checked ~pre label[for=r20],
+input[id=r21]:checked ~pre label[for=r21],
+input[id=r22]:checked ~pre label[for=r22],
+input[id=r23]:checked ~pre label[for=r23],
+input[id=r24]:checked ~pre label[for=r24],
+input[id=r25]:checked ~pre label[for=r25],
+input[id=r26]:checked ~pre label[for=r26],
+input[id=r27]:checked ~pre label[for=r27],
+input[id=r28]:checked ~pre label[for=r28],
+input[id=r29]:checked ~pre label[for=r29],
+input[id=r30]:checked ~pre label[for=r30],
+input[id=r31]:checked ~pre label[for=r31],
+input[id=r32]:checked ~pre label[for=r32],
+input[id=r33]:checked ~pre label[for=r33],
+input[id=r34]:checked ~pre label[for=r34],
+input[id=r35]:checked ~pre label[for=r35],
+input[id=r36]:checked ~pre label[for=r36],
+input[id=r37]:checked ~pre label[for=r37],
+input[id=r38]:checked ~pre label[for=r38],
+input[id=r39]:checked ~pre label[for=r39],
+input[id=r40]:checked ~pre label[for=r40]
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0,
+input[id=i1]:checked ~pre .i1,
+input[id=i2]:checked ~pre .i2,
+input[id=i3]:checked ~pre .i3,
+input[id=i4]:checked ~pre .i4,
+input[id=i5]:checked ~pre .i5,
+input[id=i6]:checked ~pre .i6
+{background: brown; color: #eed;}
+</style><input id="r0" type="radio" name="g"/>
+<input id="r1" type="radio" name="g"/>
+<input id="r2" type="radio" name="g"/>
+<input id="r3" type="radio" name="g"/>
+<input id="r4" type="radio" name="g"/>
+<input id="r5" type="radio" name="g"/>
+<input id="r6" type="radio" name="g"/>
+<input id="r7" type="radio" name="g"/>
+<input id="r8" type="radio" name="g"/>
+<input id="r9" type="radio" name="g"/>
+<input id="r10" type="radio" name="g"/>
+<input id="r11" type="radio" name="g"/>
+<input id="r12" type="radio" name="g"/>
+<input id="r13" type="radio" name="g"/>
+<input id="r14" type="radio" name="g"/>
+<input id="r15" type="radio" name="g"/>
+<input id="r16" type="radio" name="g"/>
+<input id="r17" type="radio" name="g"/>
+<input id="r18" type="radio" name="g"/>
+<input id="r19" type="radio" name="g"/>
+<input id="r20" type="radio" name="g"/>
+<input id="r21" type="radio" name="g"/>
+<input id="r22" type="radio" name="g"/>
+<input id="r23" type="radio" name="g"/>
+<input id="r24" type="radio" name="g"/>
+<input id="r25" type="radio" name="g"/>
+<input id="r26" type="radio" name="g"/>
+<input id="r27" type="radio" name="g"/>
+<input id="r28" type="radio" name="g"/>
+<input id="r29" type="radio" name="g"/>
+<input id="r30" type="radio" name="g"/>
+<input id="r31" type="radio" name="g"/>
+<input id="r32" type="radio" name="g"/>
+<input id="r33" type="radio" name="g"/>
+<input id="r34" type="radio" name="g"/>
+<input id="r35" type="radio" name="g"/>
+<input id="r36" type="radio" name="g"/>
+<input id="r37" type="radio" name="g"/>
+<input id="r38" type="radio" name="g"/>
+<input id="r39" type="radio" name="g"/>
+<input id="r40" type="radio" name="g"/>
+<input id="i0" type="radio" name="i"/>
+<input id="i1" type="radio" name="i"/>
+<input id="i2" type="radio" name="i"/>
+<input id="i3" type="radio" name="i"/>
+<input id="i4" type="radio" name="i"/>
+<input id="i5" type="radio" name="i"/>
+<input id="i6" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Copyright 2021 The Sqlite Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// Use of this source code is governed by a BSD-style</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// license that can be found in the LICENSE file.</span></code></span>
+<span class="codeline" id="line-4"><code></code></span>
+<span class="codeline" id="line-5"><code><span class="keyword">package</span> sqlite3</code></span>
+<span class="codeline" id="line-6"><code></code></span>
+<span class="codeline" id="line-7"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-8"><code>	<label for="i0"><span class="lit-string i0">"fmt"</span></label></code></span>
+<span class="codeline" id="line-9"><code>	<label for="i1"><span class="lit-string i1">"runtime"</span></label></code></span>
+<span class="codeline" id="line-10"><code>	<label for="i2"><span class="lit-string i2">"sync"</span></label></code></span>
+<span class="codeline" id="line-11"><code>	<label for="i3"><span class="lit-string i3">"sync/atomic"</span></label></code></span>
+<span class="codeline" id="line-12"><code>	<label for="i4"><span class="lit-string i4">"unsafe"</span></label></code></span>
+<span class="codeline" id="line-13"><code></code></span>
+<span class="codeline" id="line-14"><code>	<label for="i5"><span class="lit-string i5">"modernc.org/libc"</span></label></code></span>
+<span class="codeline" id="line-15"><code>	<label for="i6"><span class="lit-string i6">"modernc.org/libc/sys/types"</span></label></code></span>
+<span class="codeline" id="line-16"><code>)</code></span>
+<span class="codeline" id="line-17"><code></code></span>
+<span class="codeline" id="line-18"><code><span class="keyword">func</span> <label for="r0" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-init" class="ident">init</a></label>() {</code></span>
+<span class="codeline" id="line-19"><code>	<label for="r1" class="ident">tls</label> := <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-24" class="ident">NewTLS</a>()</code></span>
+<span class="codeline" id="line-20"><code>	<span class="keyword">if</span> <a href="sqlite_darwin_amd64.go.html#line-160050" class="ident">Xsqlite3_threadsafe</a>(<label for="r1" class="ident">tls</label>) == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-21"><code>		<a href="../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="../../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../../fmt/errors.go.html#line-17" class="ident">Errorf</a>(<span class="lit-string">"sqlite: thread safety configuration error"</span>))</code></span>
+<span class="codeline" id="line-22"><code>	}</code></span>
+<span class="codeline" id="line-23"><code></code></span>
+<span class="codeline" id="line-24"><code>	<label for="r2" class="ident">varArgs</label> := <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/mem.go.html#line-22" class="ident">Xmalloc</a>(<label for="r1" class="ident">tls</label>, <a href="../../../../pkg/modernc.org/libc/sys/types.html" class="ident i6">types</a>.<a href="../../libc/sys/types/types_darwin_amd64.go.html#line-102" class="ident">Size_t</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<span class="lit-number">0</span>))))</code></span>
+<span class="codeline" id="line-25"><code>	<span class="keyword">if</span> <label for="r2" class="ident">varArgs</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-26"><code>		<a href="../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="../../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../../fmt/errors.go.html#line-17" class="ident">Errorf</a>(<span class="lit-string">"cannot allocate memory"</span>))</code></span>
+<span class="codeline" id="line-27"><code>	}</code></span>
+<span class="codeline" id="line-28"><code></code></span>
+<span class="codeline" id="line-29"><code>	<span class="comment">// experimental pthreads support currently only on linux/amd64</span></code></span>
+<span class="codeline" id="line-30"><code>	<span class="keyword">if</span> <a href="../../../../pkg/runtime.html" class="ident i1">runtime</a>.<a href="../../../runtime/extern.go.html#line-253" class="ident">GOOS</a> != <span class="lit-string">"linux"</span> || <a href="../../../../pkg/runtime.html" class="ident i1">runtime</a>.<a href="../../../runtime/extern.go.html#line-257" class="ident">GOARCH</a> != <span class="lit-string">"amd64"</span> {</code></span>
+<span class="codeline" id="line-31"><code>		<span class="comment">// int sqlite3_config(int, ...);</span></code></span>
+<span class="codeline" id="line-32"><code>		<span class="keyword">if</span> <label for="r3" class="ident">rc</label> := <a href="sqlite_darwin_amd64.go.html#line-160266" class="ident">Xsqlite3_config</a>(<label for="r1" class="ident">tls</label>, <a href="sqlite_darwin_amd64.go.html#line-1976" class="ident">SQLITE_CONFIG_MUTEX</a>, <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/etc.go.html#line-407" class="ident">VaList</a>(<label for="r2" class="ident">varArgs</label>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-44" class="ident">mutexMethods</a>)))); <label for="r3" class="ident">rc</label> != <a href="sqlite_darwin_amd64.go.html#line-2396" class="ident">SQLITE_OK</a> {</code></span>
+<span class="codeline" id="line-33"><code>			<label for="r4" class="ident">p</label> := <a href="sqlite_darwin_amd64.go.html#line-161962" class="ident">Xsqlite3_errstr</a>(<label for="r1" class="ident">tls</label>, <label for="r3" class="ident">rc</label>)</code></span>
+<span class="codeline" id="line-34"><code>			<label for="r5" class="ident">str</label> := <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/etc.go.html#line-540" class="ident">GoString</a>(<label for="r4" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-35"><code>			<a href="../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="../../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../../fmt/errors.go.html#line-17" class="ident">Errorf</a>(<span class="lit-string">"sqlite: failed to configure mutex methods: %v"</span>, <label for="r5" class="ident">str</label>))</code></span>
+<span class="codeline" id="line-36"><code>		}</code></span>
+<span class="codeline" id="line-37"><code>	}</code></span>
+<span class="codeline" id="line-38"><code></code></span>
+<span class="codeline" id="line-39"><code>	<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/mem.go.html#line-76" class="ident">Xfree</a>(<label for="r1" class="ident">tls</label>, <label for="r2" class="ident">varArgs</label>)</code></span>
+<span class="codeline" id="line-40"><code>	<label for="r1" class="ident">tls</label>.<a href="../../libc/etc.go.html#line-206" class="ident">Close</a>()</code></span>
+<span class="codeline" id="line-41"><code>}</code></span>
+<span class="codeline" id="line-42"><code></code></span>
+<span class="codeline" id="line-43"><code><span class="keyword">var</span> (</code></span>
+<span class="codeline" id="line-44"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexMethods" class="ident">mutexMethods</a> = <a href="sqlite_darwin_amd64.go.html#line-6580" class="ident">Sqlite3_mutex_methods</a>{</code></span>
+<span class="codeline" id="line-45"><code>		<a href="sqlite_darwin_amd64.go.html#line-6506" class="ident">FxMutexInit</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span>{ f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> }{<a href="#line-169" class="ident">mutexInit</a>})),</code></span>
+<span class="codeline" id="line-46"><code>		<a href="sqlite_darwin_amd64.go.html#line-6507" class="ident">FxMutexEnd</a>:  *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span>{ f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> }{<a href="#line-172" class="ident">mutexEnd</a>})),</code></span>
+<span class="codeline" id="line-47"><code>		<a href="sqlite_darwin_amd64.go.html#line-6508" class="ident">FxMutexAlloc</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-48"><code>			f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a>) <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a></code></span>
+<span class="codeline" id="line-49"><code>		}{<a href="#line-218" class="ident">mutexAlloc</a>})),</code></span>
+<span class="codeline" id="line-50"><code>		<a href="sqlite_darwin_amd64.go.html#line-6509" class="ident">FxMutexFree</a>:  *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span>{ f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) }{<a href="#line-258" class="ident">mutexFree</a>})),</code></span>
+<span class="codeline" id="line-51"><code>		<a href="sqlite_darwin_amd64.go.html#line-6510" class="ident">FxMutexEnter</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span>{ f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) }{<a href="#line-275" class="ident">mutexEnter</a>})),</code></span>
+<span class="codeline" id="line-52"><code>		<a href="sqlite_darwin_amd64.go.html#line-6511" class="ident">FxMutexTry</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-53"><code>			f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a></code></span>
+<span class="codeline" id="line-54"><code>		}{<a href="#line-284" class="ident">mutexTry</a>})),</code></span>
+<span class="codeline" id="line-55"><code>		<a href="sqlite_darwin_amd64.go.html#line-6512" class="ident">FxMutexLeave</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span>{ f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) }{<a href="#line-293" class="ident">mutexLeave</a>})),</code></span>
+<span class="codeline" id="line-56"><code>		<a href="sqlite_darwin_amd64.go.html#line-6513" class="ident">FxMutexHeld</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-57"><code>			f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a></code></span>
+<span class="codeline" id="line-58"><code>		}{<a href="#line-326" class="ident">mutexHeld</a>})),</code></span>
+<span class="codeline" id="line-59"><code>		<a href="sqlite_darwin_amd64.go.html#line-6514" class="ident">FxMutexNotheld</a>: *(*<a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-60"><code>			f <span class="keyword">func</span>(*<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a></code></span>
+<span class="codeline" id="line-61"><code>		}{<a href="#line-335" class="ident">mutexNotheld</a>})),</code></span>
+<span class="codeline" id="line-62"><code>	}</code></span>
+<span class="codeline" id="line-63"><code></code></span>
+<span class="codeline" id="line-64"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexApp1" class="ident">mutexApp1</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-65"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexApp2" class="ident">mutexApp2</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-66"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexApp3" class="ident">mutexApp3</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-67"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexLRU" class="ident">mutexLRU</a>    <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-68"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexMaster" class="ident">mutexMaster</a> <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-69"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexMem" class="ident">mutexMem</a>    <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-70"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexOpen" class="ident">mutexOpen</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-71"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexPMem" class="ident">mutexPMem</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-72"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexPRNG" class="ident">mutexPRNG</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-73"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexVFS1" class="ident">mutexVFS1</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-74"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexVFS2" class="ident">mutexVFS2</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-75"><code>	<a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexVFS3" class="ident">mutexVFS3</a>   <a href="#line-78" class="ident">mutex</a></code></span>
+<span class="codeline" id="line-76"><code>)</code></span>
+<span class="codeline" id="line-77"><code></code></span>
+<span class="codeline" id="line-78"><code><span class="keyword">type</span> <a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutex" class="ident">mutex</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-79"><code>	cnt <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a></code></span>
+<span class="codeline" id="line-80"><code>	id  <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a></code></span>
+<span class="codeline" id="line-81"><code>	<a href="../../../../pkg/sync.html" class="ident i2">sync</a>.<a href="../../../sync/mutex.go.html#line-25" class="ident">Mutex</a></code></span>
+<span class="codeline" id="line-82"><code>	wait      <a href="../../../../pkg/sync.html" class="ident i2">sync</a>.<a href="../../../sync/mutex.go.html#line-25" class="ident">Mutex</a></code></span>
+<span class="codeline" id="line-83"><code>	recursive <a href="../../../../pkg/builtin.html#name-bool" class="ident">bool</a></code></span>
+<span class="codeline" id="line-84"><code>}</code></span>
+<span class="codeline" id="line-85"><code></code></span>
+<span class="codeline" id="line-86"><code><span class="keyword">func</span> (<label for="r6" class="ident">m</label> *<a href="#line-78" class="ident">mutex</a>) <label for="r7" class="ident">enter</label>(<label for="r8" class="ident">id</label> <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a>) {</code></span>
+<span class="codeline" id="line-87"><code>	<span class="keyword">if</span> !<label for="r6" class="ident">m</label>.<a href="#line-83" class="ident">recursive</a> {</code></span>
+<span class="codeline" id="line-88"><code>		<label for="r6" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-89"><code>		<label for="r6" class="ident">m</label>.<a href="#line-80" class="ident">id</a> = <label for="r8" class="ident">id</label></code></span>
+<span class="codeline" id="line-90"><code>		<span class="keyword">return</span></code></span>
+<span class="codeline" id="line-91"><code>	}</code></span>
+<span class="codeline" id="line-92"><code></code></span>
+<span class="codeline" id="line-93"><code>	<span class="keyword">for</span> {</code></span>
+<span class="codeline" id="line-94"><code>		<label for="r6" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-95"><code>		<span class="keyword">switch</span> <label for="r6" class="ident">m</label>.<a href="#line-80" class="ident">id</a> {</code></span>
+<span class="codeline" id="line-96"><code>		<span class="keyword">case</span> <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-97"><code>			<label for="r6" class="ident">m</label>.<a href="#line-79" class="ident">cnt</a> = <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-98"><code>			<label for="r6" class="ident">m</label>.<a href="#line-80" class="ident">id</a> = <label for="r8" class="ident">id</label></code></span>
+<span class="codeline" id="line-99"><code>			<label for="r6" class="ident">m</label>.<a href="#line-82" class="ident">wait</a>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-100"><code>			<label for="r6" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-101"><code>			<span class="keyword">return</span></code></span>
+<span class="codeline" id="line-102"><code>		<span class="keyword">case</span> <label for="r8" class="ident">id</label>:</code></span>
+<span class="codeline" id="line-103"><code>			<label for="r6" class="ident">m</label>.<a href="#line-79" class="ident">cnt</a>++</code></span>
+<span class="codeline" id="line-104"><code>			<label for="r6" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-105"><code>			<span class="keyword">return</span></code></span>
+<span class="codeline" id="line-106"><code>		}</code></span>
+<span class="codeline" id="line-107"><code></code></span>
+<span class="codeline" id="line-108"><code>		<label for="r6" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-109"><code>		<label for="r6" class="ident">m</label>.<a href="#line-82" class="ident">wait</a>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-110"><code>		<span class="comment">//lint:ignore SA2001 TODO report staticcheck issue</span></code></span>
+<span class="codeline" id="line-111"><code>		<label for="r6" class="ident">m</label>.<a href="#line-82" class="ident">wait</a>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-112"><code>	}</code></span>
+<span class="codeline" id="line-113"><code>}</code></span>
+<span class="codeline" id="line-114"><code></code></span>
+<span class="codeline" id="line-115"><code><span class="keyword">func</span> (<label for="r9" class="ident">m</label> *<a href="#line-78" class="ident">mutex</a>) <label for="r10" class="ident">try</label>(<label for="r11" class="ident">id</label> <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> {</code></span>
+<span class="codeline" id="line-116"><code>	<span class="keyword">if</span> !<label for="r9" class="ident">m</label>.<a href="#line-83" class="ident">recursive</a> {</code></span>
+<span class="codeline" id="line-117"><code>		<span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-1945" class="ident">SQLITE_BUSY</a></code></span>
+<span class="codeline" id="line-118"><code>	}</code></span>
+<span class="codeline" id="line-119"><code></code></span>
+<span class="codeline" id="line-120"><code>	<label for="r9" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-121"><code>	<span class="keyword">switch</span> <label for="r9" class="ident">m</label>.<a href="#line-80" class="ident">id</a> {</code></span>
+<span class="codeline" id="line-122"><code>	<span class="keyword">case</span> <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-123"><code>		<label for="r9" class="ident">m</label>.<a href="#line-79" class="ident">cnt</a> = <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-124"><code>		<label for="r9" class="ident">m</label>.<a href="#line-80" class="ident">id</a> = <label for="r11" class="ident">id</label></code></span>
+<span class="codeline" id="line-125"><code>		<label for="r9" class="ident">m</label>.<a href="#line-82" class="ident">wait</a>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-126"><code>		<label for="r9" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-127"><code>		<span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-2396" class="ident">SQLITE_OK</a></code></span>
+<span class="codeline" id="line-128"><code>	<span class="keyword">case</span> <label for="r11" class="ident">id</label>:</code></span>
+<span class="codeline" id="line-129"><code>		<label for="r9" class="ident">m</label>.<a href="#line-79" class="ident">cnt</a>++</code></span>
+<span class="codeline" id="line-130"><code>		<label for="r9" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-131"><code>		<span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-2396" class="ident">SQLITE_OK</a></code></span>
+<span class="codeline" id="line-132"><code>	}</code></span>
+<span class="codeline" id="line-133"><code></code></span>
+<span class="codeline" id="line-134"><code>	<label for="r9" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-135"><code>	<span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-1945" class="ident">SQLITE_BUSY</a></code></span>
+<span class="codeline" id="line-136"><code>}</code></span>
+<span class="codeline" id="line-137"><code></code></span>
+<span class="codeline" id="line-138"><code><span class="keyword">func</span> (<label for="r12" class="ident">m</label> *<a href="#line-78" class="ident">mutex</a>) <label for="r13" class="ident">leave</label>(<label for="r14" class="ident">id</label> <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a>) {</code></span>
+<span class="codeline" id="line-139"><code>	<span class="keyword">if</span> !<label for="r12" class="ident">m</label>.<a href="#line-83" class="ident">recursive</a> {</code></span>
+<span class="codeline" id="line-140"><code>		<label for="r12" class="ident">m</label>.<a href="#line-80" class="ident">id</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-141"><code>		<label for="r12" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-142"><code>		<span class="keyword">return</span></code></span>
+<span class="codeline" id="line-143"><code>	}</code></span>
+<span class="codeline" id="line-144"><code></code></span>
+<span class="codeline" id="line-145"><code>	<label for="r12" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-72" class="ident">Lock</a>()</code></span>
+<span class="codeline" id="line-146"><code>	<label for="r12" class="ident">m</label>.<a href="#line-79" class="ident">cnt</a>--</code></span>
+<span class="codeline" id="line-147"><code>	<span class="keyword">if</span> <label for="r12" class="ident">m</label>.<a href="#line-79" class="ident">cnt</a> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-148"><code>		<label for="r12" class="ident">m</label>.<a href="#line-80" class="ident">id</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-149"><code>		<label for="r12" class="ident">m</label>.<a href="#line-82" class="ident">wait</a>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-150"><code>	}</code></span>
+<span class="codeline" id="line-151"><code>	<label for="r12" class="ident">m</label>.<a href="../../../sync/mutex.go.html#line-179" class="ident">Unlock</a>()</code></span>
+<span class="codeline" id="line-152"><code>}</code></span>
+<span class="codeline" id="line-153"><code></code></span>
+<span class="codeline" id="line-154"><code><span class="comment">// int (*xMutexInit)(void);</span></code></span>
+<span class="codeline" id="line-155"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-156"><code><span class="comment">// The xMutexInit method defined by this structure is invoked as part of system</span></code></span>
+<span class="codeline" id="line-157"><code><span class="comment">// initialization by the sqlite3_initialize() function. The xMutexInit routine</span></code></span>
+<span class="codeline" id="line-158"><code><span class="comment">// is called by SQLite exactly once for each effective call to</span></code></span>
+<span class="codeline" id="line-159"><code><span class="comment">// sqlite3_initialize().</span></code></span>
+<span class="codeline" id="line-160"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-161"><code><span class="comment">// The xMutexInit() method must be threadsafe. It must be harmless to invoke</span></code></span>
+<span class="codeline" id="line-162"><code><span class="comment">// xMutexInit() multiple times within the same process and without intervening</span></code></span>
+<span class="codeline" id="line-163"><code><span class="comment">// calls to xMutexEnd(). Second and subsequent calls to xMutexInit() must be</span></code></span>
+<span class="codeline" id="line-164"><code><span class="comment">// no-ops. xMutexInit() must not use SQLite memory allocation (sqlite3_malloc()</span></code></span>
+<span class="codeline" id="line-165"><code><span class="comment">// and its associates).</span></code></span>
+<span class="codeline" id="line-166"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-167"><code><span class="comment">// If xMutexInit fails in any way, it is expected to clean up after itself</span></code></span>
+<span class="codeline" id="line-168"><code><span class="comment">// prior to returning.</span></code></span>
+<span class="codeline" id="line-169"><code><span class="keyword">func</span> <label for="r15" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexInit" class="ident">mutexInit</a></label>(<label for="r16" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> { <span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-2396" class="ident">SQLITE_OK</a> }</code></span>
+<span class="codeline" id="line-170"><code></code></span>
+<span class="codeline" id="line-171"><code><span class="comment">// int (*xMutexEnd)(void);</span></code></span>
+<span class="codeline" id="line-172"><code><span class="keyword">func</span> <label for="r17" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexEnd" class="ident">mutexEnd</a></label>(<label for="r18" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> { <span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-2396" class="ident">SQLITE_OK</a> }</code></span>
+<span class="codeline" id="line-173"><code></code></span>
+<span class="codeline" id="line-174"><code><span class="comment">// sqlite3_mutex *(*xMutexAlloc)(int);</span></code></span>
+<span class="codeline" id="line-175"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-176"><code><span class="comment">// The sqlite3_mutex_alloc() routine allocates a new mutex and returns a</span></code></span>
+<span class="codeline" id="line-177"><code><span class="comment">// pointer to it. The sqlite3_mutex_alloc() routine returns NULL if it is</span></code></span>
+<span class="codeline" id="line-178"><code><span class="comment">// unable to allocate the requested mutex. The argument to</span></code></span>
+<span class="codeline" id="line-179"><code><span class="comment">// sqlite3_mutex_alloc() must one of these integer constants:</span></code></span>
+<span class="codeline" id="line-180"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-181"><code><span class="comment">//	SQLITE_MUTEX_FAST</span></code></span>
+<span class="codeline" id="line-182"><code><span class="comment">//	SQLITE_MUTEX_RECURSIVE</span></code></span>
+<span class="codeline" id="line-183"><code><span class="comment">//	SQLITE_MUTEX_STATIC_MASTER</span></code></span>
+<span class="codeline" id="line-184"><code><span class="comment">//	SQLITE_MUTEX_STATIC_MEM</span></code></span>
+<span class="codeline" id="line-185"><code><span class="comment">//	SQLITE_MUTEX_STATIC_OPEN</span></code></span>
+<span class="codeline" id="line-186"><code><span class="comment">//	SQLITE_MUTEX_STATIC_PRNG</span></code></span>
+<span class="codeline" id="line-187"><code><span class="comment">//	SQLITE_MUTEX_STATIC_LRU</span></code></span>
+<span class="codeline" id="line-188"><code><span class="comment">//	SQLITE_MUTEX_STATIC_PMEM</span></code></span>
+<span class="codeline" id="line-189"><code><span class="comment">//	SQLITE_MUTEX_STATIC_APP1</span></code></span>
+<span class="codeline" id="line-190"><code><span class="comment">//	SQLITE_MUTEX_STATIC_APP2</span></code></span>
+<span class="codeline" id="line-191"><code><span class="comment">//	SQLITE_MUTEX_STATIC_APP3</span></code></span>
+<span class="codeline" id="line-192"><code><span class="comment">//	SQLITE_MUTEX_STATIC_VFS1</span></code></span>
+<span class="codeline" id="line-193"><code><span class="comment">//	SQLITE_MUTEX_STATIC_VFS2</span></code></span>
+<span class="codeline" id="line-194"><code><span class="comment">//	SQLITE_MUTEX_STATIC_VFS3</span></code></span>
+<span class="codeline" id="line-195"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-196"><code><span class="comment">// The first two constants (SQLITE_MUTEX_FAST and SQLITE_MUTEX_RECURSIVE) cause</span></code></span>
+<span class="codeline" id="line-197"><code><span class="comment">// sqlite3_mutex_alloc() to create a new mutex. The new mutex is recursive when</span></code></span>
+<span class="codeline" id="line-198"><code><span class="comment">// SQLITE_MUTEX_RECURSIVE is used but not necessarily so when SQLITE_MUTEX_FAST</span></code></span>
+<span class="codeline" id="line-199"><code><span class="comment">// is used. The mutex implementation does not need to make a distinction</span></code></span>
+<span class="codeline" id="line-200"><code><span class="comment">// between SQLITE_MUTEX_RECURSIVE and SQLITE_MUTEX_FAST if it does not want to.</span></code></span>
+<span class="codeline" id="line-201"><code><span class="comment">// SQLite will only request a recursive mutex in cases where it really needs</span></code></span>
+<span class="codeline" id="line-202"><code><span class="comment">// one. If a faster non-recursive mutex implementation is available on the host</span></code></span>
+<span class="codeline" id="line-203"><code><span class="comment">// platform, the mutex subsystem might return such a mutex in response to</span></code></span>
+<span class="codeline" id="line-204"><code><span class="comment">// SQLITE_MUTEX_FAST.</span></code></span>
+<span class="codeline" id="line-205"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-206"><code><span class="comment">// The other allowed parameters to sqlite3_mutex_alloc() (anything other than</span></code></span>
+<span class="codeline" id="line-207"><code><span class="comment">// SQLITE_MUTEX_FAST and SQLITE_MUTEX_RECURSIVE) each return a pointer to a</span></code></span>
+<span class="codeline" id="line-208"><code><span class="comment">// static preexisting mutex. Nine static mutexes are used by the current</span></code></span>
+<span class="codeline" id="line-209"><code><span class="comment">// version of SQLite. Future versions of SQLite may add additional static</span></code></span>
+<span class="codeline" id="line-210"><code><span class="comment">// mutexes. Static mutexes are for internal use by SQLite only. Applications</span></code></span>
+<span class="codeline" id="line-211"><code><span class="comment">// that use SQLite mutexes should use only the dynamic mutexes returned by</span></code></span>
+<span class="codeline" id="line-212"><code><span class="comment">// SQLITE_MUTEX_FAST or SQLITE_MUTEX_RECURSIVE.</span></code></span>
+<span class="codeline" id="line-213"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-214"><code><span class="comment">// Note that if one of the dynamic mutex parameters (SQLITE_MUTEX_FAST or</span></code></span>
+<span class="codeline" id="line-215"><code><span class="comment">// SQLITE_MUTEX_RECURSIVE) is used then sqlite3_mutex_alloc() returns a</span></code></span>
+<span class="codeline" id="line-216"><code><span class="comment">// different mutex on every call. For the static mutex types, the same mutex is</span></code></span>
+<span class="codeline" id="line-217"><code><span class="comment">// returned on every call that has the same type number.</span></code></span>
+<span class="codeline" id="line-218"><code><span class="keyword">func</span> <label for="r19" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexAlloc" class="ident">mutexAlloc</a></label>(<label for="r20" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r21" class="ident">typ</label> <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a>) <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> {</code></span>
+<span class="codeline" id="line-219"><code>	<span class="keyword">defer</span> <span class="keyword">func</span>() {</code></span>
+<span class="codeline" id="line-220"><code>	}()</code></span>
+<span class="codeline" id="line-221"><code>	<span class="keyword">switch</span> <label for="r21" class="ident">typ</label> {</code></span>
+<span class="codeline" id="line-222"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2355" class="ident">SQLITE_MUTEX_FAST</a>:</code></span>
+<span class="codeline" id="line-223"><code>		<span class="keyword">return</span> <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/mem.go.html#line-41" class="ident">Xcalloc</a>(<label for="r20" class="ident">tls</label>, <span class="lit-number">1</span>, <a href="../../../../pkg/modernc.org/libc/sys/types.html" class="ident i6">types</a>.<a href="../../libc/sys/types/types_darwin_amd64.go.html#line-102" class="ident">Size_t</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="#line-78" class="ident">mutex</a>{})))</code></span>
+<span class="codeline" id="line-224"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2357" class="ident">SQLITE_MUTEX_RECURSIVE</a>:</code></span>
+<span class="codeline" id="line-225"><code>		<label for="r22" class="ident">p</label> := <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/mem.go.html#line-41" class="ident">Xcalloc</a>(<label for="r20" class="ident">tls</label>, <span class="lit-number">1</span>, <a href="../../../../pkg/modernc.org/libc/sys/types.html" class="ident i6">types</a>.<a href="../../libc/sys/types/types_darwin_amd64.go.html#line-102" class="ident">Size_t</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="#line-78" class="ident">mutex</a>{})))</code></span>
+<span class="codeline" id="line-226"><code>		(*<a href="#line-78" class="ident">mutex</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r22" class="ident">p</label>)).<a href="#line-83" class="ident">recursive</a> = <a href="../../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-227"><code>		<span class="keyword">return</span> <label for="r22" class="ident">p</label></code></span>
+<span class="codeline" id="line-228"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2364" class="ident">SQLITE_MUTEX_STATIC_MASTER</a>:</code></span>
+<span class="codeline" id="line-229"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-68" class="ident">mutexMaster</a>))</code></span>
+<span class="codeline" id="line-230"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2365" class="ident">SQLITE_MUTEX_STATIC_MEM</a>:</code></span>
+<span class="codeline" id="line-231"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-69" class="ident">mutexMem</a>))</code></span>
+<span class="codeline" id="line-232"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2367" class="ident">SQLITE_MUTEX_STATIC_OPEN</a>:</code></span>
+<span class="codeline" id="line-233"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-70" class="ident">mutexOpen</a>))</code></span>
+<span class="codeline" id="line-234"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2369" class="ident">SQLITE_MUTEX_STATIC_PRNG</a>:</code></span>
+<span class="codeline" id="line-235"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-72" class="ident">mutexPRNG</a>))</code></span>
+<span class="codeline" id="line-236"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2361" class="ident">SQLITE_MUTEX_STATIC_LRU</a>:</code></span>
+<span class="codeline" id="line-237"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-67" class="ident">mutexLRU</a>))</code></span>
+<span class="codeline" id="line-238"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2368" class="ident">SQLITE_MUTEX_STATIC_PMEM</a>:</code></span>
+<span class="codeline" id="line-239"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-71" class="ident">mutexPMem</a>))</code></span>
+<span class="codeline" id="line-240"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2358" class="ident">SQLITE_MUTEX_STATIC_APP1</a>:</code></span>
+<span class="codeline" id="line-241"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-64" class="ident">mutexApp1</a>))</code></span>
+<span class="codeline" id="line-242"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2359" class="ident">SQLITE_MUTEX_STATIC_APP2</a>:</code></span>
+<span class="codeline" id="line-243"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-65" class="ident">mutexApp2</a>))</code></span>
+<span class="codeline" id="line-244"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2360" class="ident">SQLITE_MUTEX_STATIC_APP3</a>:</code></span>
+<span class="codeline" id="line-245"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-66" class="ident">mutexApp3</a>))</code></span>
+<span class="codeline" id="line-246"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2370" class="ident">SQLITE_MUTEX_STATIC_VFS1</a>:</code></span>
+<span class="codeline" id="line-247"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-73" class="ident">mutexVFS1</a>))</code></span>
+<span class="codeline" id="line-248"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2371" class="ident">SQLITE_MUTEX_STATIC_VFS2</a>:</code></span>
+<span class="codeline" id="line-249"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-74" class="ident">mutexVFS2</a>))</code></span>
+<span class="codeline" id="line-250"><code>	<span class="keyword">case</span> <a href="sqlite_darwin_amd64.go.html#line-2372" class="ident">SQLITE_MUTEX_STATIC_VFS3</a>:</code></span>
+<span class="codeline" id="line-251"><code>		<span class="keyword">return</span> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<a href="#line-75" class="ident">mutexVFS3</a>))</code></span>
+<span class="codeline" id="line-252"><code>	<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-253"><code>		<span class="keyword">return</span> <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-254"><code>	}</code></span>
+<span class="codeline" id="line-255"><code>}</code></span>
+<span class="codeline" id="line-256"><code></code></span>
+<span class="codeline" id="line-257"><code><span class="comment">// void (*xMutexFree)(sqlite3_mutex *);</span></code></span>
+<span class="codeline" id="line-258"><code><span class="keyword">func</span> <label for="r23" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexFree" class="ident">mutexFree</a></label>(<label for="r24" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r25" class="ident">m</label> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) { <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/mem.go.html#line-76" class="ident">Xfree</a>(<label for="r24" class="ident">tls</label>, <label for="r25" class="ident">m</label>) }</code></span>
+<span class="codeline" id="line-259"><code></code></span>
+<span class="codeline" id="line-260"><code><span class="comment">// The sqlite3_mutex_enter() and sqlite3_mutex_try() routines attempt to enter</span></code></span>
+<span class="codeline" id="line-261"><code><span class="comment">// a mutex. If another thread is already within the mutex,</span></code></span>
+<span class="codeline" id="line-262"><code><span class="comment">// sqlite3_mutex_enter() will block and sqlite3_mutex_try() will return</span></code></span>
+<span class="codeline" id="line-263"><code><span class="comment">// SQLITE_BUSY. The sqlite3_mutex_try() interface returns SQLITE_OK upon</span></code></span>
+<span class="codeline" id="line-264"><code><span class="comment">// successful entry. Mutexes created using SQLITE_MUTEX_RECURSIVE can be</span></code></span>
+<span class="codeline" id="line-265"><code><span class="comment">// entered multiple times by the same thread. In such cases, the mutex must be</span></code></span>
+<span class="codeline" id="line-266"><code><span class="comment">// exited an equal number of times before another thread can enter. If the same</span></code></span>
+<span class="codeline" id="line-267"><code><span class="comment">// thread tries to enter any mutex other than an SQLITE_MUTEX_RECURSIVE more</span></code></span>
+<span class="codeline" id="line-268"><code><span class="comment">// than once, the behavior is undefined.</span></code></span>
+<span class="codeline" id="line-269"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-270"><code><span class="comment">// If the argument to sqlite3_mutex_enter(), sqlite3_mutex_try(), or</span></code></span>
+<span class="codeline" id="line-271"><code><span class="comment">// sqlite3_mutex_leave() is a NULL pointer, then all three routines behave as</span></code></span>
+<span class="codeline" id="line-272"><code><span class="comment">// no-ops.</span></code></span>
+<span class="codeline" id="line-273"><code></code></span>
+<span class="codeline" id="line-274"><code><span class="comment">// void (*xMutexEnter)(sqlite3_mutex *);</span></code></span>
+<span class="codeline" id="line-275"><code><span class="keyword">func</span> <label for="r26" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexEnter" class="ident">mutexEnter</a></label>(<label for="r27" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r28" class="ident">m</label> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) {</code></span>
+<span class="codeline" id="line-276"><code>	<span class="keyword">if</span> <label for="r28" class="ident">m</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-277"><code>		<span class="keyword">return</span></code></span>
+<span class="codeline" id="line-278"><code>	}</code></span>
+<span class="codeline" id="line-279"><code></code></span>
+<span class="codeline" id="line-280"><code>	(*<a href="#line-78" class="ident">mutex</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r28" class="ident">m</label>)).<a href="#line-86" class="ident">enter</a>(<label for="r27" class="ident">tls</label>.<a href="../../libc/nopthreads.go.html#line-17" class="ident">ID</a>)</code></span>
+<span class="codeline" id="line-281"><code>}</code></span>
+<span class="codeline" id="line-282"><code></code></span>
+<span class="codeline" id="line-283"><code><span class="comment">// int (*xMutexTry)(sqlite3_mutex *);</span></code></span>
+<span class="codeline" id="line-284"><code><span class="keyword">func</span> <label for="r29" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexTry" class="ident">mutexTry</a></label>(<label for="r30" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r31" class="ident">m</label> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> {</code></span>
+<span class="codeline" id="line-285"><code>	<span class="keyword">if</span> <label for="r31" class="ident">m</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-286"><code>		<span class="keyword">return</span> <a href="sqlite_darwin_amd64.go.html#line-2396" class="ident">SQLITE_OK</a></code></span>
+<span class="codeline" id="line-287"><code>	}</code></span>
+<span class="codeline" id="line-288"><code></code></span>
+<span class="codeline" id="line-289"><code>	<span class="keyword">return</span> (*<a href="#line-78" class="ident">mutex</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r31" class="ident">m</label>)).<a href="#line-115" class="ident">try</a>(<label for="r30" class="ident">tls</label>.<a href="../../libc/nopthreads.go.html#line-17" class="ident">ID</a>)</code></span>
+<span class="codeline" id="line-290"><code>}</code></span>
+<span class="codeline" id="line-291"><code></code></span>
+<span class="codeline" id="line-292"><code><span class="comment">// void (*xMutexLeave)(sqlite3_mutex *);</span></code></span>
+<span class="codeline" id="line-293"><code><span class="keyword">func</span> <label for="r32" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexLeave" class="ident">mutexLeave</a></label>(<label for="r33" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r34" class="ident">m</label> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) {</code></span>
+<span class="codeline" id="line-294"><code>	<span class="keyword">if</span> <label for="r34" class="ident">m</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-295"><code>		<span class="keyword">return</span></code></span>
+<span class="codeline" id="line-296"><code>	}</code></span>
+<span class="codeline" id="line-297"><code></code></span>
+<span class="codeline" id="line-298"><code>	(*<a href="#line-78" class="ident">mutex</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">m</label>)).<a href="#line-138" class="ident">leave</a>(<label for="r33" class="ident">tls</label>.<a href="../../libc/nopthreads.go.html#line-17" class="ident">ID</a>)</code></span>
+<span class="codeline" id="line-299"><code>}</code></span>
+<span class="codeline" id="line-300"><code></code></span>
+<span class="codeline" id="line-301"><code><span class="comment">// The sqlite3_mutex_held() and sqlite3_mutex_notheld() routines are intended</span></code></span>
+<span class="codeline" id="line-302"><code><span class="comment">// for use inside assert() statements. The SQLite core never uses these</span></code></span>
+<span class="codeline" id="line-303"><code><span class="comment">// routines except inside an assert() and applications are advised to follow</span></code></span>
+<span class="codeline" id="line-304"><code><span class="comment">// the lead of the core. The SQLite core only provides implementations for</span></code></span>
+<span class="codeline" id="line-305"><code><span class="comment">// these routines when it is compiled with the SQLITE_DEBUG flag. External</span></code></span>
+<span class="codeline" id="line-306"><code><span class="comment">// mutex implementations are only required to provide these routines if</span></code></span>
+<span class="codeline" id="line-307"><code><span class="comment">// SQLITE_DEBUG is defined and if NDEBUG is not defined.</span></code></span>
+<span class="codeline" id="line-308"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-309"><code><span class="comment">// These routines should return true if the mutex in their argument is held or</span></code></span>
+<span class="codeline" id="line-310"><code><span class="comment">// not held, respectively, by the calling thread.</span></code></span>
+<span class="codeline" id="line-311"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-312"><code><span class="comment">// The implementation is not required to provide versions of these routines</span></code></span>
+<span class="codeline" id="line-313"><code><span class="comment">// that actually work. If the implementation does not provide working versions</span></code></span>
+<span class="codeline" id="line-314"><code><span class="comment">// of these routines, it should at least provide stubs that always return true</span></code></span>
+<span class="codeline" id="line-315"><code><span class="comment">// so that one does not get spurious assertion failures.</span></code></span>
+<span class="codeline" id="line-316"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-317"><code><span class="comment">// If the argument to sqlite3_mutex_held() is a NULL pointer then the routine</span></code></span>
+<span class="codeline" id="line-318"><code><span class="comment">// should return 1. This seems counter-intuitive since clearly the mutex cannot</span></code></span>
+<span class="codeline" id="line-319"><code><span class="comment">// be held if it does not exist. But the reason the mutex does not exist is</span></code></span>
+<span class="codeline" id="line-320"><code><span class="comment">// because the build is not using mutexes. And we do not want the assert()</span></code></span>
+<span class="codeline" id="line-321"><code><span class="comment">// containing the call to sqlite3_mutex_held() to fail, so a non-zero return is</span></code></span>
+<span class="codeline" id="line-322"><code><span class="comment">// the appropriate thing to do. The sqlite3_mutex_notheld() interface should</span></code></span>
+<span class="codeline" id="line-323"><code><span class="comment">// also return 1 when given a NULL pointer.</span></code></span>
+<span class="codeline" id="line-324"><code></code></span>
+<span class="codeline" id="line-325"><code><span class="comment">// int (*xMutexHeld)(sqlite3_mutex *);</span></code></span>
+<span class="codeline" id="line-326"><code><span class="keyword">func</span> <label for="r35" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexHeld" class="ident">mutexHeld</a></label>(<label for="r36" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r37" class="ident">m</label> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> {</code></span>
+<span class="codeline" id="line-327"><code>	<span class="keyword">if</span> <label for="r37" class="ident">m</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-328"><code>		<span class="keyword">return</span> <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-329"><code>	}</code></span>
+<span class="codeline" id="line-330"><code></code></span>
+<span class="codeline" id="line-331"><code>	<span class="keyword">return</span> <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/etc.go.html#line-566" class="ident">Bool32</a>(<a href="../../../../pkg/sync/atomic.html" class="ident i3">atomic</a>.<a href="../../../sync/atomic/doc.go.html#line-111" class="ident">LoadInt32</a>(&amp;(*<a href="#line-78" class="ident">mutex</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r37" class="ident">m</label>)).<a href="#line-80" class="ident">id</a>) == <label for="r36" class="ident">tls</label>.<a href="../../libc/nopthreads.go.html#line-17" class="ident">ID</a>)</code></span>
+<span class="codeline" id="line-332"><code>}</code></span>
+<span class="codeline" id="line-333"><code></code></span>
+<span class="codeline" id="line-334"><code><span class="comment">// int (*xMutexNotheld)(sqlite3_mutex *);</span></code></span>
+<span class="codeline" id="line-335"><code><span class="keyword">func</span> <label for="r38" class="ident"><a href="../../../../pkg/modernc.org/sqlite/lib.html#name-mutexNotheld" class="ident">mutexNotheld</a></label>(<label for="r39" class="ident">tls</label> *<a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/nopthreads.go.html#line-16" class="ident">TLS</a>, <label for="r40" class="ident">m</label> <a href="../../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../../pkg/builtin.html#name-int32" class="ident">int32</a> {</code></span>
+<span class="codeline" id="line-336"><code>	<span class="keyword">if</span> <label for="r40" class="ident">m</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-337"><code>		<span class="keyword">return</span> <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-338"><code>	}</code></span>
+<span class="codeline" id="line-339"><code></code></span>
+<span class="codeline" id="line-340"><code>	<span class="keyword">return</span> <a href="../../../../pkg/modernc.org/libc.html" class="ident i5">libc</a>.<a href="../../libc/etc.go.html#line-566" class="ident">Bool32</a>(<a href="../../../../pkg/sync/atomic.html" class="ident i3">atomic</a>.<a href="../../../sync/atomic/doc.go.html#line-111" class="ident">LoadInt32</a>(&amp;(*<a href="#line-78" class="ident">mutex</a>)(<a href="../../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r40" class="ident">m</label>)).<a href="#line-80" class="ident">id</a>) != <label for="r39" class="ident">tls</label>.<a href="../../libc/nopthreads.go.html#line-17" class="ident">ID</a>)</code></span>
+<span class="codeline" id="line-341"><code>}</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

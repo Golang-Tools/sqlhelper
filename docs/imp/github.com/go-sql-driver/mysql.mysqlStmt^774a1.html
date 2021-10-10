@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Method Implmentations: github.com/go-sql-driver/mysql.mysqlStmt</title>
+<link href="../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+<pre><code><span style="font-size:x-large;">type <a href="../../../pkg/github.com/go-sql-driver/mysql.html">github.com/go-sql-driver/mysql</a>.<b><a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-19">mysqlStmt</a></b></span><span style="font-size:large;"> <i>(struct)</i></span>
+
+<code><span class="title">Method Implmentations<span class="title-stat"><i> (4 other methods implement nothing)</i></span></span>
+
+<div class="anchor" id="name-CheckNamedValue">	<a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-47">CheckNamedValue</a>(nv *<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-NamedValue">NamedValue</a>) (err <a href="../../../pkg/builtin.html#name-error">error</a>)
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-NamedValueChecker">NamedValueChecker</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-400">CheckNamedValue</a></b></div>
+<div class="anchor" id="name-Close">	<a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-25">Close</a>() <a href="../../../pkg/builtin.html#name-error">error</a>
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-Stmt">Stmt</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-331">Close</a></b>
+		(*T).M : io.<a href="../../../pkg/io.html#name-Closer">Closer</a>.<b><a href="../../../src/io/io.go.html#line-105">Close</a></b></div>
+<div class="anchor" id="name-ColumnConverter">	<a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-43">ColumnConverter</a>(idx <a href="../../../pkg/builtin.html#name-int">int</a>) <a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-ValueConverter">ValueConverter</a>
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-ColumnConverter">ColumnConverter</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-413">ColumnConverter</a></b></div>
+<div class="anchor" id="name-Exec">	<a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-52">Exec</a>(args []<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-Value">Value</a>) (<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-Result">Result</a>, <a href="../../../pkg/builtin.html#name-error">error</a>)
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-Stmt">Stmt</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-348">Exec</a></b></div>
+<div class="anchor" id="name-ExecContext">	<a href="../../../src/github.com/go-sql-driver/mysql/connection.go.html#line-567">ExecContext</a>(ctx <a href="../../../pkg/context.html">context</a>.<a href="../../../pkg/context.html#name-Context">Context</a>, args []<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-NamedValue">NamedValue</a>) (<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-Result">Result</a>, <a href="../../../pkg/builtin.html#name-error">error</a>)
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-StmtExecContext">StmtExecContext</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-363">ExecContext</a></b></div>
+<div class="anchor" id="name-NumInput">	<a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-39">NumInput</a>() <a href="../../../pkg/builtin.html#name-int">int</a>
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-Stmt">Stmt</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-342">NumInput</a></b></div>
+<div class="anchor" id="name-Query">	<a href="../../../src/github.com/go-sql-driver/mysql/statement.go.html#line-96">Query</a>(args []<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-Value">Value</a>) (<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-Rows">Rows</a>, <a href="../../../pkg/builtin.html#name-error">error</a>)
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-Stmt">Stmt</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-354">Query</a></b></div>
+<div class="anchor" id="name-QueryContext">	<a href="../../../src/github.com/go-sql-driver/mysql/connection.go.html#line-548">QueryContext</a>(ctx <a href="../../../pkg/context.html">context</a>.<a href="../../../pkg/context.html#name-Context">Context</a>, args []<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-NamedValue">NamedValue</a>) (<a href="../../../pkg/database/sql/driver.html">driver</a>.<a href="../../../pkg/database/sql/driver.html#name-Rows">Rows</a>, <a href="../../../pkg/builtin.html#name-error">error</a>)
+		(*T).M : database/sql/driver.<a href="../../../pkg/database/sql/driver.html#name-StmtQueryContext">StmtQueryContext</a>.<b><a href="../../../src/database/sql/driver/driver.go.html#line-372">QueryContext</a></b></div></code></pre><pre id="footer">
+<table><tr><td><img src="../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

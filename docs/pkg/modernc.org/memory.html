@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Package: modernc.org/memory</title>
+<link href="../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="package-details"><code><span style="font-size:xx-large;">package <b>memory</b></span>
+
+<span class="title">Import Path</span>
+	<a href="../../index.html#pkg-modernc.org/memory">modernc.org/memory</a><i> (on <a href="https://pkg.go.dev/modernc.org/memory" target="_blank">go.dev</a>)</i>
+
+<span class="title">Dependency Relation</span>
+	imports <a href="../../dep/modernc.org/memory.html">6 packages</a>, and imported by <a href="../../dep/modernc.org/memory.html#imported-by">one package</a>
+
+<div id="files"><span class="title">Involved Source Files</span>
+
+	<input type='checkbox' checked class="fold" id="file-0-fold-content"><label for="file-0-fold-content">   <a href="../../src/modernc.org/memory/memory.go.html#doc">#d</a> <a href="../../src/modernc.org/memory/memory.go.html">memory.go</a></label><span id='file-0-fold-content-items' class="fold-items">
+		Package memory implements a memory allocator.
+
+		Build status
+
+		available at https://modern-c.appspot.com/-/builder/?importpath=modernc.org%2fmemory
+
+		Changelog
+
+		2017-10-03 Added alternative, unsafe.Pointer-based API.
+
+		Package memory implements a memory allocator.
+
+		Changelog
+
+		2017-10-03 Added alternative, unsafe.Pointer-based API.
+
+		Benchmarks
+
+		AMD Ryzen 9 3900X 12-Core Processor × 24
+
+		 jnml@3900x:~/src/modernc.org/memory$ date ; go version ; go test -run @ -bench . -benchmem |&amp; tee log
+		 Fri Nov 20 17:23:04 CET 2020
+		 go version go1.15.5 linux/amd64
+		 goos: linux
+		 goarch: amd64
+		 pkg: modernc.org/memory
+		 BenchmarkFree16-24             	141188362	         8.26 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkFree32-24             	100000000	        11.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkFree64-24             	67160647	        18.3 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc16-24           	60612698	        19.8 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc32-24           	47968105	        23.8 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc64-24           	40752181	        28.6 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkGoCalloc16-24         	66487354	        17.8 ns/op	      16 B/op	       1 allocs/op
+		 BenchmarkGoCalloc32-24         	56009206	        21.2 ns/op	      32 B/op	       1 allocs/op
+		 BenchmarkGoCalloc64-24         	52086571	        23.4 ns/op	      64 B/op	       1 allocs/op
+		 BenchmarkMalloc16-24           	113943390	        10.2 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkMalloc32-24           	113520471	        10.2 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkMalloc64-24           	108787056	        10.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree16-24      	146110286	         7.94 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree32-24      	93052707	        12.0 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree64-24      	69805262	        17.3 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc16-24    	85282725	        13.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc32-24    	66489789	        17.9 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc64-24    	53561092	        22.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc16-24    	222978858	         5.28 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc32-24    	210443384	         5.30 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc64-24    	213706227	         5.47 ns/op	       0 B/op	       0 allocs/op
+		 PASS
+		 ok  	modernc.org/memory	70.528s
+		 jnml@3900x:~/src/modernc.org/memory$
+
+		Intel® Core™ i5-4670 CPU @ 3.40GHz × 4
+
+		 ==== jnml@4670:~/src/modernc.org/memory&gt; date ; go version ; go test -run @ -bench . -benchmem |&amp; tee log
+		 Sat Dec  8 12:56:53 CET 2018
+		 go version go1.11.2 linux/amd64
+		 goos: linux
+		 goarch: amd64
+		 pkg: modernc.org/memory
+		 BenchmarkFree16-4            	100000000	        14.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkFree32-4            	100000000	        20.5 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkFree64-4            	50000000	        32.8 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc16-4          	50000000	        24.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc32-4          	50000000	        29.2 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc64-4          	50000000	        35.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkGoCalloc16-4        	50000000	        27.0 ns/op	      16 B/op	       1 allocs/op
+		 BenchmarkGoCalloc32-4        	50000000	        27.3 ns/op	      32 B/op	       1 allocs/op
+		 BenchmarkGoCalloc64-4        	30000000	        37.9 ns/op	      64 B/op	       1 allocs/op
+		 BenchmarkMalloc16-4          	100000000	        12.9 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkMalloc32-4          	100000000	        12.9 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkMalloc64-4          	100000000	        13.2 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree16-4     	100000000	        12.0 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree32-4     	100000000	        17.5 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree64-4     	50000000	        28.9 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc16-4   	100000000	        17.8 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc32-4   	100000000	        22.9 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc64-4   	50000000	        29.6 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc16-4   	200000000	         7.31 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc32-4   	200000000	         7.47 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc64-4   	200000000	         7.68 ns/op	       0 B/op	       0 allocs/op
+		 PASS
+		 ok  	modernc.org/memory	73.859s
+		 //
+		Intel® Xeon(R) CPU E5-1650 v2 @ 3.50GHz × 12
+
+		 ==== jnml@e5-1650:~/src/modernc.org/memory&gt; date ; go version ; go test -run @ -bench . -benchmem
+		 Fri Dec  7 14:18:50 CET 2018
+		 go version go1.11.2 linux/amd64
+		 goos: linux
+		 goarch: amd64
+		 pkg: modernc.org/memory
+		 BenchmarkFree16-12             	100000000	        16.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkFree32-12             	50000000	        25.0 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkFree64-12             	30000000	        39.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc16-12           	50000000	        26.3 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc32-12           	50000000	        33.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkCalloc64-12           	30000000	        38.3 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkGoCalloc16-12         	50000000	        26.6 ns/op	      16 B/op	       1 allocs/op
+		 BenchmarkGoCalloc32-12         	50000000	        26.8 ns/op	      32 B/op	       1 allocs/op
+		 BenchmarkGoCalloc64-12         	30000000	        35.1 ns/op	      64 B/op	       1 allocs/op
+		 BenchmarkMalloc16-12           	100000000	        13.5 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkMalloc32-12           	100000000	        13.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkMalloc64-12           	100000000	        14.1 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree16-12      	100000000	        14.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree32-12      	100000000	        21.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrFree64-12      	50000000	        36.7 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc16-12    	100000000	        20.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc32-12    	50000000	        27.1 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrCalloc64-12    	50000000	        33.4 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc16-12    	200000000	         8.02 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc32-12    	200000000	         8.28 ns/op	       0 B/op	       0 allocs/op
+		 BenchmarkUintptrMalloc64-12    	200000000	         8.29 ns/op	       0 B/op	       0 allocs/op
+		 PASS
+		 ok  	modernc.org/memory	80.896s
+</span>
+	<span class="nodocs">      <a href="../../src/modernc.org/memory/memory64.go.html">memory64.go</a></span>
+	<span class="nodocs">      <a href="../../src/modernc.org/memory/mmap_unix.go.html">mmap_unix.go</a></span>
+	<span class="nodocs">      <a href="../../src/modernc.org/memory/nocounters.go.html">nocounters.go</a></span>
+	<span class="nodocs">      <a href="../../src/modernc.org/memory/trace_disabled.go.html">trace_disabled.go</a></span></div>
+<div id="exported-types"><span class="title">Package-Level Type Names<span class="title-stat"><i> (total 4, in which 1 are exported)</i></span></span>
+
+<div id="exported-types-buttons" class="js-on">	/* sort exporteds by: <label id="sort-types-by-alphabet" class="button">alphabet</label> | <label id="sort-types-by-popularity" class="button">popularity</label> */</div><div class="anchor type-res" id="name-Allocator" data-popularity="905">	<input type='checkbox' class="fold" id="Allocator-fold-content"><label for="Allocator-fold-content"> type <a href="../../src/modernc.org/memory/memory.go.html#line-162">Allocator</a> <i>(struct)</i></label><span id='Allocator-fold-content-docs' class="fold-docs">
+		Allocator allocates and frees memory. Its zero value is ready for use.  The
+		exported counters are updated only when build tag memory.counters is
+		present.
+
+		<input type='checkbox' class="fold" id="Allocator-fold-fields"><label for="Allocator-fold-fields">Fields (<i>total 7, in which 3 are exported</i>)</label><span id='Allocator-fold-fields-items' class="fold-items"><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-field-Allocs"><label for="Allocator-fold-field-Allocs"><a href="../../src/modernc.org/memory/memory.go.html#line-163">Allocs</a> <i><a href="../builtin.html#name-int">int</a></i></label><span id='Allocator-fold-field-Allocs-docs' class="fold-docs">
+				// # of allocs.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-field-Bytes"><label for="Allocator-fold-field-Bytes"><a href="../../src/modernc.org/memory/memory.go.html#line-164">Bytes</a> <i><a href="../builtin.html#name-int">int</a></i></label><span id='Allocator-fold-field-Bytes-docs' class="fold-docs">
+				// Asked from OS.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-field-Mmaps"><label for="Allocator-fold-field-Mmaps"><a href="../../src/modernc.org/memory/memory.go.html#line-167">Mmaps</a> <i><a href="../builtin.html#name-int">int</a></i></label><span id='Allocator-fold-field-Mmaps-docs' class="fold-docs">
+				// Asked from OS.
+</span></span>
+			<input type='checkbox' class="showhide" id="Allocator-showhide-fields"><i><label for="Allocator-showhide-fields" class="show-inline">/* 4 unexporteds ... */</label><label for="Allocator-showhide-fields" class="hide-inline">/* 4 unexporteds: */</label></i><span class="hidden"><i>
+			<span class="nodocs"><a href="../../src/modernc.org/memory/memory.go.html#line-165">cap</a> <i>[64]<a href="../builtin.html#name-int">int</a></i></span></i></span><span class="hidden"><i>
+			<input type='checkbox' class="fold" id="Allocator-fold-field-lists"><label for="Allocator-fold-field-lists"><a href="../../src/modernc.org/memory/memory.go.html#line-166">lists</a> <i>[64]<a href="../builtin.html#name-uintptr">uintptr</a></i></label><span id='Allocator-fold-field-lists-docs' class="fold-docs">
+				// *node
+</span></i></span><span class="hidden"><i>
+			<input type='checkbox' class="fold" id="Allocator-fold-field-pages"><label for="Allocator-fold-field-pages"><a href="../../src/modernc.org/memory/memory.go.html#line-168">pages</a> <i>[64]<a href="../builtin.html#name-uintptr">uintptr</a></i></label><span id='Allocator-fold-field-pages-docs' class="fold-docs">
+				// *page
+</span></i></span><span class="hidden"><i>
+			<input type='checkbox' class="fold" id="Allocator-fold-field-regs"><label for="Allocator-fold-field-regs"><a href="../../src/modernc.org/memory/memory.go.html#line-169">regs</a> <i>map[<a href="../builtin.html#name-uintptr">uintptr</a>]struct{}</i></label><span id='Allocator-fold-field-regs-docs' class="fold-docs">
+				// map[*page]struct{}
+</span></i></span></span>
+		<input type='checkbox' class="fold" id="Allocator-fold-methods"><label for="Allocator-fold-methods">Methods (<i>total 17, in which 13 are exported</i>)</label><span id='Allocator-fold-methods-items' class="fold-items"><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-Calloc"><label for="Allocator-fold-method-Calloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-414">Calloc</a>(size <a href="../builtin.html#name-int">int</a>) (r []<a href="../builtin.html#name-byte">byte</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-Calloc-docs' class="fold-docs">
+				Calloc is like Malloc except the allocated memory is zeroed.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-Close"><label for="Allocator-fold-method-Close">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-431">Close</a>() (err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-Close-docs' class="fold-docs">
+				Close releases all OS resources used by a and sets it to its zero value.
+
+				It's not necessary to Close the Allocator when exiting a process.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-Free"><label for="Allocator-fold-method-Free">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-443">Free</a>(b []<a href="../builtin.html#name-byte">byte</a>) (err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-Free-docs' class="fold-docs">
+				Free deallocates memory (as in C.free). The argument of Free must have been
+				acquired from Calloc or Malloc or Realloc.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-Malloc"><label for="Allocator-fold-method-Malloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-458">Malloc</a>(size <a href="../builtin.html#name-int">int</a>) (r []<a href="../builtin.html#name-byte">byte</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-Malloc-docs' class="fold-docs">
+				Malloc allocates size bytes and returns a byte slice of the allocated
+				memory. The memory is not initialized. Malloc panics for size &lt; 0 and
+				returns (nil, nil) for zero size.
+
+				It's ok to reslice the returned slice but the result of appending to it
+				cannot be passed to Free or Realloc as it may refer to a different backing
+				array afterwards.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-Realloc"><label for="Allocator-fold-method-Realloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-481">Realloc</a>(b []<a href="../builtin.html#name-byte">byte</a>, size <a href="../builtin.html#name-int">int</a>) (r []<a href="../builtin.html#name-byte">byte</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-Realloc-docs' class="fold-docs">
+				Realloc changes the size of the backing array of b to size bytes or returns
+				an error, if any.  The contents will be unchanged in the range from the
+				start of the region up to the minimum of the old and new  sizes.   If the
+				new size is larger than the old size, the added memory will not be
+				initialized.  If b's backing array is of zero size, then the call is
+				equivalent to Malloc(size), for all values of size; if size is equal to
+				zero, and b's backing array is not of zero size, then the call is equivalent
+				to Free(b).  Unless b's backing array is of zero size, it must have been
+				returned by an earlier call to Malloc, Calloc or Realloc.  If the area
+				pointed to was moved, a Free(b) is done.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UintptrCalloc"><label for="Allocator-fold-method-UintptrCalloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-225">UintptrCalloc</a>(size <a href="../builtin.html#name-int">int</a>) (r <a href="../builtin.html#name-uintptr">uintptr</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UintptrCalloc-docs' class="fold-docs">
+				UintptrCalloc is like Calloc except it returns an uintptr.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UintptrFree"><label for="Allocator-fold-method-UintptrFree">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-243">UintptrFree</a>(p <a href="../builtin.html#name-uintptr">uintptr</a>) (err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UintptrFree-docs' class="fold-docs">
+				UintptrFree is like Free except its argument is an uintptr, which must have
+				been acquired from UintptrCalloc or UintptrMalloc or UintptrRealloc.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UintptrMalloc"><label for="Allocator-fold-method-UintptrMalloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-304">UintptrMalloc</a>(size <a href="../builtin.html#name-int">int</a>) (r <a href="../builtin.html#name-uintptr">uintptr</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UintptrMalloc-docs' class="fold-docs">
+				UintptrMalloc is like Malloc except it returns an uinptr.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UintptrRealloc"><label for="Allocator-fold-method-UintptrRealloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-359">UintptrRealloc</a>(p <a href="../builtin.html#name-uintptr">uintptr</a>, size <a href="../builtin.html#name-int">int</a>) (r <a href="../builtin.html#name-uintptr">uintptr</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UintptrRealloc-docs' class="fold-docs">
+				UintptrRealloc is like Realloc except its first argument is an uintptr,
+				which must have been returned from UintptrCalloc, UintptrMalloc or
+				UintptrRealloc.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UnsafeCalloc"><label for="Allocator-fold-method-UnsafeCalloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-504">UnsafeCalloc</a>(size <a href="../builtin.html#name-int">int</a>) (r <a href="../unsafe.html">unsafe</a>.<a href="../unsafe.html#name-Pointer">Pointer</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UnsafeCalloc-docs' class="fold-docs">
+				UnsafeCalloc is like Calloc except it returns an unsafe.Pointer.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UnsafeFree"><label for="Allocator-fold-method-UnsafeFree">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-515">UnsafeFree</a>(p <a href="../unsafe.html">unsafe</a>.<a href="../unsafe.html#name-Pointer">Pointer</a>) (err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UnsafeFree-docs' class="fold-docs">
+				UnsafeFree is like Free except its argument is an unsafe.Pointer, which must
+				have been acquired from UnsafeCalloc or UnsafeMalloc or UnsafeRealloc.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UnsafeMalloc"><label for="Allocator-fold-method-UnsafeMalloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-518">UnsafeMalloc</a>(size <a href="../builtin.html#name-int">int</a>) (r <a href="../unsafe.html">unsafe</a>.<a href="../unsafe.html#name-Pointer">Pointer</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UnsafeMalloc-docs' class="fold-docs">
+				UnsafeMalloc is like Malloc except it returns an unsafe.Pointer.
+</span></span><span>
+			<input type='checkbox' class="fold" id="Allocator-fold-method-UnsafeRealloc"><label for="Allocator-fold-method-UnsafeRealloc">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-530">UnsafeRealloc</a>(p <a href="../unsafe.html">unsafe</a>.<a href="../unsafe.html#name-Pointer">Pointer</a>, size <a href="../builtin.html#name-int">int</a>) (r <a href="../unsafe.html">unsafe</a>.<a href="../unsafe.html#name-Pointer">Pointer</a>, err <a href="../builtin.html#name-error">error</a>)</label><span id='Allocator-fold-method-UnsafeRealloc-docs' class="fold-docs">
+				UnsafeRealloc is like Realloc except its first argument is an
+				unsafe.Pointer, which must have been returned from UnsafeCalloc,
+				UnsafeMalloc or UnsafeRealloc.
+</span></span>
+			<input type='checkbox' class="showhide" id="Allocator-showhide-methods"><i><label for="Allocator-showhide-methods" class="show-inline">/* 4 unexporteds ... */</label><label for="Allocator-showhide-methods" class="hide-inline">/* 4 unexporteds: */</label></i><span class="hidden"><i>
+			<span class="nodocs">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-172">mmap</a>(size <a href="../builtin.html#name-int">int</a>) (<a href="../builtin.html#name-uintptr">uintptr</a>, <a href="../builtin.html#name-error">error</a>)</span></i></span><span class="hidden"><i>
+			<span class="nodocs">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-190">newPage</a>(size <a href="../builtin.html#name-int">int</a>) (<a href="../builtin.html#name-uintptr">uintptr</a>, <a href="../builtin.html#name-error">error</a>)</span></i></span><span class="hidden"><i>
+			<span class="nodocs">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-201">newSharedPage</a>(log <a href="../builtin.html#name-uint">uint</a>) (<a href="../builtin.html#name-uintptr">uintptr</a>, <a href="../builtin.html#name-error">error</a>)</span></i></span><span class="hidden"><i>
+			<span class="nodocs">(*T) <a href="../../src/modernc.org/memory/memory.go.html#line-216">unmap</a>(p <a href="../builtin.html#name-uintptr">uintptr</a>) <a href="../builtin.html#name-error">error</a></span></i></span></span>
+		<input type='checkbox' class="fold" id="Allocator-fold-impls"><label for="Allocator-fold-impls">Implements (<i>at least one exported</i>)</label><span id='Allocator-fold-impls-items' class="fold-items"><span>
+			*T : io.<a href="../io.html#name-Closer">Closer</a></span></span>
+		<input type='checkbox' class="fold" id="Allocator-fold-values"><label for="Allocator-fold-values">As Types Of (<i>only one, which is unexported</i>)</label><span id='Allocator-fold-values-items' class="fold-items">
+			<input type='checkbox' class="showhide" id="Allocator-showhide-values"><i><label for="Allocator-showhide-values" class="show-inline">/* one unexported ... */</label><label for="Allocator-showhide-values" class="hide-inline">/* one unexported: */</label></i><span class="hidden"><i>
+			  var modernc.org/libc.<a href="libc.html#name-allocator">allocator</a></i></span></span>
+
+</span></div></div><div>	<input type='checkbox' class="showhide" id="unexported-typenames-showhide"><i><label for="unexported-typenames-showhide" class="show-inline">/* 3 unexporteds ... */</label><label for="unexported-typenames-showhide" class="hide-inline">/* 3 unexporteds: */</label></i><div class="anchor type-res hidden" id="name-node" data-popularity="0">	<input type='checkbox' class="fold" id="node-fold-content"><label for="node-fold-content"> type <a href="../../src/modernc.org/memory/memory.go.html#line-148">node</a> <i>(struct)</i></label><span id='node-fold-content-docs' class="fold-docs">
+
+		<input type='checkbox' class="fold" id="node-fold-fields"><label for="node-fold-fields">Fields (<i>total 2, neither is exported</i>)</label><span id='node-fold-fields-items' class="fold-items">
+			<input type='checkbox' checked class="showhide" id="node-showhide-fields"><i><label for="node-showhide-fields" class="show-inline">/* 2 unexporteds ... */</label><label for="node-showhide-fields" class="hide-inline">/* 2 unexporteds: */</label></i><span class="hidden"><i>
+			<input type='checkbox' class="fold" id="node-fold-field-next"><label for="node-fold-field-next"><a href="../../src/modernc.org/memory/memory.go.html#line-149">next</a> <i><a href="../builtin.html#name-uintptr">uintptr</a></i></label><span id='node-fold-field-next-docs' class="fold-docs">
+				// *node
+</span></i></span><span class="hidden"><i>
+			<input type='checkbox' class="fold" id="node-fold-field-prev"><label for="node-fold-field-prev"><a href="../../src/modernc.org/memory/memory.go.html#line-149">prev</a> <i><a href="../builtin.html#name-uintptr">uintptr</a></i></label><span id='node-fold-field-prev-docs' class="fold-docs">
+				// *node
+</span></i></span></span>
+
+</span></div><div class="anchor type-res hidden" id="name-page" data-popularity="0">	<input type='checkbox' class="fold" id="page-fold-content"><label for="page-fold-content"> type <a href="../../src/modernc.org/memory/memory.go.html#line-152">page</a> <i>(struct)</i></label><span id='page-fold-content-docs' class="fold-docs">
+
+		<input type='checkbox' class="fold" id="page-fold-fields"><label for="page-fold-fields">Fields (<i>total 4, none are exported</i>)</label><span id='page-fold-fields-items' class="fold-items">
+			<input type='checkbox' checked class="showhide" id="page-showhide-fields"><i><label for="page-showhide-fields" class="show-inline">/* 4 unexporteds ... */</label><label for="page-showhide-fields" class="hide-inline">/* 4 unexporteds: */</label></i><span class="hidden"><i>
+			<span class="nodocs"><a href="../../src/modernc.org/memory/memory.go.html#line-153">brk</a> <i><a href="../builtin.html#name-int">int</a></i></span></i></span><span class="hidden"><i>
+			<span class="nodocs"><a href="../../src/modernc.org/memory/memory.go.html#line-154">log</a> <i><a href="../builtin.html#name-uint">uint</a></i></span></i></span><span class="hidden"><i>
+			<span class="nodocs"><a href="../../src/modernc.org/memory/memory.go.html#line-155">size</a> <i><a href="../builtin.html#name-int">int</a></i></span></i></span><span class="hidden"><i>
+			<span class="nodocs"><a href="../../src/modernc.org/memory/memory.go.html#line-156">used</a> <i><a href="../builtin.html#name-int">int</a></i></span></i></span></span>
+
+</span></div><div class="anchor type-res hidden" id="name-rawmem" data-popularity="0">	<span class="nodocs"> type <a href="../../src/modernc.org/memory/memory64.go.html#line-9">rawmem</a> <i>([...]T)</i></span></div></div>
+<div id="exported-functions"><span class="title">Package-Level Functions<span class="title-stat"><i> (total 8, in which 3 are exported)</i></span></span>
+
+<div class="anchor value-res" id="name-UintptrUsableSize">	<input type='checkbox' class="fold" id="UintptrUsableSize-fold-content"><label for="UintptrUsableSize-fold-content"> func <a href="../../src/modernc.org/memory/memory.go.html#line-391">UintptrUsableSize</a>(p <a href="../builtin.html#name-uintptr">uintptr</a>) (r <a href="../builtin.html#name-int">int</a>)</label><span id='UintptrUsableSize-fold-content-docs' class="fold-docs">
+		UintptrUsableSize is like UsableSize except its argument is an uintptr,
+		which must have been returned from UintptrCalloc, UintptrMalloc or
+		UintptrRealloc.
+
+</span></div><div class="anchor value-res" id="name-UnsafeUsableSize">	<input type='checkbox' class="fold" id="UnsafeUsableSize-fold-content"><label for="UnsafeUsableSize-fold-content"> func <a href="../../src/modernc.org/memory/memory.go.html#line-542">UnsafeUsableSize</a>(p <a href="../unsafe.html">unsafe</a>.<a href="../unsafe.html#name-Pointer">Pointer</a>) (r <a href="../builtin.html#name-int">int</a>)</label><span id='UnsafeUsableSize-fold-content-docs' class="fold-docs">
+		UnsafeUsableSize is like UsableSize except its argument is an
+		unsafe.Pointer, which must have been returned from UnsafeCalloc,
+		UnsafeMalloc or UnsafeRealloc.
+
+</span></div><div class="anchor value-res" id="name-UsableSize">	<input type='checkbox' class="fold" id="UsableSize-fold-content"><label for="UsableSize-fold-content"> func <a href="../../src/modernc.org/memory/memory.go.html#line-501">UsableSize</a>(p *<a href="../builtin.html#name-byte">byte</a>) (r <a href="../builtin.html#name-int">int</a>)</label><span id='UsableSize-fold-content-docs' class="fold-docs">
+		UsableSize reports the size of the memory block allocated at p, which must
+		point to the first byte of a slice returned from Calloc, Malloc or Realloc.
+		The allocated memory block size can be larger than the size originally
+		requested from Calloc, Malloc or Realloc.
+
+</span></div>	<input type='checkbox' class="showhide" id="unexported-functions-showhide"><i><label for="unexported-functions-showhide" class="show-inline">/* 5 unexporteds ... */</label><label for="unexported-functions-showhide" class="hide-inline">/* 5 unexporteds: */</label></i><div class="anchor value-res hidden" id="name-init"><i>	<span class="nodocs"> func <a href="../../src/modernc.org/memory/memory.go.html#line-139">init</a>()</span></i></div><div class="anchor value-res hidden" id="name-mmap"><i>	<input type='checkbox' class="fold" id="mmap-fold-content"><label for="mmap-fold-content"> func <a href="../../src/modernc.org/memory/mmap_unix.go.html#line-34">mmap</a>(size <a href="../builtin.html#name-int">int</a>) (<a href="../builtin.html#name-uintptr">uintptr</a>, <a href="../builtin.html#name-int">int</a>, <a href="../builtin.html#name-error">error</a>)</label><span id='mmap-fold-content-docs' class="fold-docs">
+		pageSize aligned.
+
+</span></i></div><div class="anchor value-res hidden" id="name-roundup"><i>	<input type='checkbox' class="fold" id="roundup-fold-content"><label for="roundup-fold-content"> func <a href="../../src/modernc.org/memory/memory.go.html#line-146">roundup</a>(n, m <a href="../builtin.html#name-int">int</a>) <a href="../builtin.html#name-int">int</a></label><span id='roundup-fold-content-docs' class="fold-docs">
+		if n%m != 0 { n += m-n%m }. m must be a power of 2.
+
+</span></i></div><div class="anchor value-res hidden" id="name-unmap"><i>	<span class="nodocs"> func <a href="../../src/modernc.org/memory/mmap_unix.go.html#line-24">unmap</a>(addr <a href="../builtin.html#name-uintptr">uintptr</a>, size <a href="../builtin.html#name-int">int</a>) <a href="../builtin.html#name-error">error</a></span></i></div><div class="anchor value-res hidden" id="name-usableSize"><i>	<span class="nodocs"> func <a href="../../src/modernc.org/memory/memory.go.html#line-404">usableSize</a>(p <a href="../builtin.html#name-uintptr">uintptr</a>) (r <a href="../builtin.html#name-int">int</a>)</span></i></div></div>
+<div id="exported-variables"><span class="title">Package-Level Variables<span class="title-stat"><i> (total 2, neither is exported)</i></span></span>
+
+	<input type='checkbox' class="showhide" id="unexported-variables-showhide"><i><label for="unexported-variables-showhide" class="show-inline">/* 2 unexporteds ... */</label><label for="unexported-variables-showhide" class="hide-inline">/* 2 unexporteds: */</label></i><div class="anchor value-res hidden" id="name-osPageMask"><i>	<span class="nodocs">  var <a href="../../src/modernc.org/memory/mmap_unix.go.html#line-20">osPageMask</a> <a href="../builtin.html#name-int">int</a></span></i></div><div class="anchor value-res hidden" id="name-osPageSize"><i>	<span class="nodocs">  var <a href="../../src/modernc.org/memory/mmap_unix.go.html#line-21">osPageSize</a> <a href="../builtin.html#name-int">int</a></span></i></div></div>
+<div id="exported-constants"><span class="title">Package-Level Constants<span class="title-stat"><i> (total 10, none are exported)</i></span></span>
+
+	<input type='checkbox' class="showhide" id="unexported-constants-showhide"><i><label for="unexported-constants-showhide" class="show-inline">/* 10 unexporteds ... */</label><label for="unexported-constants-showhide" class="hide-inline">/* 10 unexporteds: */</label></i><div class="anchor value-res hidden" id="name-counters"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/nocounters.go.html#line-9">counters</a> = false</span></i></div><div class="anchor value-res hidden" id="name-headerSize"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-130">headerSize</a> <a href="../builtin.html#name-uintptr">uintptr</a> = 32</span></i></div><div class="anchor value-res hidden" id="name-mallocAllign"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-131">mallocAllign</a> <a href="../builtin.html#name-uintptr">uintptr</a> = 16</span></i></div><div class="anchor value-res hidden" id="name-maxSlotSize"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-132">maxSlotSize</a> = 262144</span></i></div><div class="anchor value-res hidden" id="name-maxSlotSizeLog"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-133">maxSlotSizeLog</a> = 18</span></i></div><div class="anchor value-res hidden" id="name-pageAvail"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-134">pageAvail</a> <a href="../builtin.html#name-uintptr">uintptr</a> = 1048544</span></i></div><div class="anchor value-res hidden" id="name-pageMask"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-135">pageMask</a> = 1048575</span></i></div><div class="anchor value-res hidden" id="name-pageSize"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/memory.go.html#line-136">pageSize</a> = 1048576</span></i></div><div class="anchor value-res hidden" id="name-pageSizeLog"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/mmap_unix.go.html#line-17">pageSizeLog</a> = 20</span></i></div><div class="anchor value-res hidden" id="name-trace"><i>	<span class="nodocs">const <a href="../../src/modernc.org/memory/trace_disabled.go.html#line-9">trace</a> = false</span></i></div></div></code></pre><pre id="footer">
+<table><tr><td><img src="../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

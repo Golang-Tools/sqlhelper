@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: memory.go in package modernc.org/memory</title>
+<link href="../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	memory.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../pkg/modernc.org/memory.html">modernc.org/memory</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+input[id=r0]:checked ~pre label[for=r0],
+input[id=r1]:checked ~pre label[for=r1],
+input[id=r2]:checked ~pre label[for=r2],
+input[id=r3]:checked ~pre label[for=r3],
+input[id=r4]:checked ~pre label[for=r4],
+input[id=r5]:checked ~pre label[for=r5],
+input[id=r6]:checked ~pre label[for=r6],
+input[id=r7]:checked ~pre label[for=r7],
+input[id=r8]:checked ~pre label[for=r8],
+input[id=r9]:checked ~pre label[for=r9],
+input[id=r10]:checked ~pre label[for=r10],
+input[id=r11]:checked ~pre label[for=r11],
+input[id=r12]:checked ~pre label[for=r12],
+input[id=r13]:checked ~pre label[for=r13],
+input[id=r14]:checked ~pre label[for=r14],
+input[id=r15]:checked ~pre label[for=r15],
+input[id=r16]:checked ~pre label[for=r16],
+input[id=r17]:checked ~pre label[for=r17],
+input[id=r18]:checked ~pre label[for=r18],
+input[id=r19]:checked ~pre label[for=r19],
+input[id=r20]:checked ~pre label[for=r20],
+input[id=r21]:checked ~pre label[for=r21],
+input[id=r22]:checked ~pre label[for=r22],
+input[id=r23]:checked ~pre label[for=r23],
+input[id=r24]:checked ~pre label[for=r24],
+input[id=r25]:checked ~pre label[for=r25],
+input[id=r26]:checked ~pre label[for=r26],
+input[id=r27]:checked ~pre label[for=r27],
+input[id=r28]:checked ~pre label[for=r28],
+input[id=r29]:checked ~pre label[for=r29],
+input[id=r30]:checked ~pre label[for=r30],
+input[id=r31]:checked ~pre label[for=r31],
+input[id=r32]:checked ~pre label[for=r32],
+input[id=r33]:checked ~pre label[for=r33],
+input[id=r34]:checked ~pre label[for=r34],
+input[id=r35]:checked ~pre label[for=r35],
+input[id=r36]:checked ~pre label[for=r36],
+input[id=r37]:checked ~pre label[for=r37],
+input[id=r38]:checked ~pre label[for=r38],
+input[id=r39]:checked ~pre label[for=r39],
+input[id=r40]:checked ~pre label[for=r40],
+input[id=r41]:checked ~pre label[for=r41],
+input[id=r42]:checked ~pre label[for=r42],
+input[id=r43]:checked ~pre label[for=r43],
+input[id=r44]:checked ~pre label[for=r44],
+input[id=r45]:checked ~pre label[for=r45],
+input[id=r46]:checked ~pre label[for=r46],
+input[id=r47]:checked ~pre label[for=r47],
+input[id=r48]:checked ~pre label[for=r48],
+input[id=r49]:checked ~pre label[for=r49],
+input[id=r50]:checked ~pre label[for=r50],
+input[id=r51]:checked ~pre label[for=r51],
+input[id=r52]:checked ~pre label[for=r52],
+input[id=r53]:checked ~pre label[for=r53],
+input[id=r54]:checked ~pre label[for=r54],
+input[id=r55]:checked ~pre label[for=r55],
+input[id=r56]:checked ~pre label[for=r56],
+input[id=r57]:checked ~pre label[for=r57],
+input[id=r58]:checked ~pre label[for=r58],
+input[id=r59]:checked ~pre label[for=r59],
+input[id=r60]:checked ~pre label[for=r60],
+input[id=r61]:checked ~pre label[for=r61],
+input[id=r62]:checked ~pre label[for=r62],
+input[id=r63]:checked ~pre label[for=r63],
+input[id=r64]:checked ~pre label[for=r64],
+input[id=r65]:checked ~pre label[for=r65],
+input[id=r66]:checked ~pre label[for=r66],
+input[id=r67]:checked ~pre label[for=r67],
+input[id=r68]:checked ~pre label[for=r68],
+input[id=r69]:checked ~pre label[for=r69],
+input[id=r70]:checked ~pre label[for=r70],
+input[id=r71]:checked ~pre label[for=r71],
+input[id=r72]:checked ~pre label[for=r72],
+input[id=r73]:checked ~pre label[for=r73],
+input[id=r74]:checked ~pre label[for=r74],
+input[id=r75]:checked ~pre label[for=r75],
+input[id=r76]:checked ~pre label[for=r76],
+input[id=r77]:checked ~pre label[for=r77],
+input[id=r78]:checked ~pre label[for=r78],
+input[id=r79]:checked ~pre label[for=r79],
+input[id=r80]:checked ~pre label[for=r80],
+input[id=r81]:checked ~pre label[for=r81],
+input[id=r82]:checked ~pre label[for=r82],
+input[id=r83]:checked ~pre label[for=r83],
+input[id=r84]:checked ~pre label[for=r84],
+input[id=r85]:checked ~pre label[for=r85],
+input[id=r86]:checked ~pre label[for=r86],
+input[id=r87]:checked ~pre label[for=r87],
+input[id=r88]:checked ~pre label[for=r88],
+input[id=r89]:checked ~pre label[for=r89],
+input[id=r90]:checked ~pre label[for=r90],
+input[id=r91]:checked ~pre label[for=r91],
+input[id=r92]:checked ~pre label[for=r92],
+input[id=r93]:checked ~pre label[for=r93],
+input[id=r94]:checked ~pre label[for=r94],
+input[id=r95]:checked ~pre label[for=r95],
+input[id=r96]:checked ~pre label[for=r96],
+input[id=r97]:checked ~pre label[for=r97],
+input[id=r98]:checked ~pre label[for=r98],
+input[id=r99]:checked ~pre label[for=r99],
+input[id=r100]:checked ~pre label[for=r100],
+input[id=r101]:checked ~pre label[for=r101],
+input[id=r102]:checked ~pre label[for=r102],
+input[id=r103]:checked ~pre label[for=r103],
+input[id=r104]:checked ~pre label[for=r104],
+input[id=r105]:checked ~pre label[for=r105],
+input[id=r106]:checked ~pre label[for=r106],
+input[id=r107]:checked ~pre label[for=r107],
+input[id=r108]:checked ~pre label[for=r108],
+input[id=r109]:checked ~pre label[for=r109],
+input[id=r110]:checked ~pre label[for=r110],
+input[id=r111]:checked ~pre label[for=r111],
+input[id=r112]:checked ~pre label[for=r112],
+input[id=r113]:checked ~pre label[for=r113],
+input[id=r114]:checked ~pre label[for=r114],
+input[id=r115]:checked ~pre label[for=r115],
+input[id=r116]:checked ~pre label[for=r116],
+input[id=r117]:checked ~pre label[for=r117],
+input[id=r118]:checked ~pre label[for=r118],
+input[id=r119]:checked ~pre label[for=r119],
+input[id=r120]:checked ~pre label[for=r120],
+input[id=r121]:checked ~pre label[for=r121],
+input[id=r122]:checked ~pre label[for=r122],
+input[id=r123]:checked ~pre label[for=r123],
+input[id=r124]:checked ~pre label[for=r124],
+input[id=r125]:checked ~pre label[for=r125],
+input[id=r126]:checked ~pre label[for=r126],
+input[id=r127]:checked ~pre label[for=r127],
+input[id=r128]:checked ~pre label[for=r128],
+input[id=r129]:checked ~pre label[for=r129],
+input[id=r130]:checked ~pre label[for=r130]
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0,
+input[id=i1]:checked ~pre .i1,
+input[id=i2]:checked ~pre .i2,
+input[id=i3]:checked ~pre .i3,
+input[id=i4]:checked ~pre .i4
+{background: brown; color: #eed;}
+</style><input id="r0" type="radio" name="g"/>
+<input id="r1" type="radio" name="g"/>
+<input id="r2" type="radio" name="g"/>
+<input id="r3" type="radio" name="g"/>
+<input id="r4" type="radio" name="g"/>
+<input id="r5" type="radio" name="g"/>
+<input id="r6" type="radio" name="g"/>
+<input id="r7" type="radio" name="g"/>
+<input id="r8" type="radio" name="g"/>
+<input id="r9" type="radio" name="g"/>
+<input id="r10" type="radio" name="g"/>
+<input id="r11" type="radio" name="g"/>
+<input id="r12" type="radio" name="g"/>
+<input id="r13" type="radio" name="g"/>
+<input id="r14" type="radio" name="g"/>
+<input id="r15" type="radio" name="g"/>
+<input id="r16" type="radio" name="g"/>
+<input id="r17" type="radio" name="g"/>
+<input id="r18" type="radio" name="g"/>
+<input id="r19" type="radio" name="g"/>
+<input id="r20" type="radio" name="g"/>
+<input id="r21" type="radio" name="g"/>
+<input id="r22" type="radio" name="g"/>
+<input id="r23" type="radio" name="g"/>
+<input id="r24" type="radio" name="g"/>
+<input id="r25" type="radio" name="g"/>
+<input id="r26" type="radio" name="g"/>
+<input id="r27" type="radio" name="g"/>
+<input id="r28" type="radio" name="g"/>
+<input id="r29" type="radio" name="g"/>
+<input id="r30" type="radio" name="g"/>
+<input id="r31" type="radio" name="g"/>
+<input id="r32" type="radio" name="g"/>
+<input id="r33" type="radio" name="g"/>
+<input id="r34" type="radio" name="g"/>
+<input id="r35" type="radio" name="g"/>
+<input id="r36" type="radio" name="g"/>
+<input id="r37" type="radio" name="g"/>
+<input id="r38" type="radio" name="g"/>
+<input id="r39" type="radio" name="g"/>
+<input id="r40" type="radio" name="g"/>
+<input id="r41" type="radio" name="g"/>
+<input id="r42" type="radio" name="g"/>
+<input id="r43" type="radio" name="g"/>
+<input id="r44" type="radio" name="g"/>
+<input id="r45" type="radio" name="g"/>
+<input id="r46" type="radio" name="g"/>
+<input id="r47" type="radio" name="g"/>
+<input id="r48" type="radio" name="g"/>
+<input id="r49" type="radio" name="g"/>
+<input id="r50" type="radio" name="g"/>
+<input id="r51" type="radio" name="g"/>
+<input id="r52" type="radio" name="g"/>
+<input id="r53" type="radio" name="g"/>
+<input id="r54" type="radio" name="g"/>
+<input id="r55" type="radio" name="g"/>
+<input id="r56" type="radio" name="g"/>
+<input id="r57" type="radio" name="g"/>
+<input id="r58" type="radio" name="g"/>
+<input id="r59" type="radio" name="g"/>
+<input id="r60" type="radio" name="g"/>
+<input id="r61" type="radio" name="g"/>
+<input id="r62" type="radio" name="g"/>
+<input id="r63" type="radio" name="g"/>
+<input id="r64" type="radio" name="g"/>
+<input id="r65" type="radio" name="g"/>
+<input id="r66" type="radio" name="g"/>
+<input id="r67" type="radio" name="g"/>
+<input id="r68" type="radio" name="g"/>
+<input id="r69" type="radio" name="g"/>
+<input id="r70" type="radio" name="g"/>
+<input id="r71" type="radio" name="g"/>
+<input id="r72" type="radio" name="g"/>
+<input id="r73" type="radio" name="g"/>
+<input id="r74" type="radio" name="g"/>
+<input id="r75" type="radio" name="g"/>
+<input id="r76" type="radio" name="g"/>
+<input id="r77" type="radio" name="g"/>
+<input id="r78" type="radio" name="g"/>
+<input id="r79" type="radio" name="g"/>
+<input id="r80" type="radio" name="g"/>
+<input id="r81" type="radio" name="g"/>
+<input id="r82" type="radio" name="g"/>
+<input id="r83" type="radio" name="g"/>
+<input id="r84" type="radio" name="g"/>
+<input id="r85" type="radio" name="g"/>
+<input id="r86" type="radio" name="g"/>
+<input id="r87" type="radio" name="g"/>
+<input id="r88" type="radio" name="g"/>
+<input id="r89" type="radio" name="g"/>
+<input id="r90" type="radio" name="g"/>
+<input id="r91" type="radio" name="g"/>
+<input id="r92" type="radio" name="g"/>
+<input id="r93" type="radio" name="g"/>
+<input id="r94" type="radio" name="g"/>
+<input id="r95" type="radio" name="g"/>
+<input id="r96" type="radio" name="g"/>
+<input id="r97" type="radio" name="g"/>
+<input id="r98" type="radio" name="g"/>
+<input id="r99" type="radio" name="g"/>
+<input id="r100" type="radio" name="g"/>
+<input id="r101" type="radio" name="g"/>
+<input id="r102" type="radio" name="g"/>
+<input id="r103" type="radio" name="g"/>
+<input id="r104" type="radio" name="g"/>
+<input id="r105" type="radio" name="g"/>
+<input id="r106" type="radio" name="g"/>
+<input id="r107" type="radio" name="g"/>
+<input id="r108" type="radio" name="g"/>
+<input id="r109" type="radio" name="g"/>
+<input id="r110" type="radio" name="g"/>
+<input id="r111" type="radio" name="g"/>
+<input id="r112" type="radio" name="g"/>
+<input id="r113" type="radio" name="g"/>
+<input id="r114" type="radio" name="g"/>
+<input id="r115" type="radio" name="g"/>
+<input id="r116" type="radio" name="g"/>
+<input id="r117" type="radio" name="g"/>
+<input id="r118" type="radio" name="g"/>
+<input id="r119" type="radio" name="g"/>
+<input id="r120" type="radio" name="g"/>
+<input id="r121" type="radio" name="g"/>
+<input id="r122" type="radio" name="g"/>
+<input id="r123" type="radio" name="g"/>
+<input id="r124" type="radio" name="g"/>
+<input id="r125" type="radio" name="g"/>
+<input id="r126" type="radio" name="g"/>
+<input id="r127" type="radio" name="g"/>
+<input id="r128" type="radio" name="g"/>
+<input id="r129" type="radio" name="g"/>
+<input id="r130" type="radio" name="g"/>
+<input id="i0" type="radio" name="i"/>
+<input id="i1" type="radio" name="i"/>
+<input id="i2" type="radio" name="i"/>
+<input id="i3" type="radio" name="i"/>
+<input id="i4" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Copyright 2017 The Memory Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// Use of this source code is governed by a BSD-style</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// license that can be found in the LICENSE file.</span></code></span>
+<span class="codeline" id="line-4"><code></code></span>
+<div class="anchor" id="doc"><span class="codeline" id="line-5"><code><span class="comment">// Package memory implements a memory allocator.</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-7"><code><span class="comment">// Build status</span></code></span>
+<span class="codeline" id="line-8"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-9"><code><span class="comment">// available at https://modern-c.appspot.com/-/builder/?importpath=modernc.org%2fmemory</span></code></span>
+<span class="codeline" id="line-10"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-11"><code><span class="comment">// Changelog</span></code></span>
+<span class="codeline" id="line-12"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-13"><code><span class="comment">// 2017-10-03 Added alternative, unsafe.Pointer-based API.</span></code></span>
+<span class="codeline" id="line-14"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-15"><code><span class="comment">// Package memory implements a memory allocator.</span></code></span>
+<span class="codeline" id="line-16"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-17"><code><span class="comment">// Changelog</span></code></span>
+<span class="codeline" id="line-18"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-19"><code><span class="comment">// 2017-10-03 Added alternative, unsafe.Pointer-based API.</span></code></span>
+<span class="codeline" id="line-20"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-21"><code><span class="comment">// Benchmarks</span></code></span>
+<span class="codeline" id="line-22"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-23"><code><span class="comment">// AMD Ryzen 9 3900X 12-Core Processor × 24 </span></code></span>
+<span class="codeline" id="line-24"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-25"><code><span class="comment">//  jnml@3900x:~/src/modernc.org/memory$ date ; go version ; go test -run @ -bench . -benchmem |&amp; tee log</span></code></span>
+<span class="codeline" id="line-26"><code><span class="comment">//  Fri Nov 20 17:23:04 CET 2020</span></code></span>
+<span class="codeline" id="line-27"><code><span class="comment">//  go version go1.15.5 linux/amd64</span></code></span>
+<span class="codeline" id="line-28"><code><span class="comment">//  goos: linux</span></code></span>
+<span class="codeline" id="line-29"><code><span class="comment">//  goarch: amd64</span></code></span>
+<span class="codeline" id="line-30"><code><span class="comment">//  pkg: modernc.org/memory</span></code></span>
+<span class="codeline" id="line-31"><code><span class="comment">//  BenchmarkFree16-24             	141188362	         8.26 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-32"><code><span class="comment">//  BenchmarkFree32-24             	100000000	        11.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-33"><code><span class="comment">//  BenchmarkFree64-24             	67160647	        18.3 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-34"><code><span class="comment">//  BenchmarkCalloc16-24           	60612698	        19.8 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-35"><code><span class="comment">//  BenchmarkCalloc32-24           	47968105	        23.8 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-36"><code><span class="comment">//  BenchmarkCalloc64-24           	40752181	        28.6 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-37"><code><span class="comment">//  BenchmarkGoCalloc16-24         	66487354	        17.8 ns/op	      16 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-38"><code><span class="comment">//  BenchmarkGoCalloc32-24         	56009206	        21.2 ns/op	      32 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-39"><code><span class="comment">//  BenchmarkGoCalloc64-24         	52086571	        23.4 ns/op	      64 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-40"><code><span class="comment">//  BenchmarkMalloc16-24           	113943390	        10.2 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-41"><code><span class="comment">//  BenchmarkMalloc32-24           	113520471	        10.2 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-42"><code><span class="comment">//  BenchmarkMalloc64-24           	108787056	        10.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-43"><code><span class="comment">//  BenchmarkUintptrFree16-24      	146110286	         7.94 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-44"><code><span class="comment">//  BenchmarkUintptrFree32-24      	93052707	        12.0 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-45"><code><span class="comment">//  BenchmarkUintptrFree64-24      	69805262	        17.3 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-46"><code><span class="comment">//  BenchmarkUintptrCalloc16-24    	85282725	        13.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-47"><code><span class="comment">//  BenchmarkUintptrCalloc32-24    	66489789	        17.9 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-48"><code><span class="comment">//  BenchmarkUintptrCalloc64-24    	53561092	        22.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-49"><code><span class="comment">//  BenchmarkUintptrMalloc16-24    	222978858	         5.28 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-50"><code><span class="comment">//  BenchmarkUintptrMalloc32-24    	210443384	         5.30 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-51"><code><span class="comment">//  BenchmarkUintptrMalloc64-24    	213706227	         5.47 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-52"><code><span class="comment">//  PASS</span></code></span>
+<span class="codeline" id="line-53"><code><span class="comment">//  ok  	modernc.org/memory	70.528s</span></code></span>
+<span class="codeline" id="line-54"><code><span class="comment">//  jnml@3900x:~/src/modernc.org/memory$ </span></code></span>
+<span class="codeline" id="line-55"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-56"><code><span class="comment">// Intel® Core™ i5-4670 CPU @ 3.40GHz × 4</span></code></span>
+<span class="codeline" id="line-57"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-58"><code><span class="comment">//  ==== jnml@4670:~/src/modernc.org/memory&gt; date ; go version ; go test -run @ -bench . -benchmem |&amp; tee log</span></code></span>
+<span class="codeline" id="line-59"><code><span class="comment">//  Sat Dec  8 12:56:53 CET 2018</span></code></span>
+<span class="codeline" id="line-60"><code><span class="comment">//  go version go1.11.2 linux/amd64</span></code></span>
+<span class="codeline" id="line-61"><code><span class="comment">//  goos: linux</span></code></span>
+<span class="codeline" id="line-62"><code><span class="comment">//  goarch: amd64</span></code></span>
+<span class="codeline" id="line-63"><code><span class="comment">//  pkg: modernc.org/memory</span></code></span>
+<span class="codeline" id="line-64"><code><span class="comment">//  BenchmarkFree16-4            	100000000	        14.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-65"><code><span class="comment">//  BenchmarkFree32-4            	100000000	        20.5 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-66"><code><span class="comment">//  BenchmarkFree64-4            	50000000	        32.8 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-67"><code><span class="comment">//  BenchmarkCalloc16-4          	50000000	        24.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-68"><code><span class="comment">//  BenchmarkCalloc32-4          	50000000	        29.2 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-69"><code><span class="comment">//  BenchmarkCalloc64-4          	50000000	        35.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-70"><code><span class="comment">//  BenchmarkGoCalloc16-4        	50000000	        27.0 ns/op	      16 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-71"><code><span class="comment">//  BenchmarkGoCalloc32-4        	50000000	        27.3 ns/op	      32 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-72"><code><span class="comment">//  BenchmarkGoCalloc64-4        	30000000	        37.9 ns/op	      64 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-73"><code><span class="comment">//  BenchmarkMalloc16-4          	100000000	        12.9 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-74"><code><span class="comment">//  BenchmarkMalloc32-4          	100000000	        12.9 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-75"><code><span class="comment">//  BenchmarkMalloc64-4          	100000000	        13.2 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-76"><code><span class="comment">//  BenchmarkUintptrFree16-4     	100000000	        12.0 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-77"><code><span class="comment">//  BenchmarkUintptrFree32-4     	100000000	        17.5 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-78"><code><span class="comment">//  BenchmarkUintptrFree64-4     	50000000	        28.9 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-79"><code><span class="comment">//  BenchmarkUintptrCalloc16-4   	100000000	        17.8 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-80"><code><span class="comment">//  BenchmarkUintptrCalloc32-4   	100000000	        22.9 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-81"><code><span class="comment">//  BenchmarkUintptrCalloc64-4   	50000000	        29.6 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-82"><code><span class="comment">//  BenchmarkUintptrMalloc16-4   	200000000	         7.31 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-83"><code><span class="comment">//  BenchmarkUintptrMalloc32-4   	200000000	         7.47 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-84"><code><span class="comment">//  BenchmarkUintptrMalloc64-4   	200000000	         7.68 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-85"><code><span class="comment">//  PASS</span></code></span>
+<span class="codeline" id="line-86"><code><span class="comment">//  ok  	modernc.org/memory	73.859s</span></code></span>
+<span class="codeline" id="line-87"><code><span class="comment">//  //</span></code></span>
+<span class="codeline" id="line-88"><code><span class="comment">// Intel® Xeon(R) CPU E5-1650 v2 @ 3.50GHz × 12</span></code></span>
+<span class="codeline" id="line-89"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-90"><code><span class="comment">//  ==== jnml@e5-1650:~/src/modernc.org/memory&gt; date ; go version ; go test -run @ -bench . -benchmem</span></code></span>
+<span class="codeline" id="line-91"><code><span class="comment">//  Fri Dec  7 14:18:50 CET 2018</span></code></span>
+<span class="codeline" id="line-92"><code><span class="comment">//  go version go1.11.2 linux/amd64</span></code></span>
+<span class="codeline" id="line-93"><code><span class="comment">//  goos: linux</span></code></span>
+<span class="codeline" id="line-94"><code><span class="comment">//  goarch: amd64</span></code></span>
+<span class="codeline" id="line-95"><code><span class="comment">//  pkg: modernc.org/memory</span></code></span>
+<span class="codeline" id="line-96"><code><span class="comment">//  BenchmarkFree16-12             	100000000	        16.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-97"><code><span class="comment">//  BenchmarkFree32-12             	50000000	        25.0 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-98"><code><span class="comment">//  BenchmarkFree64-12             	30000000	        39.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-99"><code><span class="comment">//  BenchmarkCalloc16-12           	50000000	        26.3 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-100"><code><span class="comment">//  BenchmarkCalloc32-12           	50000000	        33.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-101"><code><span class="comment">//  BenchmarkCalloc64-12           	30000000	        38.3 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-102"><code><span class="comment">//  BenchmarkGoCalloc16-12         	50000000	        26.6 ns/op	      16 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-103"><code><span class="comment">//  BenchmarkGoCalloc32-12         	50000000	        26.8 ns/op	      32 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-104"><code><span class="comment">//  BenchmarkGoCalloc64-12         	30000000	        35.1 ns/op	      64 B/op	       1 allocs/op</span></code></span>
+<span class="codeline" id="line-105"><code><span class="comment">//  BenchmarkMalloc16-12           	100000000	        13.5 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-106"><code><span class="comment">//  BenchmarkMalloc32-12           	100000000	        13.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-107"><code><span class="comment">//  BenchmarkMalloc64-12           	100000000	        14.1 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-108"><code><span class="comment">//  BenchmarkUintptrFree16-12      	100000000	        14.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-109"><code><span class="comment">//  BenchmarkUintptrFree32-12      	100000000	        21.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-110"><code><span class="comment">//  BenchmarkUintptrFree64-12      	50000000	        36.7 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-111"><code><span class="comment">//  BenchmarkUintptrCalloc16-12    	100000000	        20.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-112"><code><span class="comment">//  BenchmarkUintptrCalloc32-12    	50000000	        27.1 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-113"><code><span class="comment">//  BenchmarkUintptrCalloc64-12    	50000000	        33.4 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-114"><code><span class="comment">//  BenchmarkUintptrMalloc16-12    	200000000	         8.02 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-115"><code><span class="comment">//  BenchmarkUintptrMalloc32-12    	200000000	         8.28 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-116"><code><span class="comment">//  BenchmarkUintptrMalloc64-12    	200000000	         8.29 ns/op	       0 B/op	       0 allocs/op</span></code></span>
+<span class="codeline" id="line-117"><code><span class="comment">//  PASS</span></code></span>
+<span class="codeline" id="line-118"><code><span class="comment">//  ok  	modernc.org/memory	80.896s</span></code></span></div><span class="codeline" id="line-119"><code><span class="keyword">package</span> memory <span class="comment">// import "modernc.org/memory"</span></code></span>
+<span class="codeline" id="line-120"><code></code></span>
+<span class="codeline" id="line-121"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-122"><code>	<label for="i0"><span class="lit-string i0">"fmt"</span></label></code></span>
+<span class="codeline" id="line-123"><code>	<label for="i1"><span class="lit-string i1">"math/bits"</span></label></code></span>
+<span class="codeline" id="line-124"><code>	<label for="i2"><span class="lit-string i2">"os"</span></label></code></span>
+<span class="codeline" id="line-125"><code>	<label for="i3"><span class="lit-string i3">"reflect"</span></label></code></span>
+<span class="codeline" id="line-126"><code>	<label for="i4"><span class="lit-string i4">"unsafe"</span></label></code></span>
+<span class="codeline" id="line-127"><code>)</code></span>
+<span class="codeline" id="line-128"><code></code></span>
+<span class="codeline" id="line-129"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-130"><code>	<a href="../../../pkg/modernc.org/memory.html#name-headerSize" class="ident">headerSize</a>     = <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="#line-152" class="ident">page</a>{})</code></span>
+<span class="codeline" id="line-131"><code>	<a href="../../../pkg/modernc.org/memory.html#name-mallocAllign" class="ident">mallocAllign</a>   = <span class="lit-number">2</span> * <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<span class="lit-number">0</span>))</code></span>
+<span class="codeline" id="line-132"><code>	<a href="../../../pkg/modernc.org/memory.html#name-maxSlotSize" class="ident">maxSlotSize</a>    = <span class="lit-number">1</span> &lt;&lt; <a href="#line-133" class="ident">maxSlotSizeLog</a></code></span>
+<span class="codeline" id="line-133"><code>	<a href="../../../pkg/modernc.org/memory.html#name-maxSlotSizeLog" class="ident">maxSlotSizeLog</a> = <a href="mmap_unix.go.html#line-17" class="ident">pageSizeLog</a> - <span class="lit-number">2</span></code></span>
+<span class="codeline" id="line-134"><code>	<a href="../../../pkg/modernc.org/memory.html#name-pageAvail" class="ident">pageAvail</a>      = <a href="#line-136" class="ident">pageSize</a> - <a href="#line-130" class="ident">headerSize</a></code></span>
+<span class="codeline" id="line-135"><code>	<a href="../../../pkg/modernc.org/memory.html#name-pageMask" class="ident">pageMask</a>       = <a href="#line-136" class="ident">pageSize</a> - <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-136"><code>	<a href="../../../pkg/modernc.org/memory.html#name-pageSize" class="ident">pageSize</a>       = <span class="lit-number">1</span> &lt;&lt; <a href="mmap_unix.go.html#line-17" class="ident">pageSizeLog</a></code></span>
+<span class="codeline" id="line-137"><code>)</code></span>
+<span class="codeline" id="line-138"><code></code></span>
+<span class="codeline" id="line-139"><code><span class="keyword">func</span> <label for="r0" class="ident"><a href="../../../pkg/modernc.org/memory.html#name-init" class="ident">init</a></label>() {</code></span>
+<span class="codeline" id="line-140"><code>	<span class="keyword">if</span> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="#line-152" class="ident">page</a>{})%<a href="#line-131" class="ident">mallocAllign</a> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-141"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<span class="lit-string">"internal error"</span>)</code></span>
+<span class="codeline" id="line-142"><code>	}</code></span>
+<span class="codeline" id="line-143"><code>}</code></span>
+<span class="codeline" id="line-144"><code></code></span>
+<span class="codeline" id="line-145"><code><span class="comment">// if n%m != 0 { n += m-n%m }. m must be a power of 2.</span></code></span>
+<span class="codeline" id="line-146"><code><span class="keyword">func</span> <label for="r1" class="ident"><a href="../../../pkg/modernc.org/memory.html#name-roundup" class="ident">roundup</a></label>(<label for="r2" class="ident">n</label>, <label for="r3" class="ident">m</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) <a href="../../../pkg/builtin.html#name-int" class="ident">int</a> { <span class="keyword">return</span> (<label for="r2" class="ident">n</label> + <label for="r3" class="ident">m</label> - <span class="lit-number">1</span>) &amp;^ (<label for="r3" class="ident">m</label> - <span class="lit-number">1</span>) }</code></span>
+<span class="codeline" id="line-147"><code></code></span>
+<span class="codeline" id="line-148"><code><span class="keyword">type</span> <a href="../../../pkg/modernc.org/memory.html#name-node" class="ident">node</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-149"><code>	prev, next <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> <span class="comment">// *node</span></code></span>
+<span class="codeline" id="line-150"><code>}</code></span>
+<span class="codeline" id="line-151"><code></code></span>
+<span class="codeline" id="line-152"><code><span class="keyword">type</span> <a href="../../../pkg/modernc.org/memory.html#name-page" class="ident">page</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-153"><code>	brk  <a href="../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-154"><code>	log  <a href="../../../pkg/builtin.html#name-uint" class="ident">uint</a></code></span>
+<span class="codeline" id="line-155"><code>	size <a href="../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-156"><code>	used <a href="../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-157"><code>}</code></span>
+<span class="codeline" id="line-158"><code></code></span>
+<span class="codeline" id="line-159"><code><span class="comment">// Allocator allocates and frees memory. Its zero value is ready for use.  The</span></code></span>
+<span class="codeline" id="line-160"><code><span class="comment">// exported counters are updated only when build tag memory.counters is</span></code></span>
+<span class="codeline" id="line-161"><code><span class="comment">// present.</span></code></span>
+<span class="codeline" id="line-162"><code><span class="keyword">type</span> <a href="../../../pkg/modernc.org/memory.html#name-Allocator" class="ident">Allocator</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-163"><code>	Allocs <a href="../../../pkg/builtin.html#name-int" class="ident">int</a> <span class="comment">// # of allocs.</span></code></span>
+<span class="codeline" id="line-164"><code>	Bytes  <a href="../../../pkg/builtin.html#name-int" class="ident">int</a> <span class="comment">// Asked from OS.</span></code></span>
+<span class="codeline" id="line-165"><code>	cap    [<span class="lit-number">64</span>]<a href="../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-166"><code>	lists  [<span class="lit-number">64</span>]<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>          <span class="comment">// *node</span></code></span>
+<span class="codeline" id="line-167"><code>	Mmaps  <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>                  <span class="comment">// Asked from OS.</span></code></span>
+<span class="codeline" id="line-168"><code>	pages  [<span class="lit-number">64</span>]<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>          <span class="comment">// *page</span></code></span>
+<span class="codeline" id="line-169"><code>	regs   <span class="keyword">map</span>[<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>]<span class="keyword">struct</span>{} <span class="comment">// map[*page]struct{}</span></code></span>
+<span class="codeline" id="line-170"><code>}</code></span>
+<span class="codeline" id="line-171"><code></code></span>
+<span class="codeline" id="line-172"><code><span class="keyword">func</span> (<label for="r4" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r5" class="ident">mmap</label>(<label for="r6" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> <span class="comment">/* *page */</span>, <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-173"><code>	<label for="r7" class="ident">p</label>, <label for="r6" class="ident">size</label>, <label for="r8" class="ident">err</label> := <a href="mmap_unix.go.html#line-34" class="ident">mmap</a>(<label for="r6" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-174"><code>	<span class="keyword">if</span> <label for="r8" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-175"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r8" class="ident">err</label></code></span>
+<span class="codeline" id="line-176"><code>	}</code></span>
+<span class="codeline" id="line-177"><code></code></span>
+<span class="codeline" id="line-178"><code>	<span class="keyword">if</span> <a href="nocounters.go.html#line-9" class="ident">counters</a> {</code></span>
+<span class="codeline" id="line-179"><code>		<label for="r4" class="ident">a</label>.<a href="#line-167" class="ident">Mmaps</a>++</code></span>
+<span class="codeline" id="line-180"><code>		<label for="r4" class="ident">a</label>.<a href="#line-164" class="ident">Bytes</a> += <label for="r6" class="ident">size</label></code></span>
+<span class="codeline" id="line-181"><code>	}</code></span>
+<span class="codeline" id="line-182"><code>	<span class="keyword">if</span> <label for="r4" class="ident">a</label>.<a href="#line-169" class="ident">regs</a> == <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-183"><code>		<label for="r4" class="ident">a</label>.<a href="#line-169" class="ident">regs</a> = <span class="keyword">map</span>[<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>]<span class="keyword">struct</span>{}{}</code></span>
+<span class="codeline" id="line-184"><code>	}</code></span>
+<span class="codeline" id="line-185"><code>	(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r7" class="ident">p</label>)).<a href="#line-155" class="ident">size</a> = <label for="r6" class="ident">size</label></code></span>
+<span class="codeline" id="line-186"><code>	<label for="r4" class="ident">a</label>.<a href="#line-169" class="ident">regs</a>[<label for="r7" class="ident">p</label>] = <span class="keyword">struct</span>{}{}</code></span>
+<span class="codeline" id="line-187"><code>	<span class="keyword">return</span> <label for="r7" class="ident">p</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-188"><code>}</code></span>
+<span class="codeline" id="line-189"><code></code></span>
+<span class="codeline" id="line-190"><code><span class="keyword">func</span> (<label for="r9" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r10" class="ident">newPage</label>(<label for="r11" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> <span class="comment">/* *page */</span>, <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-191"><code>	<label for="r11" class="ident">size</label> += <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="#line-130" class="ident">headerSize</a>)</code></span>
+<span class="codeline" id="line-192"><code>	<label for="r12" class="ident">p</label>, <label for="r13" class="ident">err</label> := <label for="r9" class="ident">a</label>.<a href="#line-172" class="ident">mmap</a>(<label for="r11" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-193"><code>	<span class="keyword">if</span> <label for="r13" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-194"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r13" class="ident">err</label></code></span>
+<span class="codeline" id="line-195"><code>	}</code></span>
+<span class="codeline" id="line-196"><code></code></span>
+<span class="codeline" id="line-197"><code>	(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r12" class="ident">p</label>)).<a href="#line-154" class="ident">log</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-198"><code>	<span class="keyword">return</span> <label for="r12" class="ident">p</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-199"><code>}</code></span>
+<span class="codeline" id="line-200"><code></code></span>
+<span class="codeline" id="line-201"><code><span class="keyword">func</span> (<label for="r14" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r15" class="ident">newSharedPage</label>(<label for="r16" class="ident">log</label> <a href="../../../pkg/builtin.html#name-uint" class="ident">uint</a>) (<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> <span class="comment">/* *page */</span>, <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-202"><code>	<span class="keyword">if</span> <label for="r14" class="ident">a</label>.<a href="#line-165" class="ident">cap</a>[<label for="r16" class="ident">log</label>] == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-203"><code>		<label for="r14" class="ident">a</label>.<a href="#line-165" class="ident">cap</a>[<label for="r16" class="ident">log</label>] = <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="#line-134" class="ident">pageAvail</a>) / (<span class="lit-number">1</span> &lt;&lt; <label for="r16" class="ident">log</label>)</code></span>
+<span class="codeline" id="line-204"><code>	}</code></span>
+<span class="codeline" id="line-205"><code>	<label for="r17" class="ident">size</label> := <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="#line-130" class="ident">headerSize</a>) + <label for="r14" class="ident">a</label>.<a href="#line-165" class="ident">cap</a>[<label for="r16" class="ident">log</label>]&lt;&lt;<label for="r16" class="ident">log</label></code></span>
+<span class="codeline" id="line-206"><code>	<label for="r18" class="ident">p</label>, <label for="r19" class="ident">err</label> := <label for="r14" class="ident">a</label>.<a href="#line-172" class="ident">mmap</a>(<label for="r17" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-207"><code>	<span class="keyword">if</span> <label for="r19" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-208"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r19" class="ident">err</label></code></span>
+<span class="codeline" id="line-209"><code>	}</code></span>
+<span class="codeline" id="line-210"><code></code></span>
+<span class="codeline" id="line-211"><code>	<label for="r14" class="ident">a</label>.<a href="#line-168" class="ident">pages</a>[<label for="r16" class="ident">log</label>] = <label for="r18" class="ident">p</label></code></span>
+<span class="codeline" id="line-212"><code>	(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r18" class="ident">p</label>)).<a href="#line-154" class="ident">log</a> = <label for="r16" class="ident">log</label></code></span>
+<span class="codeline" id="line-213"><code>	<span class="keyword">return</span> <label for="r18" class="ident">p</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-214"><code>}</code></span>
+<span class="codeline" id="line-215"><code></code></span>
+<span class="codeline" id="line-216"><code><span class="keyword">func</span> (<label for="r20" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r21" class="ident">unmap</label>(<label for="r22" class="ident">p</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> <span class="comment">/* *page */</span>) <a href="../../../pkg/builtin.html#name-error" class="ident">error</a> {</code></span>
+<span class="codeline" id="line-217"><code>	<a href="../../../pkg/builtin.html#name-delete" class="ident">delete</a>(<label for="r20" class="ident">a</label>.<a href="#line-169" class="ident">regs</a>, <label for="r22" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-218"><code>	<span class="keyword">if</span> <a href="nocounters.go.html#line-9" class="ident">counters</a> {</code></span>
+<span class="codeline" id="line-219"><code>		<label for="r20" class="ident">a</label>.<a href="#line-167" class="ident">Mmaps</a>--</code></span>
+<span class="codeline" id="line-220"><code>	}</code></span>
+<span class="codeline" id="line-221"><code>	<span class="keyword">return</span> <a href="mmap_unix.go.html#line-24" class="ident">unmap</a>(<label for="r22" class="ident">p</label>, (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r22" class="ident">p</label>)).<a href="#line-155" class="ident">size</a>)</code></span>
+<span class="codeline" id="line-222"><code>}</code></span>
+<span class="codeline" id="line-223"><code></code></span>
+<span class="codeline" id="line-224"><code><span class="comment">// UintptrCalloc is like Calloc except it returns an uintptr.</span></code></span>
+<span class="codeline" id="line-225"><code><span class="keyword">func</span> (<label for="r23" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r24" class="ident">UintptrCalloc</label>(<label for="r25" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r26" class="ident">r</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r27" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-226"><code>	<span class="keyword">if</span> <a href="trace_disabled.go.html#line-9" class="ident">trace</a> {</code></span>
+<span class="codeline" id="line-227"><code>		<span class="keyword">defer</span> <span class="keyword">func</span>() {</code></span>
+<span class="codeline" id="line-228"><code>			<a href="../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../fmt/print.go.html#line-202" class="ident">Fprintf</a>(<a href="../../../pkg/os.html" class="ident i2">os</a>.<a href="../../os/file.go.html#line-66" class="ident">Stderr</a>, <span class="lit-string">"Calloc(%#x) %#x, %v\n"</span>, <label for="r25" class="ident">size</label>, <label for="r26" class="ident">r</label>, <label for="r27" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-229"><code>		}()</code></span>
+<span class="codeline" id="line-230"><code>	}</code></span>
+<span class="codeline" id="line-231"><code>	<span class="keyword">if</span> <label for="r26" class="ident">r</label>, <label for="r27" class="ident">err</label> = <label for="r23" class="ident">a</label>.<a href="#line-304" class="ident">UintptrMalloc</a>(<label for="r25" class="ident">size</label>); <label for="r26" class="ident">r</label> == <span class="lit-number">0</span> || <label for="r27" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-232"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r27" class="ident">err</label></code></span>
+<span class="codeline" id="line-233"><code>	}</code></span>
+<span class="codeline" id="line-234"><code>	<label for="r28" class="ident">b</label> := ((*<a href="memory64.go.html#line-9" class="ident">rawmem</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r26" class="ident">r</label>)))[:<label for="r25" class="ident">size</label>:<label for="r25" class="ident">size</label>]</code></span>
+<span class="codeline" id="line-235"><code>	<span class="keyword">for</span> <label for="r29" class="ident">i</label> := <span class="keyword">range</span> <label for="r28" class="ident">b</label> {</code></span>
+<span class="codeline" id="line-236"><code>		<label for="r28" class="ident">b</label>[<label for="r29" class="ident">i</label>] = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-237"><code>	}</code></span>
+<span class="codeline" id="line-238"><code>	<span class="keyword">return</span> <label for="r26" class="ident">r</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-239"><code>}</code></span>
+<span class="codeline" id="line-240"><code></code></span>
+<span class="codeline" id="line-241"><code><span class="comment">// UintptrFree is like Free except its argument is an uintptr, which must have</span></code></span>
+<span class="codeline" id="line-242"><code><span class="comment">// been acquired from UintptrCalloc or UintptrMalloc or UintptrRealloc.</span></code></span>
+<span class="codeline" id="line-243"><code><span class="keyword">func</span> (<label for="r30" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r31" class="ident">UintptrFree</label>(<label for="r32" class="ident">p</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) (<label for="r33" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-244"><code>	<span class="keyword">if</span> <a href="trace_disabled.go.html#line-9" class="ident">trace</a> {</code></span>
+<span class="codeline" id="line-245"><code>		<span class="keyword">defer</span> <span class="keyword">func</span>() {</code></span>
+<span class="codeline" id="line-246"><code>			<a href="../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../fmt/print.go.html#line-202" class="ident">Fprintf</a>(<a href="../../../pkg/os.html" class="ident i2">os</a>.<a href="../../os/file.go.html#line-66" class="ident">Stderr</a>, <span class="lit-string">"Free(%#x) %v\n"</span>, <label for="r32" class="ident">p</label>, <label for="r33" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-247"><code>		}()</code></span>
+<span class="codeline" id="line-248"><code>	}</code></span>
+<span class="codeline" id="line-249"><code>	<span class="keyword">if</span> <label for="r32" class="ident">p</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-250"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-251"><code>	}</code></span>
+<span class="codeline" id="line-252"><code></code></span>
+<span class="codeline" id="line-253"><code>	<span class="keyword">if</span> <a href="nocounters.go.html#line-9" class="ident">counters</a> {</code></span>
+<span class="codeline" id="line-254"><code>		<label for="r30" class="ident">a</label>.<a href="#line-163" class="ident">Allocs</a>--</code></span>
+<span class="codeline" id="line-255"><code>	}</code></span>
+<span class="codeline" id="line-256"><code>	<label for="r34" class="ident">pg</label> := <label for="r32" class="ident">p</label> &amp;^ <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="#line-135" class="ident">pageMask</a>)</code></span>
+<span class="codeline" id="line-257"><code>	<label for="r35" class="ident">log</label> := (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">pg</label>)).<a href="#line-154" class="ident">log</a></code></span>
+<span class="codeline" id="line-258"><code>	<span class="keyword">if</span> <label for="r35" class="ident">log</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-259"><code>		<span class="keyword">if</span> <a href="nocounters.go.html#line-9" class="ident">counters</a> {</code></span>
+<span class="codeline" id="line-260"><code>			<label for="r30" class="ident">a</label>.<a href="#line-164" class="ident">Bytes</a> -= (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">pg</label>)).<a href="#line-155" class="ident">size</a></code></span>
+<span class="codeline" id="line-261"><code>		}</code></span>
+<span class="codeline" id="line-262"><code>		<span class="keyword">return</span> <label for="r30" class="ident">a</label>.<a href="#line-216" class="ident">unmap</a>(<label for="r34" class="ident">pg</label>)</code></span>
+<span class="codeline" id="line-263"><code>	}</code></span>
+<span class="codeline" id="line-264"><code></code></span>
+<span class="codeline" id="line-265"><code>	(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r32" class="ident">p</label>)).<a href="#line-149" class="ident">prev</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-266"><code>	(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r32" class="ident">p</label>)).<a href="#line-149" class="ident">next</a> = <label for="r30" class="ident">a</label>.<a href="#line-166" class="ident">lists</a>[<label for="r35" class="ident">log</label>]</code></span>
+<span class="codeline" id="line-267"><code>	<span class="keyword">if</span> <label for="r36" class="ident">next</label> := (*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r32" class="ident">p</label>)).<a href="#line-149" class="ident">next</a>; <label for="r36" class="ident">next</label> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-268"><code>		(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r36" class="ident">next</label>)).<a href="#line-149" class="ident">prev</a> = <label for="r32" class="ident">p</label></code></span>
+<span class="codeline" id="line-269"><code>	}</code></span>
+<span class="codeline" id="line-270"><code>	<label for="r30" class="ident">a</label>.<a href="#line-166" class="ident">lists</a>[<label for="r35" class="ident">log</label>] = <label for="r32" class="ident">p</label></code></span>
+<span class="codeline" id="line-271"><code>	(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">pg</label>)).<a href="#line-156" class="ident">used</a>--</code></span>
+<span class="codeline" id="line-272"><code>	<span class="keyword">if</span> (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">pg</label>)).<a href="#line-156" class="ident">used</a> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-273"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-274"><code>	}</code></span>
+<span class="codeline" id="line-275"><code></code></span>
+<span class="codeline" id="line-276"><code>	<span class="keyword">for</span> <label for="r37" class="ident">i</label> := <span class="lit-number">0</span>; <label for="r37" class="ident">i</label> &lt; (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">pg</label>)).<a href="#line-153" class="ident">brk</a>; <label for="r37" class="ident">i</label>++ {</code></span>
+<span class="codeline" id="line-277"><code>		<label for="r38" class="ident">n</label> := <label for="r34" class="ident">pg</label> + <a href="#line-130" class="ident">headerSize</a> + <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<label for="r37" class="ident">i</label>)&lt;&lt;<label for="r35" class="ident">log</label></code></span>
+<span class="codeline" id="line-278"><code>		<label for="r39" class="ident">next</label> := (*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r38" class="ident">n</label>)).<a href="#line-149" class="ident">next</a></code></span>
+<span class="codeline" id="line-279"><code>		<label for="r40" class="ident">prev</label> := (*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r38" class="ident">n</label>)).<a href="#line-149" class="ident">prev</a></code></span>
+<span class="codeline" id="line-280"><code>		<span class="keyword">switch</span> {</code></span>
+<span class="codeline" id="line-281"><code>		<span class="keyword">case</span> <label for="r40" class="ident">prev</label> == <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-282"><code>			<label for="r30" class="ident">a</label>.<a href="#line-166" class="ident">lists</a>[<label for="r35" class="ident">log</label>] = <label for="r39" class="ident">next</label></code></span>
+<span class="codeline" id="line-283"><code>			<span class="keyword">if</span> <label for="r39" class="ident">next</label> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-284"><code>				(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r39" class="ident">next</label>)).<a href="#line-149" class="ident">prev</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-285"><code>			}</code></span>
+<span class="codeline" id="line-286"><code>		<span class="keyword">case</span> <label for="r39" class="ident">next</label> == <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-287"><code>			(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r40" class="ident">prev</label>)).<a href="#line-149" class="ident">next</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-288"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-289"><code>			(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r40" class="ident">prev</label>)).<a href="#line-149" class="ident">next</a> = <label for="r39" class="ident">next</label></code></span>
+<span class="codeline" id="line-290"><code>			(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r39" class="ident">next</label>)).<a href="#line-149" class="ident">prev</a> = <label for="r40" class="ident">prev</label></code></span>
+<span class="codeline" id="line-291"><code>		}</code></span>
+<span class="codeline" id="line-292"><code>	}</code></span>
+<span class="codeline" id="line-293"><code></code></span>
+<span class="codeline" id="line-294"><code>	<span class="keyword">if</span> <label for="r30" class="ident">a</label>.<a href="#line-168" class="ident">pages</a>[<label for="r35" class="ident">log</label>] == <label for="r34" class="ident">pg</label> {</code></span>
+<span class="codeline" id="line-295"><code>		<label for="r30" class="ident">a</label>.<a href="#line-168" class="ident">pages</a>[<label for="r35" class="ident">log</label>] = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-296"><code>	}</code></span>
+<span class="codeline" id="line-297"><code>	<span class="keyword">if</span> <a href="nocounters.go.html#line-9" class="ident">counters</a> {</code></span>
+<span class="codeline" id="line-298"><code>		<label for="r30" class="ident">a</label>.<a href="#line-164" class="ident">Bytes</a> -= (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r34" class="ident">pg</label>)).<a href="#line-155" class="ident">size</a></code></span>
+<span class="codeline" id="line-299"><code>	}</code></span>
+<span class="codeline" id="line-300"><code>	<span class="keyword">return</span> <label for="r30" class="ident">a</label>.<a href="#line-216" class="ident">unmap</a>(<label for="r34" class="ident">pg</label>)</code></span>
+<span class="codeline" id="line-301"><code>}</code></span>
+<span class="codeline" id="line-302"><code></code></span>
+<span class="codeline" id="line-303"><code><span class="comment">// UintptrMalloc is like Malloc except it returns an uinptr.</span></code></span>
+<span class="codeline" id="line-304"><code><span class="keyword">func</span> (<label for="r41" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r42" class="ident">UintptrMalloc</label>(<label for="r43" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r44" class="ident">r</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r45" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-305"><code>	<span class="keyword">if</span> <a href="trace_disabled.go.html#line-9" class="ident">trace</a> {</code></span>
+<span class="codeline" id="line-306"><code>		<span class="keyword">defer</span> <span class="keyword">func</span>() {</code></span>
+<span class="codeline" id="line-307"><code>			<a href="../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../fmt/print.go.html#line-202" class="ident">Fprintf</a>(<a href="../../../pkg/os.html" class="ident i2">os</a>.<a href="../../os/file.go.html#line-66" class="ident">Stderr</a>, <span class="lit-string">"Malloc(%#x) %#x, %v\n"</span>, <label for="r43" class="ident">size</label>, <label for="r44" class="ident">r</label>, <label for="r45" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-308"><code>		}()</code></span>
+<span class="codeline" id="line-309"><code>	}</code></span>
+<span class="codeline" id="line-310"><code>	<span class="keyword">if</span> <label for="r43" class="ident">size</label> &lt; <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-311"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<span class="lit-string">"invalid malloc size"</span>)</code></span>
+<span class="codeline" id="line-312"><code>	}</code></span>
+<span class="codeline" id="line-313"><code></code></span>
+<span class="codeline" id="line-314"><code>	<span class="keyword">if</span> <label for="r43" class="ident">size</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-315"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-316"><code>	}</code></span>
+<span class="codeline" id="line-317"><code></code></span>
+<span class="codeline" id="line-318"><code>	<span class="keyword">if</span> <a href="nocounters.go.html#line-9" class="ident">counters</a> {</code></span>
+<span class="codeline" id="line-319"><code>		<label for="r41" class="ident">a</label>.<a href="#line-163" class="ident">Allocs</a>++</code></span>
+<span class="codeline" id="line-320"><code>	}</code></span>
+<span class="codeline" id="line-321"><code>	<label for="r46" class="ident">log</label> := <a href="../../../pkg/builtin.html#name-uint" class="ident">uint</a>(<a href="../../../pkg/math/bits.html" class="ident i1">bits</a>.<a href="../../math/bits/bits.go.html#line-296" class="ident">Len</a>(<a href="../../../pkg/builtin.html#name-uint" class="ident">uint</a>((<label for="r43" class="ident">size</label>+<a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="#line-131" class="ident">mallocAllign</a>)-<span class="lit-number">1</span>)&amp;^<a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="#line-131" class="ident">mallocAllign</a>-<span class="lit-number">1</span>) - <span class="lit-number">1</span>)))</code></span>
+<span class="codeline" id="line-322"><code>	<span class="keyword">if</span> <label for="r46" class="ident">log</label> &gt; <a href="#line-133" class="ident">maxSlotSizeLog</a> {</code></span>
+<span class="codeline" id="line-323"><code>		<label for="r47" class="ident">p</label>, <label for="r48" class="ident">err</label> := <label for="r41" class="ident">a</label>.<a href="#line-190" class="ident">newPage</a>(<label for="r43" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-324"><code>		<span class="keyword">if</span> <label for="r48" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-325"><code>			<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r48" class="ident">err</label></code></span>
+<span class="codeline" id="line-326"><code>		}</code></span>
+<span class="codeline" id="line-327"><code></code></span>
+<span class="codeline" id="line-328"><code>		<span class="keyword">return</span> <label for="r47" class="ident">p</label> + <a href="#line-130" class="ident">headerSize</a>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-329"><code>	}</code></span>
+<span class="codeline" id="line-330"><code></code></span>
+<span class="codeline" id="line-331"><code>	<span class="keyword">if</span> <label for="r41" class="ident">a</label>.<a href="#line-166" class="ident">lists</a>[<label for="r46" class="ident">log</label>] == <span class="lit-number">0</span> &amp;&amp; <label for="r41" class="ident">a</label>.<a href="#line-168" class="ident">pages</a>[<label for="r46" class="ident">log</label>] == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-332"><code>		<span class="keyword">if</span> <label for="r49" class="ident">_</label>, <label for="r50" class="ident">err</label> := <label for="r41" class="ident">a</label>.<a href="#line-201" class="ident">newSharedPage</a>(<label for="r46" class="ident">log</label>); <label for="r50" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-333"><code>			<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r50" class="ident">err</label></code></span>
+<span class="codeline" id="line-334"><code>		}</code></span>
+<span class="codeline" id="line-335"><code>	}</code></span>
+<span class="codeline" id="line-336"><code></code></span>
+<span class="codeline" id="line-337"><code>	<span class="keyword">if</span> <label for="r51" class="ident">p</label> := <label for="r41" class="ident">a</label>.<a href="#line-168" class="ident">pages</a>[<label for="r46" class="ident">log</label>]; <label for="r51" class="ident">p</label> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-338"><code>		(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r51" class="ident">p</label>)).<a href="#line-156" class="ident">used</a>++</code></span>
+<span class="codeline" id="line-339"><code>		(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r51" class="ident">p</label>)).<a href="#line-153" class="ident">brk</a>++</code></span>
+<span class="codeline" id="line-340"><code>		<span class="keyword">if</span> (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r51" class="ident">p</label>)).<a href="#line-153" class="ident">brk</a> == <label for="r41" class="ident">a</label>.<a href="#line-165" class="ident">cap</a>[<label for="r46" class="ident">log</label>] {</code></span>
+<span class="codeline" id="line-341"><code>			<label for="r41" class="ident">a</label>.<a href="#line-168" class="ident">pages</a>[<label for="r46" class="ident">log</label>] = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-342"><code>		}</code></span>
+<span class="codeline" id="line-343"><code>		<span class="keyword">return</span> <label for="r51" class="ident">p</label> + <a href="#line-130" class="ident">headerSize</a> + <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>((*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r51" class="ident">p</label>)).<a href="#line-153" class="ident">brk</a>-<span class="lit-number">1</span>)&lt;&lt;<label for="r46" class="ident">log</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-344"><code>	}</code></span>
+<span class="codeline" id="line-345"><code></code></span>
+<span class="codeline" id="line-346"><code>	<label for="r52" class="ident">n</label> := <label for="r41" class="ident">a</label>.<a href="#line-166" class="ident">lists</a>[<label for="r46" class="ident">log</label>]</code></span>
+<span class="codeline" id="line-347"><code>	<label for="r53" class="ident">p</label> := <label for="r52" class="ident">n</label> &amp;^ <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="#line-135" class="ident">pageMask</a>)</code></span>
+<span class="codeline" id="line-348"><code>	<label for="r41" class="ident">a</label>.<a href="#line-166" class="ident">lists</a>[<label for="r46" class="ident">log</label>] = (*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r52" class="ident">n</label>)).<a href="#line-149" class="ident">next</a></code></span>
+<span class="codeline" id="line-349"><code>	<span class="keyword">if</span> <label for="r54" class="ident">next</label> := (*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r52" class="ident">n</label>)).<a href="#line-149" class="ident">next</a>; <label for="r54" class="ident">next</label> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-350"><code>		(*<a href="#line-148" class="ident">node</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r54" class="ident">next</label>)).<a href="#line-149" class="ident">prev</a> = <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-351"><code>	}</code></span>
+<span class="codeline" id="line-352"><code>	(*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r53" class="ident">p</label>)).<a href="#line-156" class="ident">used</a>++</code></span>
+<span class="codeline" id="line-353"><code>	<span class="keyword">return</span> <label for="r52" class="ident">n</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-354"><code>}</code></span>
+<span class="codeline" id="line-355"><code></code></span>
+<span class="codeline" id="line-356"><code><span class="comment">// UintptrRealloc is like Realloc except its first argument is an uintptr,</span></code></span>
+<span class="codeline" id="line-357"><code><span class="comment">// which must have been returned from UintptrCalloc, UintptrMalloc or</span></code></span>
+<span class="codeline" id="line-358"><code><span class="comment">// UintptrRealloc.</span></code></span>
+<span class="codeline" id="line-359"><code><span class="keyword">func</span> (<label for="r55" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r56" class="ident">UintptrRealloc</label>(<label for="r57" class="ident">p</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r58" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r59" class="ident">r</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r60" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-360"><code>	<span class="keyword">if</span> <a href="trace_disabled.go.html#line-9" class="ident">trace</a> {</code></span>
+<span class="codeline" id="line-361"><code>		<span class="keyword">defer</span> <span class="keyword">func</span>() {</code></span>
+<span class="codeline" id="line-362"><code>			<a href="../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../fmt/print.go.html#line-202" class="ident">Fprintf</a>(<a href="../../../pkg/os.html" class="ident i2">os</a>.<a href="../../os/file.go.html#line-66" class="ident">Stderr</a>, <span class="lit-string">"UnsafeRealloc(%#x, %#x) %#x, %v\n"</span>, <label for="r57" class="ident">p</label>, <label for="r58" class="ident">size</label>, <label for="r59" class="ident">r</label>, <label for="r60" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-363"><code>		}()</code></span>
+<span class="codeline" id="line-364"><code>	}</code></span>
+<span class="codeline" id="line-365"><code>	<span class="keyword">switch</span> {</code></span>
+<span class="codeline" id="line-366"><code>	<span class="keyword">case</span> <label for="r57" class="ident">p</label> == <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-367"><code>		<span class="keyword">return</span> <label for="r55" class="ident">a</label>.<a href="#line-304" class="ident">UintptrMalloc</a>(<label for="r58" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-368"><code>	<span class="keyword">case</span> <label for="r58" class="ident">size</label> == <span class="lit-number">0</span> &amp;&amp; <label for="r57" class="ident">p</label> != <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-369"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r55" class="ident">a</label>.<a href="#line-243" class="ident">UintptrFree</a>(<label for="r57" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-370"><code>	}</code></span>
+<span class="codeline" id="line-371"><code></code></span>
+<span class="codeline" id="line-372"><code>	<label for="r61" class="ident">us</label> := <a href="#line-391" class="ident">UintptrUsableSize</a>(<label for="r57" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-373"><code>	<span class="keyword">if</span> <label for="r61" class="ident">us</label> &gt; <label for="r58" class="ident">size</label> {</code></span>
+<span class="codeline" id="line-374"><code>		<span class="keyword">return</span> <label for="r57" class="ident">p</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-375"><code>	}</code></span>
+<span class="codeline" id="line-376"><code></code></span>
+<span class="codeline" id="line-377"><code>	<span class="keyword">if</span> <label for="r59" class="ident">r</label>, <label for="r60" class="ident">err</label> = <label for="r55" class="ident">a</label>.<a href="#line-304" class="ident">UintptrMalloc</a>(<label for="r58" class="ident">size</label>); <label for="r60" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-378"><code>		<span class="keyword">return</span> <span class="lit-number">0</span>, <label for="r60" class="ident">err</label></code></span>
+<span class="codeline" id="line-379"><code>	}</code></span>
+<span class="codeline" id="line-380"><code></code></span>
+<span class="codeline" id="line-381"><code>	<span class="keyword">if</span> <label for="r61" class="ident">us</label> &lt; <label for="r58" class="ident">size</label> {</code></span>
+<span class="codeline" id="line-382"><code>		<label for="r58" class="ident">size</label> = <label for="r61" class="ident">us</label></code></span>
+<span class="codeline" id="line-383"><code>	}</code></span>
+<span class="codeline" id="line-384"><code>	<a href="../../../pkg/builtin.html#name-copy" class="ident">copy</a>((*<a href="memory64.go.html#line-9" class="ident">rawmem</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r59" class="ident">r</label>))[:<label for="r58" class="ident">size</label>:<label for="r58" class="ident">size</label>], (*<a href="memory64.go.html#line-9" class="ident">rawmem</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r57" class="ident">p</label>))[:<label for="r58" class="ident">size</label>:<label for="r58" class="ident">size</label>])</code></span>
+<span class="codeline" id="line-385"><code>	<span class="keyword">return</span> <label for="r59" class="ident">r</label>, <label for="r55" class="ident">a</label>.<a href="#line-243" class="ident">UintptrFree</a>(<label for="r57" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-386"><code>}</code></span>
+<span class="codeline" id="line-387"><code></code></span>
+<span class="codeline" id="line-388"><code><span class="comment">// UintptrUsableSize is like UsableSize except its argument is an uintptr,</span></code></span>
+<span class="codeline" id="line-389"><code><span class="comment">// which must have been returned from UintptrCalloc, UintptrMalloc or</span></code></span>
+<span class="codeline" id="line-390"><code><span class="comment">// UintptrRealloc.</span></code></span>
+<span class="codeline" id="line-391"><code><span class="keyword">func</span> <label for="r62" class="ident"><a href="../../../pkg/modernc.org/memory.html#name-UintptrUsableSize" class="ident">UintptrUsableSize</a></label>(<label for="r63" class="ident">p</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) (<label for="r64" class="ident">r</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) {</code></span>
+<span class="codeline" id="line-392"><code>	<span class="keyword">if</span> <a href="trace_disabled.go.html#line-9" class="ident">trace</a> {</code></span>
+<span class="codeline" id="line-393"><code>		<span class="keyword">defer</span> <span class="keyword">func</span>() {</code></span>
+<span class="codeline" id="line-394"><code>			<a href="../../../pkg/fmt.html" class="ident i0">fmt</a>.<a href="../../fmt/print.go.html#line-202" class="ident">Fprintf</a>(<a href="../../../pkg/os.html" class="ident i2">os</a>.<a href="../../os/file.go.html#line-66" class="ident">Stderr</a>, <span class="lit-string">"UsableSize(%#x) %#x\n"</span>, <label for="r63" class="ident">p</label>, <label for="r64" class="ident">r</label>)</code></span>
+<span class="codeline" id="line-395"><code>		}()</code></span>
+<span class="codeline" id="line-396"><code>	}</code></span>
+<span class="codeline" id="line-397"><code>	<span class="keyword">if</span> <label for="r63" class="ident">p</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-398"><code>		<span class="keyword">return</span> <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-399"><code>	}</code></span>
+<span class="codeline" id="line-400"><code></code></span>
+<span class="codeline" id="line-401"><code>	<span class="keyword">return</span> <a href="#line-404" class="ident">usableSize</a>(<label for="r63" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-402"><code>}</code></span>
+<span class="codeline" id="line-403"><code></code></span>
+<span class="codeline" id="line-404"><code><span class="keyword">func</span> <label for="r65" class="ident"><a href="../../../pkg/modernc.org/memory.html#name-usableSize" class="ident">usableSize</a></label>(<label for="r66" class="ident">p</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) (<label for="r67" class="ident">r</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) {</code></span>
+<span class="codeline" id="line-405"><code>	<label for="r68" class="ident">pg</label> := <label for="r66" class="ident">p</label> &amp;^ <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="#line-135" class="ident">pageMask</a>)</code></span>
+<span class="codeline" id="line-406"><code>	<span class="keyword">if</span> <label for="r69" class="ident">log</label> := (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r68" class="ident">pg</label>)).<a href="#line-154" class="ident">log</a>; <label for="r69" class="ident">log</label> != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-407"><code>		<span class="keyword">return</span> <span class="lit-number">1</span> &lt;&lt; <label for="r69" class="ident">log</label></code></span>
+<span class="codeline" id="line-408"><code>	}</code></span>
+<span class="codeline" id="line-409"><code></code></span>
+<span class="codeline" id="line-410"><code>	<span class="keyword">return</span> (*<a href="#line-152" class="ident">page</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r68" class="ident">pg</label>)).<a href="#line-155" class="ident">size</a> - <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="#line-130" class="ident">headerSize</a>)</code></span>
+<span class="codeline" id="line-411"><code>}</code></span>
+<span class="codeline" id="line-412"><code></code></span>
+<span class="codeline" id="line-413"><code><span class="comment">// Calloc is like Malloc except the allocated memory is zeroed.</span></code></span>
+<span class="codeline" id="line-414"><code><span class="keyword">func</span> (<label for="r70" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r71" class="ident">Calloc</label>(<label for="r72" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r73" class="ident">r</label> []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>, <label for="r74" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-415"><code>	<label for="r75" class="ident">p</label>, <label for="r74" class="ident">err</label> := <label for="r70" class="ident">a</label>.<a href="#line-225" class="ident">UintptrCalloc</a>(<label for="r72" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-416"><code>	<span class="keyword">if</span> <label for="r74" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-417"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r74" class="ident">err</label></code></span>
+<span class="codeline" id="line-418"><code>	}</code></span>
+<span class="codeline" id="line-419"><code></code></span>
+<span class="codeline" id="line-420"><code>	<span class="keyword">var</span> <label for="r76" class="ident">b</label> []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a></code></span>
+<span class="codeline" id="line-421"><code>	<label for="r77" class="ident">sh</label> := (*<a href="../../../pkg/reflect.html" class="ident i3">reflect</a>.<a href="../../reflect/value.go.html#line-1994" class="ident">SliceHeader</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<label for="r76" class="ident">b</label>))</code></span>
+<span class="codeline" id="line-422"><code>	<label for="r77" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1997" class="ident">Cap</a> = <a href="#line-404" class="ident">usableSize</a>(<label for="r75" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-423"><code>	<label for="r77" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1995" class="ident">Data</a> = <label for="r75" class="ident">p</label></code></span>
+<span class="codeline" id="line-424"><code>	<label for="r77" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1996" class="ident">Len</a> = <label for="r72" class="ident">size</label></code></span>
+<span class="codeline" id="line-425"><code>	<span class="keyword">return</span> <label for="r76" class="ident">b</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-426"><code>}</code></span>
+<span class="codeline" id="line-427"><code></code></span>
+<span class="codeline" id="line-428"><code><span class="comment">// Close releases all OS resources used by a and sets it to its zero value.</span></code></span>
+<span class="codeline" id="line-429"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-430"><code><span class="comment">// It's not necessary to Close the Allocator when exiting a process.</span></code></span>
+<span class="codeline" id="line-431"><code><span class="keyword">func</span> (<label for="r78" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r79" class="ident"><a href="../../../imp/modernc.org/memory.Allocator.html#name-.Close" class="ident">Close</a></label>() (<label for="r80" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-432"><code>	<span class="keyword">for</span> <label for="r81" class="ident">p</label> := <span class="keyword">range</span> <label for="r78" class="ident">a</label>.<a href="#line-169" class="ident">regs</a> {</code></span>
+<span class="codeline" id="line-433"><code>		<span class="keyword">if</span> <label for="r82" class="ident">e</label> := <label for="r78" class="ident">a</label>.<a href="#line-216" class="ident">unmap</a>(<label for="r81" class="ident">p</label>); <label for="r82" class="ident">e</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> &amp;&amp; <label for="r80" class="ident">err</label> == <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-434"><code>			<label for="r80" class="ident">err</label> = <label for="r82" class="ident">e</label></code></span>
+<span class="codeline" id="line-435"><code>		}</code></span>
+<span class="codeline" id="line-436"><code>	}</code></span>
+<span class="codeline" id="line-437"><code>	*<label for="r78" class="ident">a</label> = <a href="#line-162" class="ident">Allocator</a>{}</code></span>
+<span class="codeline" id="line-438"><code>	<span class="keyword">return</span> <label for="r80" class="ident">err</label></code></span>
+<span class="codeline" id="line-439"><code>}</code></span>
+<span class="codeline" id="line-440"><code></code></span>
+<span class="codeline" id="line-441"><code><span class="comment">// Free deallocates memory (as in C.free). The argument of Free must have been</span></code></span>
+<span class="codeline" id="line-442"><code><span class="comment">// acquired from Calloc or Malloc or Realloc.</span></code></span>
+<span class="codeline" id="line-443"><code><span class="keyword">func</span> (<label for="r83" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r84" class="ident">Free</label>(<label for="r85" class="ident">b</label> []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>) (<label for="r86" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-444"><code>	<span class="keyword">if</span> <label for="r85" class="ident">b</label> = <label for="r85" class="ident">b</label>[:<a href="../../../pkg/builtin.html#name-cap" class="ident">cap</a>(<label for="r85" class="ident">b</label>)]; <a href="../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r85" class="ident">b</label>) == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-445"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-446"><code>	}</code></span>
+<span class="codeline" id="line-447"><code></code></span>
+<span class="codeline" id="line-448"><code>	<span class="keyword">return</span> <label for="r83" class="ident">a</label>.<a href="#line-243" class="ident">UintptrFree</a>(<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<label for="r85" class="ident">b</label>[<span class="lit-number">0</span>])))</code></span>
+<span class="codeline" id="line-449"><code>}</code></span>
+<span class="codeline" id="line-450"><code></code></span>
+<span class="codeline" id="line-451"><code><span class="comment">// Malloc allocates size bytes and returns a byte slice of the allocated</span></code></span>
+<span class="codeline" id="line-452"><code><span class="comment">// memory. The memory is not initialized. Malloc panics for size &lt; 0 and</span></code></span>
+<span class="codeline" id="line-453"><code><span class="comment">// returns (nil, nil) for zero size.</span></code></span>
+<span class="codeline" id="line-454"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-455"><code><span class="comment">// It's ok to reslice the returned slice but the result of appending to it</span></code></span>
+<span class="codeline" id="line-456"><code><span class="comment">// cannot be passed to Free or Realloc as it may refer to a different backing</span></code></span>
+<span class="codeline" id="line-457"><code><span class="comment">// array afterwards.</span></code></span>
+<span class="codeline" id="line-458"><code><span class="keyword">func</span> (<label for="r87" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r88" class="ident">Malloc</label>(<label for="r89" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r90" class="ident">r</label> []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>, <label for="r91" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-459"><code>	<label for="r92" class="ident">p</label>, <label for="r91" class="ident">err</label> := <label for="r87" class="ident">a</label>.<a href="#line-304" class="ident">UintptrMalloc</a>(<label for="r89" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-460"><code>	<span class="keyword">if</span> <label for="r92" class="ident">p</label> == <span class="lit-number">0</span> || <label for="r91" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-461"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r91" class="ident">err</label></code></span>
+<span class="codeline" id="line-462"><code>	}</code></span>
+<span class="codeline" id="line-463"><code></code></span>
+<span class="codeline" id="line-464"><code>	<label for="r93" class="ident">sh</label> := (*<a href="../../../pkg/reflect.html" class="ident i3">reflect</a>.<a href="../../reflect/value.go.html#line-1994" class="ident">SliceHeader</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<label for="r90" class="ident">r</label>))</code></span>
+<span class="codeline" id="line-465"><code>	<label for="r93" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1997" class="ident">Cap</a> = <a href="#line-404" class="ident">usableSize</a>(<label for="r92" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-466"><code>	<label for="r93" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1995" class="ident">Data</a> = <label for="r92" class="ident">p</label></code></span>
+<span class="codeline" id="line-467"><code>	<label for="r93" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1996" class="ident">Len</a> = <label for="r89" class="ident">size</label></code></span>
+<span class="codeline" id="line-468"><code>	<span class="keyword">return</span> <label for="r90" class="ident">r</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-469"><code>}</code></span>
+<span class="codeline" id="line-470"><code></code></span>
+<span class="codeline" id="line-471"><code><span class="comment">// Realloc changes the size of the backing array of b to size bytes or returns</span></code></span>
+<span class="codeline" id="line-472"><code><span class="comment">// an error, if any.  The contents will be unchanged in the range from the</span></code></span>
+<span class="codeline" id="line-473"><code><span class="comment">// start of the region up to the minimum of the old and new  sizes.   If the</span></code></span>
+<span class="codeline" id="line-474"><code><span class="comment">// new size is larger than the old size, the added memory will not be</span></code></span>
+<span class="codeline" id="line-475"><code><span class="comment">// initialized.  If b's backing array is of zero size, then the call is</span></code></span>
+<span class="codeline" id="line-476"><code><span class="comment">// equivalent to Malloc(size), for all values of size; if size is equal to</span></code></span>
+<span class="codeline" id="line-477"><code><span class="comment">// zero, and b's backing array is not of zero size, then the call is equivalent</span></code></span>
+<span class="codeline" id="line-478"><code><span class="comment">// to Free(b).  Unless b's backing array is of zero size, it must have been</span></code></span>
+<span class="codeline" id="line-479"><code><span class="comment">// returned by an earlier call to Malloc, Calloc or Realloc.  If the area</span></code></span>
+<span class="codeline" id="line-480"><code><span class="comment">// pointed to was moved, a Free(b) is done.</span></code></span>
+<span class="codeline" id="line-481"><code><span class="keyword">func</span> (<label for="r94" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r95" class="ident">Realloc</label>(<label for="r96" class="ident">b</label> []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>, <label for="r97" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r98" class="ident">r</label> []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>, <label for="r99" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-482"><code>	<span class="keyword">var</span> <label for="r100" class="ident">p</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a></code></span>
+<span class="codeline" id="line-483"><code>	<span class="keyword">if</span> <label for="r96" class="ident">b</label> = <label for="r96" class="ident">b</label>[:<a href="../../../pkg/builtin.html#name-cap" class="ident">cap</a>(<label for="r96" class="ident">b</label>)]; <a href="../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r96" class="ident">b</label>) != <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-484"><code>		<label for="r100" class="ident">p</label> = <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<label for="r96" class="ident">b</label>[<span class="lit-number">0</span>]))</code></span>
+<span class="codeline" id="line-485"><code>	}</code></span>
+<span class="codeline" id="line-486"><code>	<span class="keyword">if</span> <label for="r100" class="ident">p</label>, <label for="r99" class="ident">err</label> = <label for="r94" class="ident">a</label>.<a href="#line-359" class="ident">UintptrRealloc</a>(<label for="r100" class="ident">p</label>, <label for="r97" class="ident">size</label>); <label for="r100" class="ident">p</label> == <span class="lit-number">0</span> || <label for="r99" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-487"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r99" class="ident">err</label></code></span>
+<span class="codeline" id="line-488"><code>	}</code></span>
+<span class="codeline" id="line-489"><code></code></span>
+<span class="codeline" id="line-490"><code>	<label for="r101" class="ident">sh</label> := (*<a href="../../../pkg/reflect.html" class="ident i3">reflect</a>.<a href="../../reflect/value.go.html#line-1994" class="ident">SliceHeader</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(&amp;<label for="r98" class="ident">r</label>))</code></span>
+<span class="codeline" id="line-491"><code>	<label for="r101" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1997" class="ident">Cap</a> = <a href="#line-404" class="ident">usableSize</a>(<label for="r100" class="ident">p</label>)</code></span>
+<span class="codeline" id="line-492"><code>	<label for="r101" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1995" class="ident">Data</a> = <label for="r100" class="ident">p</label></code></span>
+<span class="codeline" id="line-493"><code>	<label for="r101" class="ident">sh</label>.<a href="../../reflect/value.go.html#line-1996" class="ident">Len</a> = <label for="r97" class="ident">size</label></code></span>
+<span class="codeline" id="line-494"><code>	<span class="keyword">return</span> <label for="r98" class="ident">r</label>, <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-495"><code>}</code></span>
+<span class="codeline" id="line-496"><code></code></span>
+<span class="codeline" id="line-497"><code><span class="comment">// UsableSize reports the size of the memory block allocated at p, which must</span></code></span>
+<span class="codeline" id="line-498"><code><span class="comment">// point to the first byte of a slice returned from Calloc, Malloc or Realloc.</span></code></span>
+<span class="codeline" id="line-499"><code><span class="comment">// The allocated memory block size can be larger than the size originally</span></code></span>
+<span class="codeline" id="line-500"><code><span class="comment">// requested from Calloc, Malloc or Realloc.</span></code></span>
+<span class="codeline" id="line-501"><code><span class="keyword">func</span> <label for="r102" class="ident"><a href="../../../pkg/modernc.org/memory.html#name-UsableSize" class="ident">UsableSize</a></label>(<label for="r103" class="ident">p</label> *<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>) (<label for="r104" class="ident">r</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) { <span class="keyword">return</span> <a href="#line-391" class="ident">UintptrUsableSize</a>(<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r103" class="ident">p</label>))) }</code></span>
+<span class="codeline" id="line-502"><code></code></span>
+<span class="codeline" id="line-503"><code><span class="comment">// UnsafeCalloc is like Calloc except it returns an unsafe.Pointer.</span></code></span>
+<span class="codeline" id="line-504"><code><span class="keyword">func</span> (<label for="r105" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r106" class="ident">UnsafeCalloc</label>(<label for="r107" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r108" class="ident">r</label> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>, <label for="r109" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-505"><code>	<label for="r110" class="ident">p</label>, <label for="r109" class="ident">err</label> := <label for="r105" class="ident">a</label>.<a href="#line-225" class="ident">UintptrCalloc</a>(<label for="r107" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-506"><code>	<span class="keyword">if</span> <label for="r109" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-507"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r109" class="ident">err</label></code></span>
+<span class="codeline" id="line-508"><code>	}</code></span>
+<span class="codeline" id="line-509"><code></code></span>
+<span class="codeline" id="line-510"><code>	<span class="keyword">return</span> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r110" class="ident">p</label>), <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-511"><code>}</code></span>
+<span class="codeline" id="line-512"><code></code></span>
+<span class="codeline" id="line-513"><code><span class="comment">// UnsafeFree is like Free except its argument is an unsafe.Pointer, which must</span></code></span>
+<span class="codeline" id="line-514"><code><span class="comment">// have been acquired from UnsafeCalloc or UnsafeMalloc or UnsafeRealloc.</span></code></span>
+<span class="codeline" id="line-515"><code><span class="keyword">func</span> (<label for="r111" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r112" class="ident">UnsafeFree</label>(<label for="r113" class="ident">p</label> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>) (<label for="r114" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) { <span class="keyword">return</span> <label for="r111" class="ident">a</label>.<a href="#line-243" class="ident">UintptrFree</a>(<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<label for="r113" class="ident">p</label>)) }</code></span>
+<span class="codeline" id="line-516"><code></code></span>
+<span class="codeline" id="line-517"><code><span class="comment">// UnsafeMalloc is like Malloc except it returns an unsafe.Pointer.</span></code></span>
+<span class="codeline" id="line-518"><code><span class="keyword">func</span> (<label for="r115" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r116" class="ident">UnsafeMalloc</label>(<label for="r117" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r118" class="ident">r</label> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>, <label for="r119" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-519"><code>	<label for="r120" class="ident">p</label>, <label for="r119" class="ident">err</label> := <label for="r115" class="ident">a</label>.<a href="#line-304" class="ident">UintptrMalloc</a>(<label for="r117" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-520"><code>	<span class="keyword">if</span> <label for="r119" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-521"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r119" class="ident">err</label></code></span>
+<span class="codeline" id="line-522"><code>	}</code></span>
+<span class="codeline" id="line-523"><code></code></span>
+<span class="codeline" id="line-524"><code>	<span class="keyword">return</span> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r120" class="ident">p</label>), <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-525"><code>}</code></span>
+<span class="codeline" id="line-526"><code></code></span>
+<span class="codeline" id="line-527"><code><span class="comment">// UnsafeRealloc is like Realloc except its first argument is an</span></code></span>
+<span class="codeline" id="line-528"><code><span class="comment">// unsafe.Pointer, which must have been returned from UnsafeCalloc,</span></code></span>
+<span class="codeline" id="line-529"><code><span class="comment">// UnsafeMalloc or UnsafeRealloc.</span></code></span>
+<span class="codeline" id="line-530"><code><span class="keyword">func</span> (<label for="r121" class="ident">a</label> *<a href="#line-162" class="ident">Allocator</a>) <label for="r122" class="ident">UnsafeRealloc</label>(<label for="r123" class="ident">p</label> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>, <label for="r124" class="ident">size</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r125" class="ident">r</label> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>, <label for="r126" class="ident">err</label> <a href="../../../pkg/builtin.html#name-error" class="ident">error</a>) {</code></span>
+<span class="codeline" id="line-531"><code>	<label for="r127" class="ident">q</label>, <label for="r126" class="ident">err</label> := <label for="r121" class="ident">a</label>.<a href="#line-359" class="ident">UintptrRealloc</a>(<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<label for="r123" class="ident">p</label>), <label for="r124" class="ident">size</label>)</code></span>
+<span class="codeline" id="line-532"><code>	<span class="keyword">if</span> <label for="r126" class="ident">err</label> != <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-533"><code>		<span class="keyword">return</span> <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>, <label for="r126" class="ident">err</label></code></span>
+<span class="codeline" id="line-534"><code>	}</code></span>
+<span class="codeline" id="line-535"><code></code></span>
+<span class="codeline" id="line-536"><code>	<span class="keyword">return</span> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r127" class="ident">q</label>), <a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-537"><code>}</code></span>
+<span class="codeline" id="line-538"><code></code></span>
+<span class="codeline" id="line-539"><code><span class="comment">// UnsafeUsableSize is like UsableSize except its argument is an</span></code></span>
+<span class="codeline" id="line-540"><code><span class="comment">// unsafe.Pointer, which must have been returned from UnsafeCalloc,</span></code></span>
+<span class="codeline" id="line-541"><code><span class="comment">// UnsafeMalloc or UnsafeRealloc.</span></code></span>
+<span class="codeline" id="line-542"><code><span class="keyword">func</span> <label for="r128" class="ident"><a href="../../../pkg/modernc.org/memory.html#name-UnsafeUsableSize" class="ident">UnsafeUsableSize</a></label>(<label for="r129" class="ident">p</label> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>) (<label for="r130" class="ident">r</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) { <span class="keyword">return</span> <a href="#line-391" class="ident">UintptrUsableSize</a>(<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>(<label for="r129" class="ident">p</label>)) }</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: printf.go in package modernc.org/libc</title>
+<link href="../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	printf.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../pkg/modernc.org/libc.html">modernc.org/libc</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+input[id=r0]:checked ~pre label[for=r0],
+input[id=r1]:checked ~pre label[for=r1],
+input[id=r2]:checked ~pre label[for=r2],
+input[id=r3]:checked ~pre label[for=r3],
+input[id=r4]:checked ~pre label[for=r4],
+input[id=r5]:checked ~pre label[for=r5],
+input[id=r6]:checked ~pre label[for=r6],
+input[id=r7]:checked ~pre label[for=r7],
+input[id=r8]:checked ~pre label[for=r8],
+input[id=r9]:checked ~pre label[for=r9],
+input[id=r10]:checked ~pre label[for=r10],
+input[id=r11]:checked ~pre label[for=r11],
+input[id=r12]:checked ~pre label[for=r12],
+input[id=r13]:checked ~pre label[for=r13],
+input[id=r14]:checked ~pre label[for=r14],
+input[id=r15]:checked ~pre label[for=r15],
+input[id=r16]:checked ~pre label[for=r16],
+input[id=r17]:checked ~pre label[for=r17],
+input[id=r18]:checked ~pre label[for=r18],
+input[id=r19]:checked ~pre label[for=r19],
+input[id=r20]:checked ~pre label[for=r20],
+input[id=r21]:checked ~pre label[for=r21],
+input[id=r22]:checked ~pre label[for=r22],
+input[id=r23]:checked ~pre label[for=r23],
+input[id=r24]:checked ~pre label[for=r24],
+input[id=r25]:checked ~pre label[for=r25],
+input[id=r26]:checked ~pre label[for=r26],
+input[id=r27]:checked ~pre label[for=r27],
+input[id=r28]:checked ~pre label[for=r28],
+input[id=r29]:checked ~pre label[for=r29],
+input[id=r30]:checked ~pre label[for=r30],
+input[id=r31]:checked ~pre label[for=r31],
+input[id=r32]:checked ~pre label[for=r32],
+input[id=r33]:checked ~pre label[for=r33],
+input[id=r34]:checked ~pre label[for=r34],
+input[id=r35]:checked ~pre label[for=r35],
+input[id=r36]:checked ~pre label[for=r36],
+input[id=r37]:checked ~pre label[for=r37],
+input[id=r38]:checked ~pre label[for=r38],
+input[id=r39]:checked ~pre label[for=r39],
+input[id=r40]:checked ~pre label[for=r40],
+input[id=r41]:checked ~pre label[for=r41],
+input[id=r42]:checked ~pre label[for=r42],
+input[id=r43]:checked ~pre label[for=r43],
+input[id=r44]:checked ~pre label[for=r44],
+input[id=r45]:checked ~pre label[for=r45],
+input[id=r46]:checked ~pre label[for=r46],
+input[id=r47]:checked ~pre label[for=r47],
+input[id=r48]:checked ~pre label[for=r48],
+input[id=r49]:checked ~pre label[for=r49],
+input[id=r50]:checked ~pre label[for=r50],
+input[id=r51]:checked ~pre label[for=r51],
+input[id=r52]:checked ~pre label[for=r52],
+input[id=r53]:checked ~pre label[for=r53],
+input[id=r54]:checked ~pre label[for=r54],
+input[id=r55]:checked ~pre label[for=r55],
+input[id=r56]:checked ~pre label[for=r56],
+input[id=r57]:checked ~pre label[for=r57],
+input[id=r58]:checked ~pre label[for=r58],
+input[id=r59]:checked ~pre label[for=r59],
+input[id=r60]:checked ~pre label[for=r60],
+input[id=r61]:checked ~pre label[for=r61],
+input[id=r62]:checked ~pre label[for=r62],
+input[id=r63]:checked ~pre label[for=r63]
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0,
+input[id=i1]:checked ~pre .i1,
+input[id=i2]:checked ~pre .i2,
+input[id=i3]:checked ~pre .i3,
+input[id=i4]:checked ~pre .i4
+{background: brown; color: #eed;}
+</style><input id="r0" type="radio" name="g"/>
+<input id="r1" type="radio" name="g"/>
+<input id="r2" type="radio" name="g"/>
+<input id="r3" type="radio" name="g"/>
+<input id="r4" type="radio" name="g"/>
+<input id="r5" type="radio" name="g"/>
+<input id="r6" type="radio" name="g"/>
+<input id="r7" type="radio" name="g"/>
+<input id="r8" type="radio" name="g"/>
+<input id="r9" type="radio" name="g"/>
+<input id="r10" type="radio" name="g"/>
+<input id="r11" type="radio" name="g"/>
+<input id="r12" type="radio" name="g"/>
+<input id="r13" type="radio" name="g"/>
+<input id="r14" type="radio" name="g"/>
+<input id="r15" type="radio" name="g"/>
+<input id="r16" type="radio" name="g"/>
+<input id="r17" type="radio" name="g"/>
+<input id="r18" type="radio" name="g"/>
+<input id="r19" type="radio" name="g"/>
+<input id="r20" type="radio" name="g"/>
+<input id="r21" type="radio" name="g"/>
+<input id="r22" type="radio" name="g"/>
+<input id="r23" type="radio" name="g"/>
+<input id="r24" type="radio" name="g"/>
+<input id="r25" type="radio" name="g"/>
+<input id="r26" type="radio" name="g"/>
+<input id="r27" type="radio" name="g"/>
+<input id="r28" type="radio" name="g"/>
+<input id="r29" type="radio" name="g"/>
+<input id="r30" type="radio" name="g"/>
+<input id="r31" type="radio" name="g"/>
+<input id="r32" type="radio" name="g"/>
+<input id="r33" type="radio" name="g"/>
+<input id="r34" type="radio" name="g"/>
+<input id="r35" type="radio" name="g"/>
+<input id="r36" type="radio" name="g"/>
+<input id="r37" type="radio" name="g"/>
+<input id="r38" type="radio" name="g"/>
+<input id="r39" type="radio" name="g"/>
+<input id="r40" type="radio" name="g"/>
+<input id="r41" type="radio" name="g"/>
+<input id="r42" type="radio" name="g"/>
+<input id="r43" type="radio" name="g"/>
+<input id="r44" type="radio" name="g"/>
+<input id="r45" type="radio" name="g"/>
+<input id="r46" type="radio" name="g"/>
+<input id="r47" type="radio" name="g"/>
+<input id="r48" type="radio" name="g"/>
+<input id="r49" type="radio" name="g"/>
+<input id="r50" type="radio" name="g"/>
+<input id="r51" type="radio" name="g"/>
+<input id="r52" type="radio" name="g"/>
+<input id="r53" type="radio" name="g"/>
+<input id="r54" type="radio" name="g"/>
+<input id="r55" type="radio" name="g"/>
+<input id="r56" type="radio" name="g"/>
+<input id="r57" type="radio" name="g"/>
+<input id="r58" type="radio" name="g"/>
+<input id="r59" type="radio" name="g"/>
+<input id="r60" type="radio" name="g"/>
+<input id="r61" type="radio" name="g"/>
+<input id="r62" type="radio" name="g"/>
+<input id="r63" type="radio" name="g"/>
+<input id="i0" type="radio" name="i"/>
+<input id="i1" type="radio" name="i"/>
+<input id="i2" type="radio" name="i"/>
+<input id="i3" type="radio" name="i"/>
+<input id="i4" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code><span class="comment">// Copyright 2020 The Libc Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// Use of this source code is governed by a BSD-style</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">// license that can be found in the LICENSE file.</span></code></span>
+<span class="codeline" id="line-4"><code></code></span>
+<span class="codeline" id="line-5"><code><span class="keyword">package</span> libc <span class="comment">// import "modernc.org/libc"</span></code></span>
+<span class="codeline" id="line-6"><code></code></span>
+<span class="codeline" id="line-7"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-8"><code>	<label for="i0"><span class="lit-string i0">"bytes"</span></label></code></span>
+<span class="codeline" id="line-9"><code>	<label for="i1"><span class="lit-string i1">"fmt"</span></label></code></span>
+<span class="codeline" id="line-10"><code>	<label for="i2"><span class="lit-string i2">"strconv"</span></label></code></span>
+<span class="codeline" id="line-11"><code>	<label for="i3"><span class="lit-string i3">"strings"</span></label></code></span>
+<span class="codeline" id="line-12"><code>	<label for="i4"><span class="lit-string i4">"unsafe"</span></label></code></span>
+<span class="codeline" id="line-13"><code>)</code></span>
+<span class="codeline" id="line-14"><code></code></span>
+<span class="codeline" id="line-15"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-16"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modNone" class="ident">modNone</a> = <a href="../../../pkg/builtin.html#name-iota" class="ident">iota</a></code></span>
+<span class="codeline" id="line-17"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modHH" class="ident">modHH</a></code></span>
+<span class="codeline" id="line-18"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modH" class="ident">modH</a></code></span>
+<span class="codeline" id="line-19"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modL" class="ident">modL</a></code></span>
+<span class="codeline" id="line-20"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modLL" class="ident">modLL</a></code></span>
+<span class="codeline" id="line-21"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modQ" class="ident">modQ</a></code></span>
+<span class="codeline" id="line-22"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modCapitalL" class="ident">modCapitalL</a></code></span>
+<span class="codeline" id="line-23"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modJ" class="ident">modJ</a></code></span>
+<span class="codeline" id="line-24"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modZ" class="ident">modZ</a></code></span>
+<span class="codeline" id="line-25"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modCapitalZ" class="ident">modCapitalZ</a></code></span>
+<span class="codeline" id="line-26"><code>	<a href="../../../pkg/modernc.org/libc.html#name-modT" class="ident">modT</a></code></span>
+<span class="codeline" id="line-27"><code>	<a href="../../../pkg/modernc.org/libc.html#name-mod32" class="ident">mod32</a></code></span>
+<span class="codeline" id="line-28"><code>	<a href="../../../pkg/modernc.org/libc.html#name-mod64" class="ident">mod64</a></code></span>
+<span class="codeline" id="line-29"><code>)</code></span>
+<span class="codeline" id="line-30"><code></code></span>
+<span class="codeline" id="line-31"><code><span class="comment">// Format of the format string</span></code></span>
+<span class="codeline" id="line-32"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-33"><code><span class="comment">// The format string is a character string, beginning and ending in its initial</span></code></span>
+<span class="codeline" id="line-34"><code><span class="comment">// shift state, if any.  The format string is composed of zero or more</span></code></span>
+<span class="codeline" id="line-35"><code><span class="comment">// directives: ordinary  characters  (not  %), which  are  copied unchanged to</span></code></span>
+<span class="codeline" id="line-36"><code><span class="comment">// the output stream; and conversion specifications, each of which results in</span></code></span>
+<span class="codeline" id="line-37"><code><span class="comment">// fetching zero or more subsequent arguments.</span></code></span>
+<span class="codeline" id="line-38"><code><span class="keyword">func</span> <label for="r0" class="ident"><a href="../../../pkg/modernc.org/libc.html#name-printf" class="ident">printf</a></label>(<label for="r1" class="ident">format</label>, <label for="r2" class="ident">args</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) []<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a> {</code></span>
+<span class="codeline" id="line-39"><code>	<label for="r3" class="ident">buf</label> := <a href="../../../pkg/bytes.html" class="ident i0">bytes</a>.<a href="../../bytes/buffer.go.html#line-450" class="ident">NewBuffer</a>(<a href="../../../pkg/builtin.html#name-nil" class="ident">nil</a>)</code></span>
+<span class="codeline" id="line-40"><code>	<span class="keyword">for</span> {</code></span>
+<span class="codeline" id="line-41"><code>		<span class="keyword">switch</span> <label for="r4" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r1" class="ident">format</label>)); <label for="r4" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-42"><code>		<span class="keyword">case</span> <span class="lit-number">'%'</span>:</code></span>
+<span class="codeline" id="line-43"><code>			<label for="r1" class="ident">format</label> = <a href="#line-60" class="ident">printfConversion</a>(<label for="r3" class="ident">buf</label>, <label for="r1" class="ident">format</label>, &amp;<label for="r2" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-44"><code>		<span class="keyword">case</span> <span class="lit-number">0</span>:</code></span>
+<span class="codeline" id="line-45"><code>			<span class="comment">// if dmesgs {</span></code></span>
+<span class="codeline" id="line-46"><code><span class="comment">			// 	dmesg("%v: %q", origin(1), buf.Bytes())</span></code></span>
+<span class="codeline" id="line-47"><code><span class="comment">			// }</span></code></span>
+<span class="codeline" id="line-48"><code>			<span class="keyword">return</span> <label for="r3" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-54" class="ident">Bytes</a>()</code></span>
+<span class="codeline" id="line-49"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-50"><code>			<label for="r1" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-51"><code>			<label for="r3" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-263" class="ident">WriteByte</a>(<label for="r4" class="ident">c</label>)</code></span>
+<span class="codeline" id="line-52"><code>		}</code></span>
+<span class="codeline" id="line-53"><code>	}</code></span>
+<span class="codeline" id="line-54"><code>}</code></span>
+<span class="codeline" id="line-55"><code></code></span>
+<span class="codeline" id="line-56"><code><span class="comment">// Each conversion specification is introduced by the character %, and ends</span></code></span>
+<span class="codeline" id="line-57"><code><span class="comment">// with a conversion specifier.  In between there may be (in this order) zero</span></code></span>
+<span class="codeline" id="line-58"><code><span class="comment">// or more flags, an optional minimum field width, an optional  precision  and</span></code></span>
+<span class="codeline" id="line-59"><code><span class="comment">// an optional length modifier.</span></code></span>
+<span class="codeline" id="line-60"><code><span class="keyword">func</span> <label for="r5" class="ident"><a href="../../../pkg/modernc.org/libc.html#name-printfConversion" class="ident">printfConversion</a></label>(<label for="r6" class="ident">buf</label> *<a href="../../../pkg/bytes.html" class="ident i0">bytes</a>.<a href="../../bytes/buffer.go.html#line-20" class="ident">Buffer</a>, <label for="r7" class="ident">format</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r8" class="ident">args</label> *<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a> {</code></span>
+<span class="codeline" id="line-61"><code>	<label for="r7" class="ident">format</label>++ <span class="comment">// '%'</span></code></span>
+<span class="codeline" id="line-62"><code>	<label for="r9" class="ident">spec</label> := <span class="lit-string">"%"</span></code></span>
+<span class="codeline" id="line-63"><code></code></span>
+<span class="codeline" id="line-64"><code>	<span class="comment">// Flags characters</span></code></span>
+<span class="codeline" id="line-65"><code><span class="comment">	//</span></code></span>
+<span class="codeline" id="line-66"><code><span class="comment">	// The character % is followed by zero or more of the following flags:</span></code></span>
+<span class="codeline" id="line-67"><code><label for="r10" class="ident">flags</label>:</code></span>
+<span class="codeline" id="line-68"><code>	<span class="keyword">for</span> {</code></span>
+<span class="codeline" id="line-69"><code>		<span class="keyword">switch</span> <label for="r11" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r7" class="ident">format</label>)); <label for="r11" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-70"><code>		<span class="keyword">case</span> <span class="lit-number">'#'</span>:</code></span>
+<span class="codeline" id="line-71"><code>			<span class="comment">// The value should be converted to an "alternate form".  For o conversions,</span></code></span>
+<span class="codeline" id="line-72"><code><span class="comment">			// the first character of the output string is made zero (by prefixing a 0 if</span></code></span>
+<span class="codeline" id="line-73"><code><span class="comment">			// it was not zero already).  For x and  X  conversions,  a nonzero result has</span></code></span>
+<span class="codeline" id="line-74"><code><span class="comment">			// the string "0x" (or "0X" for X conversions) prepended to it.  For a, A, e,</span></code></span>
+<span class="codeline" id="line-75"><code><span class="comment">			// E, f, F, g, and G conversions, the result will always contain a decimal</span></code></span>
+<span class="codeline" id="line-76"><code><span class="comment">			// point, even if no digits follow it (normally, a decimal point appears in the</span></code></span>
+<span class="codeline" id="line-77"><code><span class="comment">			// results of those conversions only if a digit follows).  For g and G</span></code></span>
+<span class="codeline" id="line-78"><code><span class="comment">			// conversions, trailing  zeros are not removed from the result as they would</span></code></span>
+<span class="codeline" id="line-79"><code><span class="comment">			// otherwise be.  For other conversions, the result is undefined.</span></code></span>
+<span class="codeline" id="line-80"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-81"><code>			<label for="r9" class="ident">spec</label> += <span class="lit-string">"#"</span></code></span>
+<span class="codeline" id="line-82"><code>		<span class="keyword">case</span> <span class="lit-number">'0'</span>:</code></span>
+<span class="codeline" id="line-83"><code>			<span class="comment">// The  value  should  be zero padded.  For d, i, o, u, x, X, a, A, e, E, f, F,</span></code></span>
+<span class="codeline" id="line-84"><code><span class="comment">			// g, and G conversions, the converted value is padded on the left with zeros</span></code></span>
+<span class="codeline" id="line-85"><code><span class="comment">			// rather than blanks.  If the 0 and - flags both appear, the 0 flag is</span></code></span>
+<span class="codeline" id="line-86"><code><span class="comment">			// ignored.  If a precision is given with a numeric conversion (d, i, o, u, x,</span></code></span>
+<span class="codeline" id="line-87"><code><span class="comment">			// and X), the 0 flag is ignored.  For other conversions, the  behav‐ ior is</span></code></span>
+<span class="codeline" id="line-88"><code><span class="comment">			// undefined.</span></code></span>
+<span class="codeline" id="line-89"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-90"><code>			<label for="r9" class="ident">spec</label> += <span class="lit-string">"0"</span></code></span>
+<span class="codeline" id="line-91"><code>		<span class="keyword">case</span> <span class="lit-number">'-'</span>:</code></span>
+<span class="codeline" id="line-92"><code>			<span class="comment">// The  converted value is to be left adjusted on the field boundary.  (The</span></code></span>
+<span class="codeline" id="line-93"><code><span class="comment">			// default is right justification.)  The converted value is padded on the right</span></code></span>
+<span class="codeline" id="line-94"><code><span class="comment">			// with blanks, rather than on the left with blanks or zeros.  A - overrides a</span></code></span>
+<span class="codeline" id="line-95"><code><span class="comment">			// 0 if both are given.</span></code></span>
+<span class="codeline" id="line-96"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-97"><code>			<label for="r9" class="ident">spec</label> += <span class="lit-string">"-"</span></code></span>
+<span class="codeline" id="line-98"><code>		<span class="keyword">case</span> <span class="lit-number">' '</span>:</code></span>
+<span class="codeline" id="line-99"><code>			<span class="comment">// A blank should be left before a positive number (or empty string) produced</span></code></span>
+<span class="codeline" id="line-100"><code><span class="comment">			// by a signed conversion.</span></code></span>
+<span class="codeline" id="line-101"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-102"><code>			<label for="r9" class="ident">spec</label> += <span class="lit-string">" "</span></code></span>
+<span class="codeline" id="line-103"><code>		<span class="keyword">case</span> <span class="lit-number">'+'</span>:</code></span>
+<span class="codeline" id="line-104"><code>			<span class="comment">// A sign (+ or -) should always be placed before a number produced by a signed</span></code></span>
+<span class="codeline" id="line-105"><code><span class="comment">			// conversion.  By default, a sign is used only for negative numbers.  A +</span></code></span>
+<span class="codeline" id="line-106"><code><span class="comment">			// overrides a space  if  both  are used.</span></code></span>
+<span class="codeline" id="line-107"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-108"><code>			<label for="r9" class="ident">spec</label> += <span class="lit-string">"+"</span></code></span>
+<span class="codeline" id="line-109"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-110"><code>			<span class="keyword">break</span> <label for="r10" class="ident">flags</label></code></span>
+<span class="codeline" id="line-111"><code>		}</code></span>
+<span class="codeline" id="line-112"><code>	}</code></span>
+<span class="codeline" id="line-113"><code>	<label for="r7" class="ident">format</label>, <label for="r12" class="ident">width</label>, <label for="r13" class="ident">hasWidth</label> := <a href="#line-443" class="ident">parseFieldWidth</a>(<label for="r7" class="ident">format</label>)</code></span>
+<span class="codeline" id="line-114"><code>	<span class="keyword">if</span> <label for="r13" class="ident">hasWidth</label> {</code></span>
+<span class="codeline" id="line-115"><code>		<label for="r9" class="ident">spec</label> += <a href="../../../pkg/strconv.html" class="ident i2">strconv</a>.<a href="../../strconv/itoa.go.html#line-34" class="ident">Itoa</a>(<label for="r12" class="ident">width</label>)</code></span>
+<span class="codeline" id="line-116"><code>	}</code></span>
+<span class="codeline" id="line-117"><code>	<label for="r7" class="ident">format</label>, <label for="r14" class="ident">prec</label>, <label for="r15" class="ident">hasPrecision</label> := <a href="#line-482" class="ident">parsePrecision</a>(<label for="r7" class="ident">format</label>, <label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-118"><code>	<label for="r7" class="ident">format</label>, <label for="r16" class="ident">mod</label> := <a href="#line-555" class="ident">parseLengthModifier</a>(<label for="r7" class="ident">format</label>)</code></span>
+<span class="codeline" id="line-119"><code></code></span>
+<span class="codeline" id="line-120"><code>	<span class="keyword">var</span> <label for="r17" class="ident">str</label> <a href="../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-121"><code></code></span>
+<span class="codeline" id="line-122"><code><label for="r18" class="ident">more</label>:</code></span>
+<span class="codeline" id="line-123"><code>	<span class="comment">// Conversion specifiers</span></code></span>
+<span class="codeline" id="line-124"><code><span class="comment">	//</span></code></span>
+<span class="codeline" id="line-125"><code><span class="comment">	// A character that specifies the type of conversion to be applied.  The</span></code></span>
+<span class="codeline" id="line-126"><code><span class="comment">	// conversion specifiers and their meanings are:</span></code></span>
+<span class="codeline" id="line-127"><code>	<span class="keyword">switch</span> <label for="r19" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r7" class="ident">format</label>)); <label for="r19" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-128"><code>	<span class="keyword">case</span> <span class="lit-number">'d'</span>, <span class="lit-number">'i'</span>:</code></span>
+<span class="codeline" id="line-129"><code>		<span class="comment">// The  int argument is converted to signed decimal notation.  The precision,</span></code></span>
+<span class="codeline" id="line-130"><code><span class="comment">		// if any, gives the minimum number of digits that must appear; if the</span></code></span>
+<span class="codeline" id="line-131"><code><span class="comment">		// converted value requires fewer digits, it is padded on the left with zeros.</span></code></span>
+<span class="codeline" id="line-132"><code><span class="comment">		// The default precision is 1.  When 0 is printed with an explicit precision 0,</span></code></span>
+<span class="codeline" id="line-133"><code><span class="comment">		// the output is empty.</span></code></span>
+<span class="codeline" id="line-134"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-135"><code>		<span class="keyword">var</span> <label for="r20" class="ident">arg</label> <a href="../../../pkg/builtin.html#name-int64" class="ident">int64</a></code></span>
+<span class="codeline" id="line-136"><code>		<span class="keyword">switch</span> <label for="r16" class="ident">mod</label> {</code></span>
+<span class="codeline" id="line-137"><code>		<span class="keyword">case</span> <a href="#line-16" class="ident">modNone</a>, <a href="#line-19" class="ident">modL</a>, <a href="#line-20" class="ident">modLL</a>, <a href="#line-28" class="ident">mod64</a>:</code></span>
+<span class="codeline" id="line-138"><code>			<label for="r20" class="ident">arg</label> = <a href="etc.go.html#line-467" class="ident">VaInt64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-139"><code>		<span class="keyword">case</span> <a href="#line-18" class="ident">modH</a>:</code></span>
+<span class="codeline" id="line-140"><code>			<label for="r20" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-int64" class="ident">int64</a>(<a href="../../../pkg/builtin.html#name-int16" class="ident">int16</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-141"><code>		<span class="keyword">case</span> <a href="#line-17" class="ident">modHH</a>:</code></span>
+<span class="codeline" id="line-142"><code>			<label for="r20" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-int64" class="ident">int64</a>(<a href="../../../pkg/builtin.html#name-int8" class="ident">int8</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-143"><code>		<span class="keyword">case</span> <a href="#line-27" class="ident">mod32</a>:</code></span>
+<span class="codeline" id="line-144"><code>			<label for="r20" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-int64" class="ident">int64</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>))</code></span>
+<span class="codeline" id="line-145"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-146"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r16" class="ident">mod</label>))</code></span>
+<span class="codeline" id="line-147"><code>		}</code></span>
+<span class="codeline" id="line-148"><code></code></span>
+<span class="codeline" id="line-149"><code>		<span class="keyword">if</span> <label for="r20" class="ident">arg</label> == <span class="lit-number">0</span> &amp;&amp; <label for="r15" class="ident">hasPrecision</label> &amp;&amp; <label for="r14" class="ident">prec</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-150"><code>			<span class="keyword">break</span></code></span>
+<span class="codeline" id="line-151"><code>		}</code></span>
+<span class="codeline" id="line-152"><code></code></span>
+<span class="codeline" id="line-153"><code>		<span class="keyword">if</span> <label for="r15" class="ident">hasPrecision</label> {</code></span>
+<span class="codeline" id="line-154"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r14" class="ident">prec</label>))</code></span>
+<span class="codeline" id="line-155"><code>		}</code></span>
+<span class="codeline" id="line-156"><code></code></span>
+<span class="codeline" id="line-157"><code>		<label for="r21" class="ident">f</label> := <label for="r9" class="ident">spec</label> + <span class="lit-string">"d"</span></code></span>
+<span class="codeline" id="line-158"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r21" class="ident">f</label>, <label for="r20" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-159"><code>	<span class="keyword">case</span> <span class="lit-number">'u'</span>:</code></span>
+<span class="codeline" id="line-160"><code>		<span class="comment">// The unsigned int argument is converted to unsigned decimal notation. The</span></code></span>
+<span class="codeline" id="line-161"><code><span class="comment">		// precision, if any, gives the minimum number of digits that must appear; if</span></code></span>
+<span class="codeline" id="line-162"><code><span class="comment">		// the converted value requires fewer digits, it is padded on the left with</span></code></span>
+<span class="codeline" id="line-163"><code><span class="comment">		// zeros.  The default precision is 1.  When 0 is printed with an explicit</span></code></span>
+<span class="codeline" id="line-164"><code><span class="comment">		// precision 0, the output is empty.</span></code></span>
+<span class="codeline" id="line-165"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-166"><code>		<span class="keyword">var</span> <label for="r22" class="ident">arg</label> <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a></code></span>
+<span class="codeline" id="line-167"><code>		<span class="keyword">switch</span> <label for="r16" class="ident">mod</label> {</code></span>
+<span class="codeline" id="line-168"><code>		<span class="keyword">case</span> <a href="#line-16" class="ident">modNone</a>, <a href="#line-19" class="ident">modL</a>, <a href="#line-20" class="ident">modLL</a>, <a href="#line-28" class="ident">mod64</a>:</code></span>
+<span class="codeline" id="line-169"><code>			<label for="r22" class="ident">arg</label> = <a href="etc.go.html#line-480" class="ident">VaUint64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-170"><code>		<span class="keyword">case</span> <a href="#line-18" class="ident">modH</a>:</code></span>
+<span class="codeline" id="line-171"><code>			<label for="r22" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="../../../pkg/builtin.html#name-uint16" class="ident">uint16</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-172"><code>		<span class="keyword">case</span> <a href="#line-17" class="ident">modHH</a>:</code></span>
+<span class="codeline" id="line-173"><code>			<label for="r22" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="../../../pkg/builtin.html#name-uint8" class="ident">uint8</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-174"><code>		<span class="keyword">case</span> <a href="#line-27" class="ident">mod32</a>:</code></span>
+<span class="codeline" id="line-175"><code>			<label for="r22" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>))</code></span>
+<span class="codeline" id="line-176"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-177"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r16" class="ident">mod</label>))</code></span>
+<span class="codeline" id="line-178"><code>		}</code></span>
+<span class="codeline" id="line-179"><code></code></span>
+<span class="codeline" id="line-180"><code>		<span class="keyword">if</span> <label for="r22" class="ident">arg</label> == <span class="lit-number">0</span> &amp;&amp; <label for="r15" class="ident">hasPrecision</label> &amp;&amp; <label for="r14" class="ident">prec</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-181"><code>			<span class="keyword">break</span></code></span>
+<span class="codeline" id="line-182"><code>		}</code></span>
+<span class="codeline" id="line-183"><code></code></span>
+<span class="codeline" id="line-184"><code>		<span class="keyword">if</span> <label for="r15" class="ident">hasPrecision</label> {</code></span>
+<span class="codeline" id="line-185"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r14" class="ident">prec</label>))</code></span>
+<span class="codeline" id="line-186"><code>		}</code></span>
+<span class="codeline" id="line-187"><code></code></span>
+<span class="codeline" id="line-188"><code>		<label for="r23" class="ident">f</label> := <label for="r9" class="ident">spec</label> + <span class="lit-string">"d"</span></code></span>
+<span class="codeline" id="line-189"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r23" class="ident">f</label>, <label for="r22" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-190"><code>	<span class="keyword">case</span> <span class="lit-number">'o'</span>:</code></span>
+<span class="codeline" id="line-191"><code>		<span class="comment">// The unsigned int argument is converted to unsigned octal notation. The</span></code></span>
+<span class="codeline" id="line-192"><code><span class="comment">		// precision, if any, gives the minimum number of digits that must appear; if</span></code></span>
+<span class="codeline" id="line-193"><code><span class="comment">		// the converted value requires fewer digits, it is padded on the left with</span></code></span>
+<span class="codeline" id="line-194"><code><span class="comment">		// zeros.  The default precision is 1.  When 0 is printed with an explicit</span></code></span>
+<span class="codeline" id="line-195"><code><span class="comment">		// precision 0, the output is empty.</span></code></span>
+<span class="codeline" id="line-196"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-197"><code>		<span class="keyword">var</span> <label for="r24" class="ident">arg</label> <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a></code></span>
+<span class="codeline" id="line-198"><code>		<span class="keyword">switch</span> <label for="r16" class="ident">mod</label> {</code></span>
+<span class="codeline" id="line-199"><code>		<span class="keyword">case</span> <a href="#line-16" class="ident">modNone</a>, <a href="#line-19" class="ident">modL</a>, <a href="#line-20" class="ident">modLL</a>, <a href="#line-28" class="ident">mod64</a>:</code></span>
+<span class="codeline" id="line-200"><code>			<label for="r24" class="ident">arg</label> = <a href="etc.go.html#line-480" class="ident">VaUint64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-201"><code>		<span class="keyword">case</span> <a href="#line-18" class="ident">modH</a>:</code></span>
+<span class="codeline" id="line-202"><code>			<label for="r24" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="../../../pkg/builtin.html#name-uint16" class="ident">uint16</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-203"><code>		<span class="keyword">case</span> <a href="#line-17" class="ident">modHH</a>:</code></span>
+<span class="codeline" id="line-204"><code>			<label for="r24" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="../../../pkg/builtin.html#name-uint8" class="ident">uint8</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-205"><code>		<span class="keyword">case</span> <a href="#line-27" class="ident">mod32</a>:</code></span>
+<span class="codeline" id="line-206"><code>			<label for="r24" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>))</code></span>
+<span class="codeline" id="line-207"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-208"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r16" class="ident">mod</label>))</code></span>
+<span class="codeline" id="line-209"><code>		}</code></span>
+<span class="codeline" id="line-210"><code></code></span>
+<span class="codeline" id="line-211"><code>		<span class="keyword">if</span> <label for="r24" class="ident">arg</label> == <span class="lit-number">0</span> &amp;&amp; <label for="r15" class="ident">hasPrecision</label> &amp;&amp; <label for="r14" class="ident">prec</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-212"><code>			<span class="keyword">break</span></code></span>
+<span class="codeline" id="line-213"><code>		}</code></span>
+<span class="codeline" id="line-214"><code></code></span>
+<span class="codeline" id="line-215"><code>		<span class="keyword">if</span> <label for="r15" class="ident">hasPrecision</label> {</code></span>
+<span class="codeline" id="line-216"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r14" class="ident">prec</label>))</code></span>
+<span class="codeline" id="line-217"><code>		}</code></span>
+<span class="codeline" id="line-218"><code></code></span>
+<span class="codeline" id="line-219"><code>		<label for="r25" class="ident">f</label> := <label for="r9" class="ident">spec</label> + <span class="lit-string">"o"</span></code></span>
+<span class="codeline" id="line-220"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r25" class="ident">f</label>, <label for="r24" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-221"><code>	<span class="keyword">case</span> <span class="lit-number">'I'</span>:</code></span>
+<span class="codeline" id="line-222"><code>		<span class="keyword">if</span> !<a href="libc.go.html#line-48" class="ident">isWindows</a> {</code></span>
+<span class="codeline" id="line-223"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">"%#U"</span>, <label for="r19" class="ident">c</label>))</code></span>
+<span class="codeline" id="line-224"><code>		}</code></span>
+<span class="codeline" id="line-225"><code></code></span>
+<span class="codeline" id="line-226"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-227"><code>		<span class="keyword">switch</span> <label for="r19" class="ident">c</label> = *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r7" class="ident">format</label>)); <label for="r19" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-228"><code>		<span class="keyword">case</span> <span class="lit-number">'x'</span>, <span class="lit-number">'X'</span>:</code></span>
+<span class="codeline" id="line-229"><code>			<span class="comment">// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-wsprintfa</span></code></span>
+<span class="codeline" id="line-230"><code><span class="comment">			//</span></code></span>
+<span class="codeline" id="line-231"><code><span class="comment">			// Ix, IX</span></code></span>
+<span class="codeline" id="line-232"><code><span class="comment">			//</span></code></span>
+<span class="codeline" id="line-233"><code><span class="comment">			// 64-bit unsigned hexadecimal integer in lowercase or uppercase on 64-bit</span></code></span>
+<span class="codeline" id="line-234"><code><span class="comment">			// platforms, 32-bit unsigned hexadecimal integer in lowercase or uppercase on</span></code></span>
+<span class="codeline" id="line-235"><code><span class="comment">			// 32-bit platforms.</span></code></span>
+<span class="codeline" id="line-236"><code>			<span class="keyword">if</span> <a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Sizeof" class="ident">Sizeof</a>(<a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<span class="lit-number">0</span>)) == <span class="lit-number">4</span> {</code></span>
+<span class="codeline" id="line-237"><code>				<label for="r16" class="ident">mod</label> = <a href="#line-27" class="ident">mod32</a></code></span>
+<span class="codeline" id="line-238"><code>			}</code></span>
+<span class="codeline" id="line-239"><code>		<span class="keyword">case</span> <span class="lit-number">'3'</span>:</code></span>
+<span class="codeline" id="line-240"><code>			<span class="comment">// https://en.wikipedia.org/wiki/Printf_format_string#Length_field</span></code></span>
+<span class="codeline" id="line-241"><code><span class="comment">			//</span></code></span>
+<span class="codeline" id="line-242"><code><span class="comment">			// I32	For integer types, causes printf to expect a 32-bit (double word) integer argument.</span></code></span>
+<span class="codeline" id="line-243"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-244"><code>			<span class="keyword">switch</span> <label for="r19" class="ident">c</label> = *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r7" class="ident">format</label>)); <label for="r19" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-245"><code>			<span class="keyword">case</span> <span class="lit-number">'2'</span>:</code></span>
+<span class="codeline" id="line-246"><code>				<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-247"><code>				<label for="r16" class="ident">mod</label> = <a href="#line-27" class="ident">mod32</a></code></span>
+<span class="codeline" id="line-248"><code>				<span class="keyword">goto</span> <label for="r18" class="ident">more</label></code></span>
+<span class="codeline" id="line-249"><code>			<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-250"><code>				<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">"%#U"</span>, <label for="r19" class="ident">c</label>))</code></span>
+<span class="codeline" id="line-251"><code>			}</code></span>
+<span class="codeline" id="line-252"><code>		<span class="keyword">case</span> <span class="lit-number">'6'</span>:</code></span>
+<span class="codeline" id="line-253"><code>			<span class="comment">// https://en.wikipedia.org/wiki/Printf_format_string#Length_field</span></code></span>
+<span class="codeline" id="line-254"><code><span class="comment">			//</span></code></span>
+<span class="codeline" id="line-255"><code><span class="comment">			// I64	For integer types, causes printf to expect a 64-bit (quad word) integer argument.</span></code></span>
+<span class="codeline" id="line-256"><code>			<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-257"><code>			<span class="keyword">switch</span> <label for="r19" class="ident">c</label> = *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r7" class="ident">format</label>)); <label for="r19" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-258"><code>			<span class="keyword">case</span> <span class="lit-number">'4'</span>:</code></span>
+<span class="codeline" id="line-259"><code>				<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-260"><code>				<label for="r16" class="ident">mod</label> = <a href="#line-28" class="ident">mod64</a></code></span>
+<span class="codeline" id="line-261"><code>				<span class="keyword">goto</span> <label for="r18" class="ident">more</label></code></span>
+<span class="codeline" id="line-262"><code>			<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-263"><code>				<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">"%#U"</span>, <label for="r19" class="ident">c</label>))</code></span>
+<span class="codeline" id="line-264"><code>			}</code></span>
+<span class="codeline" id="line-265"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-266"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">"%#U"</span>, <label for="r19" class="ident">c</label>))</code></span>
+<span class="codeline" id="line-267"><code>		}</code></span>
+<span class="codeline" id="line-268"><code>		<span class="keyword">fallthrough</span></code></span>
+<span class="codeline" id="line-269"><code>	<span class="keyword">case</span> <span class="lit-number">'X'</span>:</code></span>
+<span class="codeline" id="line-270"><code>		<span class="keyword">fallthrough</span></code></span>
+<span class="codeline" id="line-271"><code>	<span class="keyword">case</span> <span class="lit-number">'x'</span>:</code></span>
+<span class="codeline" id="line-272"><code>		<span class="comment">// The unsigned int argument is converted to unsigned hexadecimal notation.</span></code></span>
+<span class="codeline" id="line-273"><code><span class="comment">		// The letters abcdef are used for x  conversions;  the letters ABCDEF are used</span></code></span>
+<span class="codeline" id="line-274"><code><span class="comment">		// for X conversions.  The precision, if any, gives the minimum number of</span></code></span>
+<span class="codeline" id="line-275"><code><span class="comment">		// digits that must appear; if the converted value requires fewer digits, it is</span></code></span>
+<span class="codeline" id="line-276"><code><span class="comment">		// padded on the left with zeros.  The default precision is 1.  When 0 is</span></code></span>
+<span class="codeline" id="line-277"><code><span class="comment">		// printed with an explicit precision 0, the output is empty.</span></code></span>
+<span class="codeline" id="line-278"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-279"><code>		<span class="keyword">var</span> <label for="r26" class="ident">arg</label> <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a></code></span>
+<span class="codeline" id="line-280"><code>		<span class="keyword">switch</span> <label for="r16" class="ident">mod</label> {</code></span>
+<span class="codeline" id="line-281"><code>		<span class="keyword">case</span> <a href="#line-16" class="ident">modNone</a>, <a href="#line-19" class="ident">modL</a>, <a href="#line-20" class="ident">modLL</a>, <a href="#line-28" class="ident">mod64</a>:</code></span>
+<span class="codeline" id="line-282"><code>			<label for="r26" class="ident">arg</label> = <a href="etc.go.html#line-480" class="ident">VaUint64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-283"><code>		<span class="keyword">case</span> <a href="#line-18" class="ident">modH</a>:</code></span>
+<span class="codeline" id="line-284"><code>			<label for="r26" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="../../../pkg/builtin.html#name-uint16" class="ident">uint16</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-285"><code>		<span class="keyword">case</span> <a href="#line-17" class="ident">modHH</a>:</code></span>
+<span class="codeline" id="line-286"><code>			<label for="r26" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="../../../pkg/builtin.html#name-uint8" class="ident">uint8</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)))</code></span>
+<span class="codeline" id="line-287"><code>		<span class="keyword">case</span> <a href="#line-27" class="ident">mod32</a>:</code></span>
+<span class="codeline" id="line-288"><code>			<label for="r26" class="ident">arg</label> = <a href="../../../pkg/builtin.html#name-uint64" class="ident">uint64</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>))</code></span>
+<span class="codeline" id="line-289"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-290"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>, <label for="r16" class="ident">mod</label>))</code></span>
+<span class="codeline" id="line-291"><code>		}</code></span>
+<span class="codeline" id="line-292"><code></code></span>
+<span class="codeline" id="line-293"><code>		<span class="keyword">if</span> <label for="r26" class="ident">arg</label> == <span class="lit-number">0</span> &amp;&amp; <label for="r15" class="ident">hasPrecision</label> &amp;&amp; <label for="r14" class="ident">prec</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-294"><code>			<span class="keyword">break</span></code></span>
+<span class="codeline" id="line-295"><code>		}</code></span>
+<span class="codeline" id="line-296"><code></code></span>
+<span class="codeline" id="line-297"><code>		<span class="keyword">if</span> <a href="../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../strings/strings.go.html#line-61" class="ident">Contains</a>(<label for="r9" class="ident">spec</label>, <span class="lit-string">"#"</span>) &amp;&amp; <label for="r26" class="ident">arg</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-298"><code>			<label for="r9" class="ident">spec</label> = <a href="../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../strings/strings.go.html#line-963" class="ident">ReplaceAll</a>(<label for="r9" class="ident">spec</label>, <span class="lit-string">"#"</span>, <span class="lit-string">""</span>)</code></span>
+<span class="codeline" id="line-299"><code>		}</code></span>
+<span class="codeline" id="line-300"><code>		<span class="keyword">var</span> <label for="r27" class="ident">f</label> <a href="../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-301"><code>		<span class="keyword">switch</span> {</code></span>
+<span class="codeline" id="line-302"><code>		<span class="keyword">case</span> <label for="r15" class="ident">hasPrecision</label>:</code></span>
+<span class="codeline" id="line-303"><code>			<label for="r27" class="ident">f</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<span class="lit-string">"%s.%d%c"</span>, <label for="r9" class="ident">spec</label>, <label for="r14" class="ident">prec</label>, <label for="r19" class="ident">c</label>)</code></span>
+<span class="codeline" id="line-304"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-305"><code>			<label for="r27" class="ident">f</label> = <label for="r9" class="ident">spec</label> + <a href="../../../pkg/builtin.html#name-string" class="ident">string</a>(<label for="r19" class="ident">c</label>)</code></span>
+<span class="codeline" id="line-306"><code>		}</code></span>
+<span class="codeline" id="line-307"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r27" class="ident">f</label>, <label for="r26" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-308"><code>	<span class="keyword">case</span> <span class="lit-number">'e'</span>, <span class="lit-number">'E'</span>:</code></span>
+<span class="codeline" id="line-309"><code>		<span class="comment">// The double argument is rounded and converted in the style [-]d.ddde±dd where</span></code></span>
+<span class="codeline" id="line-310"><code><span class="comment">		// there is one digit before the decimal-point character and the number of</span></code></span>
+<span class="codeline" id="line-311"><code><span class="comment">		// digits after it is equal to  the precision;  if the precision is missing, it</span></code></span>
+<span class="codeline" id="line-312"><code><span class="comment">		// is taken as 6; if the precision is zero, no decimal-point character appears.</span></code></span>
+<span class="codeline" id="line-313"><code><span class="comment">		// An E conversion uses the letter E (rather than e) to intro‐ duce the</span></code></span>
+<span class="codeline" id="line-314"><code><span class="comment">		// exponent.  The exponent always contains at least two digits; if the value is</span></code></span>
+<span class="codeline" id="line-315"><code><span class="comment">		// zero, the exponent is 00.</span></code></span>
+<span class="codeline" id="line-316"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-317"><code>		<label for="r28" class="ident">arg</label> := <a href="etc.go.html#line-506" class="ident">VaFloat64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-318"><code>		<span class="keyword">if</span> !<label for="r15" class="ident">hasPrecision</label> {</code></span>
+<span class="codeline" id="line-319"><code>			<label for="r14" class="ident">prec</label> = <span class="lit-number">6</span></code></span>
+<span class="codeline" id="line-320"><code>		}</code></span>
+<span class="codeline" id="line-321"><code>		<label for="r29" class="ident">f</label> := <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<span class="lit-string">"%s.%d%c"</span>, <label for="r9" class="ident">spec</label>, <label for="r14" class="ident">prec</label>, <label for="r19" class="ident">c</label>)</code></span>
+<span class="codeline" id="line-322"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r29" class="ident">f</label>, <label for="r28" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-323"><code>	<span class="keyword">case</span> <span class="lit-number">'f'</span>, <span class="lit-number">'F'</span>:</code></span>
+<span class="codeline" id="line-324"><code>		<span class="comment">// The double argument is rounded and converted to decimal notation in the</span></code></span>
+<span class="codeline" id="line-325"><code><span class="comment">		// style [-]ddd.ddd, where the number of digits after the decimal-point</span></code></span>
+<span class="codeline" id="line-326"><code><span class="comment">		// character  is  equal  to  the  precision specification.   If  the  precision</span></code></span>
+<span class="codeline" id="line-327"><code><span class="comment">		// is missing, it is taken as 6; if the precision is explicitly zero, no</span></code></span>
+<span class="codeline" id="line-328"><code><span class="comment">		// decimal-point character appears.  If a decimal point appears, at least one</span></code></span>
+<span class="codeline" id="line-329"><code><span class="comment">		// digit appears before it.</span></code></span>
+<span class="codeline" id="line-330"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-331"><code>		<label for="r30" class="ident">arg</label> := <a href="etc.go.html#line-506" class="ident">VaFloat64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-332"><code>		<span class="keyword">if</span> !<label for="r15" class="ident">hasPrecision</label> {</code></span>
+<span class="codeline" id="line-333"><code>			<label for="r14" class="ident">prec</label> = <span class="lit-number">6</span></code></span>
+<span class="codeline" id="line-334"><code>		}</code></span>
+<span class="codeline" id="line-335"><code>		<label for="r31" class="ident">f</label> := <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<span class="lit-string">"%s.%d%c"</span>, <label for="r9" class="ident">spec</label>, <label for="r14" class="ident">prec</label>, <label for="r19" class="ident">c</label>)</code></span>
+<span class="codeline" id="line-336"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r31" class="ident">f</label>, <label for="r30" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-337"><code>	<span class="keyword">case</span> <span class="lit-number">'G'</span>:</code></span>
+<span class="codeline" id="line-338"><code>		<span class="keyword">fallthrough</span></code></span>
+<span class="codeline" id="line-339"><code>	<span class="keyword">case</span> <span class="lit-number">'g'</span>:</code></span>
+<span class="codeline" id="line-340"><code>		<span class="comment">// The double argument is converted in style f or e (or F or E for G</span></code></span>
+<span class="codeline" id="line-341"><code><span class="comment">		// conversions).  The precision specifies the number of significant digits.  If</span></code></span>
+<span class="codeline" id="line-342"><code><span class="comment">		// the precision is missing, 6 digits are given;  if the precision is zero, it</span></code></span>
+<span class="codeline" id="line-343"><code><span class="comment">		// is treated as 1.  Style e is used if the exponent from its conversion is</span></code></span>
+<span class="codeline" id="line-344"><code><span class="comment">		// less than -4 or greater than or equal to the precision.  Trailing zeros are</span></code></span>
+<span class="codeline" id="line-345"><code><span class="comment">		// removed from the fractional part of the result; a decimal point appears only</span></code></span>
+<span class="codeline" id="line-346"><code><span class="comment">		// if it is followed by at least one digit.</span></code></span>
+<span class="codeline" id="line-347"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-348"><code>		<label for="r32" class="ident">arg</label> := <a href="etc.go.html#line-506" class="ident">VaFloat64</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-349"><code>		<span class="keyword">if</span> !<label for="r15" class="ident">hasPrecision</label> {</code></span>
+<span class="codeline" id="line-350"><code>			<label for="r14" class="ident">prec</label> = <span class="lit-number">6</span></code></span>
+<span class="codeline" id="line-351"><code>		}</code></span>
+<span class="codeline" id="line-352"><code>		<span class="keyword">if</span> <label for="r14" class="ident">prec</label> == <span class="lit-number">0</span> {</code></span>
+<span class="codeline" id="line-353"><code>			<label for="r14" class="ident">prec</label> = <span class="lit-number">1</span></code></span>
+<span class="codeline" id="line-354"><code>		}</code></span>
+<span class="codeline" id="line-355"><code></code></span>
+<span class="codeline" id="line-356"><code>		<label for="r33" class="ident">f</label> := <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<span class="lit-string">"%s.%d%c"</span>, <label for="r9" class="ident">spec</label>, <label for="r14" class="ident">prec</label>, <label for="r19" class="ident">c</label>)</code></span>
+<span class="codeline" id="line-357"><code>		<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r33" class="ident">f</label>, <label for="r32" class="ident">arg</label>)</code></span>
+<span class="codeline" id="line-358"><code>	<span class="keyword">case</span> <span class="lit-number">'s'</span>:</code></span>
+<span class="codeline" id="line-359"><code>		<span class="comment">// If  no l modifier is present: the const char * argument is expected to be a</span></code></span>
+<span class="codeline" id="line-360"><code><span class="comment">		// pointer to an array of character type (pointer to a string).  Characters</span></code></span>
+<span class="codeline" id="line-361"><code><span class="comment">		// from the array are written up to (but not including) a terminating null byte</span></code></span>
+<span class="codeline" id="line-362"><code><span class="comment">		// ('\0'); if a precision is specified, no more than the number specified are</span></code></span>
+<span class="codeline" id="line-363"><code><span class="comment">		// written.  If a precision  is  given,  no  null  byte  need  be present; if</span></code></span>
+<span class="codeline" id="line-364"><code><span class="comment">		// the precision is not specified, or is greater than the size of the array,</span></code></span>
+<span class="codeline" id="line-365"><code><span class="comment">		// the array must contain a terminating null byte.</span></code></span>
+<span class="codeline" id="line-366"><code><span class="comment">		//</span></code></span>
+<span class="codeline" id="line-367"><code><span class="comment">		// If  an  l  modifier  is  present: the const wchar_t * argument is expected</span></code></span>
+<span class="codeline" id="line-368"><code><span class="comment">		// to be a pointer to an array of wide characters.  Wide characters from the</span></code></span>
+<span class="codeline" id="line-369"><code><span class="comment">		// array are converted to multibyte characters (each by a call to the</span></code></span>
+<span class="codeline" id="line-370"><code><span class="comment">		// wcrtomb(3) function, with a conversion state starting in the initial state</span></code></span>
+<span class="codeline" id="line-371"><code><span class="comment">		// before the first wide character), up to and including a terminating null</span></code></span>
+<span class="codeline" id="line-372"><code><span class="comment">		// wide  character.   The  resulting  multibyte  characters are written up to</span></code></span>
+<span class="codeline" id="line-373"><code><span class="comment">		// (but not including) the terminating null byte.  If a precision is specified,</span></code></span>
+<span class="codeline" id="line-374"><code><span class="comment">		// no more bytes than the number specified are written, but no partial</span></code></span>
+<span class="codeline" id="line-375"><code><span class="comment">		// multibyte characters are written.  Note that the precision determines the</span></code></span>
+<span class="codeline" id="line-376"><code><span class="comment">		// number of bytes written, not the number of wide characters or  screen</span></code></span>
+<span class="codeline" id="line-377"><code><span class="comment">		// positions.   The  array  must contain a terminating null wide character,</span></code></span>
+<span class="codeline" id="line-378"><code><span class="comment">		// unless a precision is given and it is so small that the number of bytes</span></code></span>
+<span class="codeline" id="line-379"><code><span class="comment">		// written exceeds it before the end of the array is reached.</span></code></span>
+<span class="codeline" id="line-380"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-381"><code>		<label for="r34" class="ident">arg</label> := <a href="etc.go.html#line-519" class="ident">VaUintptr</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-382"><code>		<span class="keyword">switch</span> <label for="r16" class="ident">mod</label> {</code></span>
+<span class="codeline" id="line-383"><code>		<span class="keyword">case</span> <a href="#line-16" class="ident">modNone</a>:</code></span>
+<span class="codeline" id="line-384"><code>			<span class="keyword">var</span> <label for="r35" class="ident">f</label> <a href="../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-385"><code>			<span class="keyword">switch</span> {</code></span>
+<span class="codeline" id="line-386"><code>			<span class="keyword">case</span> <label for="r15" class="ident">hasPrecision</label>:</code></span>
+<span class="codeline" id="line-387"><code>				<label for="r35" class="ident">f</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<span class="lit-string">"%s.%ds"</span>, <label for="r9" class="ident">spec</label>, <label for="r14" class="ident">prec</label>)</code></span>
+<span class="codeline" id="line-388"><code>				<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r35" class="ident">f</label>, <a href="etc.go.html#line-558" class="ident">GoBytes</a>(<label for="r34" class="ident">arg</label>, <label for="r14" class="ident">prec</label>))</code></span>
+<span class="codeline" id="line-389"><code>			<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-390"><code>				<label for="r35" class="ident">f</label> = <label for="r9" class="ident">spec</label> + <span class="lit-string">"s"</span></code></span>
+<span class="codeline" id="line-391"><code>				<label for="r17" class="ident">str</label> = <a href="../../../pkg/fmt.html" class="ident i1">fmt</a>.<a href="../../fmt/print.go.html#line-217" class="ident">Sprintf</a>(<label for="r35" class="ident">f</label>, <a href="etc.go.html#line-540" class="ident">GoString</a>(<label for="r34" class="ident">arg</label>))</code></span>
+<span class="codeline" id="line-392"><code>			}</code></span>
+<span class="codeline" id="line-393"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-394"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-395"><code>		}</code></span>
+<span class="codeline" id="line-396"><code>	<span class="keyword">case</span> <span class="lit-number">'p'</span>:</code></span>
+<span class="codeline" id="line-397"><code>		<span class="comment">// The void * pointer argument is printed in hexadecimal (as if by %#x or</span></code></span>
+<span class="codeline" id="line-398"><code><span class="comment">		// %#lx).</span></code></span>
+<span class="codeline" id="line-399"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-400"><code>		<label for="r36" class="ident">arg</label> := <a href="etc.go.html#line-519" class="ident">VaUintptr</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-401"><code>		<label for="r6" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-180" class="ident">WriteString</a>(<span class="lit-string">"0x"</span>)</code></span>
+<span class="codeline" id="line-402"><code>		<label for="r6" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-180" class="ident">WriteString</a>(<a href="../../../pkg/strconv.html" class="ident i2">strconv</a>.<a href="../../strconv/itoa.go.html#line-25" class="ident">FormatInt</a>(<a href="../../../pkg/builtin.html#name-int64" class="ident">int64</a>(<label for="r36" class="ident">arg</label>), <span class="lit-number">16</span>))</code></span>
+<span class="codeline" id="line-403"><code>	<span class="keyword">case</span> <span class="lit-number">'c'</span>:</code></span>
+<span class="codeline" id="line-404"><code>		<span class="comment">// If no l modifier is present, the int argument is converted to an unsigned</span></code></span>
+<span class="codeline" id="line-405"><code><span class="comment">		// char, and the resulting character is written.  If an l modifier is present,</span></code></span>
+<span class="codeline" id="line-406"><code><span class="comment">		// the wint_t (wide character) ar‐ gument is converted to a multibyte sequence</span></code></span>
+<span class="codeline" id="line-407"><code><span class="comment">		// by a call to the wcrtomb(3) function, with a conversion state starting in</span></code></span>
+<span class="codeline" id="line-408"><code><span class="comment">		// the initial state, and the resulting multibyte string is  writ‐ ten.</span></code></span>
+<span class="codeline" id="line-409"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-410"><code>		<span class="keyword">switch</span> <label for="r16" class="ident">mod</label> {</code></span>
+<span class="codeline" id="line-411"><code>		<span class="keyword">case</span> <a href="#line-16" class="ident">modNone</a>:</code></span>
+<span class="codeline" id="line-412"><code>			<label for="r37" class="ident">arg</label> := <a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r8" class="ident">args</label>)</code></span>
+<span class="codeline" id="line-413"><code>			<label for="r6" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-263" class="ident">WriteByte</a>(<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>(<label for="r37" class="ident">arg</label>))</code></span>
+<span class="codeline" id="line-414"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-415"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-416"><code>		}</code></span>
+<span class="codeline" id="line-417"><code>	<span class="keyword">case</span> <span class="lit-number">'%'</span>:</code></span>
+<span class="codeline" id="line-418"><code>		<span class="comment">// A '%' is written.  No argument is converted.  The complete conversion</span></code></span>
+<span class="codeline" id="line-419"><code><span class="comment">		// specification is '%%'.</span></code></span>
+<span class="codeline" id="line-420"><code>		<label for="r7" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-421"><code>		<label for="r6" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-263" class="ident">WriteByte</a>(<span class="lit-number">'%'</span>)</code></span>
+<span class="codeline" id="line-422"><code>	<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-423"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">"%#U"</span>, <label for="r19" class="ident">c</label>))</code></span>
+<span class="codeline" id="line-424"><code>	}</code></span>
+<span class="codeline" id="line-425"><code></code></span>
+<span class="codeline" id="line-426"><code>	<label for="r6" class="ident">buf</label>.<a href="../../bytes/buffer.go.html#line-180" class="ident">WriteString</a>(<label for="r17" class="ident">str</label>)</code></span>
+<span class="codeline" id="line-427"><code>	<span class="keyword">return</span> <label for="r7" class="ident">format</label></code></span>
+<span class="codeline" id="line-428"><code>}</code></span>
+<span class="codeline" id="line-429"><code></code></span>
+<span class="codeline" id="line-430"><code><span class="comment">// Field width</span></code></span>
+<span class="codeline" id="line-431"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-432"><code><span class="comment">// An optional decimal digit string (with nonzero first digit) specifying a</span></code></span>
+<span class="codeline" id="line-433"><code><span class="comment">// minimum field width.  If the converted value has fewer characters than the</span></code></span>
+<span class="codeline" id="line-434"><code><span class="comment">// field width, it will be padded with spa‐ ces on the left (or right, if the</span></code></span>
+<span class="codeline" id="line-435"><code><span class="comment">// left-adjustment flag has been given).  Instead of a decimal digit string one</span></code></span>
+<span class="codeline" id="line-436"><code><span class="comment">// may write "*" or "*m$" (for some decimal integer m) to specify that the</span></code></span>
+<span class="codeline" id="line-437"><code><span class="comment">// field width  is  given  in the next argument, or in the m-th argument,</span></code></span>
+<span class="codeline" id="line-438"><code><span class="comment">// respectively, which must be of type int.  A negative field width is taken as</span></code></span>
+<span class="codeline" id="line-439"><code><span class="comment">// a '-' flag followed by a positive field width.  In no case does a</span></code></span>
+<span class="codeline" id="line-440"><code><span class="comment">// nonexistent or small field width cause truncation of a field; if the result</span></code></span>
+<span class="codeline" id="line-441"><code><span class="comment">// of a conversion is wider than the field width, the field is expanded to</span></code></span>
+<span class="codeline" id="line-442"><code><span class="comment">// contain the conversion result.</span></code></span>
+<span class="codeline" id="line-443"><code><span class="keyword">func</span> <label for="r38" class="ident"><a href="../../../pkg/modernc.org/libc.html#name-parseFieldWidth" class="ident">parseFieldWidth</a></label>(<label for="r39" class="ident">format</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) (<label for="r40" class="ident">_</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r41" class="ident">n</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>, <label for="r42" class="ident">ok</label> <a href="../../../pkg/builtin.html#name-bool" class="ident">bool</a>) {</code></span>
+<span class="codeline" id="line-444"><code>	<label for="r43" class="ident">first</label> := <a href="../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-445"><code>	<span class="keyword">for</span> {</code></span>
+<span class="codeline" id="line-446"><code>		<span class="keyword">var</span> <label for="r44" class="ident">digit</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-447"><code>		<span class="keyword">switch</span> <label for="r45" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r39" class="ident">format</label>)); {</code></span>
+<span class="codeline" id="line-448"><code>		<span class="keyword">case</span> <label for="r43" class="ident">first</label> &amp;&amp; <label for="r45" class="ident">c</label> == <span class="lit-number">'0'</span>:</code></span>
+<span class="codeline" id="line-449"><code>			<span class="keyword">return</span> <label for="r39" class="ident">format</label>, <label for="r41" class="ident">n</label>, <label for="r42" class="ident">ok</label></code></span>
+<span class="codeline" id="line-450"><code>		<span class="keyword">case</span> <label for="r43" class="ident">first</label> &amp;&amp; <label for="r45" class="ident">c</label> == <span class="lit-number">'*'</span>:</code></span>
+<span class="codeline" id="line-451"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-452"><code>		<span class="keyword">case</span> <label for="r45" class="ident">c</label> &gt;= <span class="lit-number">'0'</span> &amp;&amp; <label for="r45" class="ident">c</label> &lt;= <span class="lit-number">'9'</span>:</code></span>
+<span class="codeline" id="line-453"><code>			<label for="r39" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-454"><code>			<label for="r42" class="ident">ok</label> = <a href="../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-455"><code>			<label for="r43" class="ident">first</label> = <a href="../../../pkg/builtin.html#name-false" class="ident">false</a></code></span>
+<span class="codeline" id="line-456"><code>			<label for="r44" class="ident">digit</label> = <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<label for="r45" class="ident">c</label>) - <span class="lit-number">'0'</span></code></span>
+<span class="codeline" id="line-457"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-458"><code>			<span class="keyword">return</span> <label for="r39" class="ident">format</label>, <label for="r41" class="ident">n</label>, <label for="r42" class="ident">ok</label></code></span>
+<span class="codeline" id="line-459"><code>		}</code></span>
+<span class="codeline" id="line-460"><code></code></span>
+<span class="codeline" id="line-461"><code>		<label for="r46" class="ident">n0</label> := <label for="r41" class="ident">n</label></code></span>
+<span class="codeline" id="line-462"><code>		<label for="r41" class="ident">n</label> = <span class="lit-number">10</span>*<label for="r41" class="ident">n</label> + <label for="r44" class="ident">digit</label></code></span>
+<span class="codeline" id="line-463"><code>		<span class="keyword">if</span> <label for="r41" class="ident">n</label> &lt; <label for="r46" class="ident">n0</label> {</code></span>
+<span class="codeline" id="line-464"><code>			<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-465"><code>		}</code></span>
+<span class="codeline" id="line-466"><code>	}</code></span>
+<span class="codeline" id="line-467"><code>}</code></span>
+<span class="codeline" id="line-468"><code></code></span>
+<span class="codeline" id="line-469"><code><span class="comment">// Precision</span></code></span>
+<span class="codeline" id="line-470"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-471"><code><span class="comment">// An  optional precision, in the form of a period ('.')  followed by an</span></code></span>
+<span class="codeline" id="line-472"><code><span class="comment">// optional decimal digit string.  Instead of a decimal digit string one may</span></code></span>
+<span class="codeline" id="line-473"><code><span class="comment">// write "*" or "*m$" (for some decimal integer m) to specify that the</span></code></span>
+<span class="codeline" id="line-474"><code><span class="comment">// precision is given in the next argument, or in the m-th argument,</span></code></span>
+<span class="codeline" id="line-475"><code><span class="comment">// respectively, which must be of type int.  If the precision is given as just</span></code></span>
+<span class="codeline" id="line-476"><code><span class="comment">// '.', the  precision  is taken  to  be  zero.  A negative precision is taken</span></code></span>
+<span class="codeline" id="line-477"><code><span class="comment">// as if the precision were omitted.  This gives the minimum number of digits</span></code></span>
+<span class="codeline" id="line-478"><code><span class="comment">// to appear for d, i, o, u, x, and X conversions, the number of digits to</span></code></span>
+<span class="codeline" id="line-479"><code><span class="comment">// appear after the radix character for a, A, e, E, f, and F conversions, the</span></code></span>
+<span class="codeline" id="line-480"><code><span class="comment">// maximum number of significant digits for g and G conversions, or the maximum</span></code></span>
+<span class="codeline" id="line-481"><code><span class="comment">// number of characters to be printed from a string for s and S conversions.</span></code></span>
+<span class="codeline" id="line-482"><code><span class="keyword">func</span> <label for="r47" class="ident"><a href="../../../pkg/modernc.org/libc.html#name-parsePrecision" class="ident">parsePrecision</a></label>(<label for="r48" class="ident">format</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r49" class="ident">args</label> *<a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) (<label for="r50" class="ident">_</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r51" class="ident">n</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>, <label for="r52" class="ident">ok</label> <a href="../../../pkg/builtin.html#name-bool" class="ident">bool</a>) {</code></span>
+<span class="codeline" id="line-483"><code>	<span class="keyword">for</span> {</code></span>
+<span class="codeline" id="line-484"><code>		<span class="keyword">switch</span> <label for="r53" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r48" class="ident">format</label>)); <label for="r53" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-485"><code>		<span class="keyword">case</span> <span class="lit-number">'.'</span>:</code></span>
+<span class="codeline" id="line-486"><code>			<label for="r48" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-487"><code>			<label for="r54" class="ident">first</label> := <a href="../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-488"><code>			<span class="keyword">for</span> {</code></span>
+<span class="codeline" id="line-489"><code>				<span class="keyword">switch</span> <label for="r55" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r48" class="ident">format</label>)); {</code></span>
+<span class="codeline" id="line-490"><code>				<span class="keyword">case</span> <label for="r54" class="ident">first</label> &amp;&amp; <label for="r55" class="ident">c</label> == <span class="lit-number">'*'</span>:</code></span>
+<span class="codeline" id="line-491"><code>					<label for="r48" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-492"><code>					<label for="r51" class="ident">n</label> = <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<a href="etc.go.html#line-441" class="ident">VaInt32</a>(<label for="r49" class="ident">args</label>))</code></span>
+<span class="codeline" id="line-493"><code>					<span class="keyword">return</span> <label for="r48" class="ident">format</label>, <label for="r51" class="ident">n</label>, <a href="../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-494"><code>				<span class="keyword">case</span> <label for="r55" class="ident">c</label> &gt;= <span class="lit-number">'0'</span> &amp;&amp; <label for="r55" class="ident">c</label> &lt;= <span class="lit-number">'9'</span>:</code></span>
+<span class="codeline" id="line-495"><code>					<label for="r48" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-496"><code>					<label for="r54" class="ident">first</label> = <a href="../../../pkg/builtin.html#name-false" class="ident">false</a></code></span>
+<span class="codeline" id="line-497"><code>					<label for="r56" class="ident">n0</label> := <label for="r51" class="ident">n</label></code></span>
+<span class="codeline" id="line-498"><code>					<label for="r51" class="ident">n</label> = <span class="lit-number">10</span>*<label for="r51" class="ident">n</label> + (<a href="../../../pkg/builtin.html#name-int" class="ident">int</a>(<label for="r55" class="ident">c</label>) - <span class="lit-number">'0'</span>)</code></span>
+<span class="codeline" id="line-499"><code>					<span class="keyword">if</span> <label for="r51" class="ident">n</label> &lt; <label for="r56" class="ident">n0</label> {</code></span>
+<span class="codeline" id="line-500"><code>						<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-501"><code>					}</code></span>
+<span class="codeline" id="line-502"><code>				<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-503"><code>					<span class="keyword">return</span> <label for="r48" class="ident">format</label>, <label for="r51" class="ident">n</label>, <a href="../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-504"><code>				}</code></span>
+<span class="codeline" id="line-505"><code>			}</code></span>
+<span class="codeline" id="line-506"><code>		<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-507"><code>			<span class="keyword">return</span> <label for="r48" class="ident">format</label>, <span class="lit-number">0</span>, <a href="../../../pkg/builtin.html#name-false" class="ident">false</a></code></span>
+<span class="codeline" id="line-508"><code>		}</code></span>
+<span class="codeline" id="line-509"><code>	}</code></span>
+<span class="codeline" id="line-510"><code>}</code></span>
+<span class="codeline" id="line-511"><code></code></span>
+<span class="codeline" id="line-512"><code><span class="comment">// Length modifier</span></code></span>
+<span class="codeline" id="line-513"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-514"><code><span class="comment">// Here, "integer conversion" stands for d, i, o, u, x, or X conversion.</span></code></span>
+<span class="codeline" id="line-515"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-516"><code><span class="comment">// hh     A following integer conversion corresponds to a signed char or</span></code></span>
+<span class="codeline" id="line-517"><code><span class="comment">// unsigned char argument, or a following n conversion corresponds to a pointer</span></code></span>
+<span class="codeline" id="line-518"><code><span class="comment">// to a signed char argument.</span></code></span>
+<span class="codeline" id="line-519"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-520"><code><span class="comment">// h      A following integer conversion corresponds to a short int or unsigned</span></code></span>
+<span class="codeline" id="line-521"><code><span class="comment">// short int argument, or a following n conversion corresponds to a pointer to</span></code></span>
+<span class="codeline" id="line-522"><code><span class="comment">// a short int argument.</span></code></span>
+<span class="codeline" id="line-523"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-524"><code><span class="comment">// l      (ell)  A following integer conversion corresponds to a long int or</span></code></span>
+<span class="codeline" id="line-525"><code><span class="comment">// unsigned long int argument, or a following n conversion corresponds to a</span></code></span>
+<span class="codeline" id="line-526"><code><span class="comment">// pointer to a long int argument, or a fol‐ lowing c conversion corresponds to</span></code></span>
+<span class="codeline" id="line-527"><code><span class="comment">// a wint_t argument, or a following s conversion corresponds to a pointer to</span></code></span>
+<span class="codeline" id="line-528"><code><span class="comment">// wchar_t argument.</span></code></span>
+<span class="codeline" id="line-529"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-530"><code><span class="comment">// ll     (ell-ell).  A following integer conversion corresponds to a long long</span></code></span>
+<span class="codeline" id="line-531"><code><span class="comment">// int or unsigned long long int argument, or a following n conversion</span></code></span>
+<span class="codeline" id="line-532"><code><span class="comment">// corresponds to a pointer to a long long int argument.</span></code></span>
+<span class="codeline" id="line-533"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-534"><code><span class="comment">// q      A synonym for ll.  This is a nonstandard extension, derived from BSD;</span></code></span>
+<span class="codeline" id="line-535"><code><span class="comment">// avoid its use in new code.</span></code></span>
+<span class="codeline" id="line-536"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-537"><code><span class="comment">// L      A following a, A, e, E, f, F, g, or G conversion corresponds to a</span></code></span>
+<span class="codeline" id="line-538"><code><span class="comment">// long double argument.  (C99 allows %LF, but SUSv2 does not.)</span></code></span>
+<span class="codeline" id="line-539"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-540"><code><span class="comment">// j      A following integer conversion corresponds to an intmax_t or</span></code></span>
+<span class="codeline" id="line-541"><code><span class="comment">// uintmax_t argument, or a following n conversion corresponds to a pointer to</span></code></span>
+<span class="codeline" id="line-542"><code><span class="comment">// an intmax_t argument.</span></code></span>
+<span class="codeline" id="line-543"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-544"><code><span class="comment">// z      A following integer conversion corresponds to a size_t or ssize_t</span></code></span>
+<span class="codeline" id="line-545"><code><span class="comment">// argument, or a following n conversion corresponds to a pointer to a size_t</span></code></span>
+<span class="codeline" id="line-546"><code><span class="comment">// argument.</span></code></span>
+<span class="codeline" id="line-547"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-548"><code><span class="comment">// Z      A nonstandard synonym for z that predates the appearance of z.  Do</span></code></span>
+<span class="codeline" id="line-549"><code><span class="comment">// not use in new code.</span></code></span>
+<span class="codeline" id="line-550"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-551"><code><span class="comment">// t      A following integer conversion corresponds to a ptrdiff_t argument,</span></code></span>
+<span class="codeline" id="line-552"><code><span class="comment">// or a following n conversion corresponds to a pointer to a ptrdiff_t</span></code></span>
+<span class="codeline" id="line-553"><code><span class="comment">// argument.</span></code></span>
+<span class="codeline" id="line-554"><code></code></span>
+<span class="codeline" id="line-555"><code><span class="keyword">func</span> <label for="r57" class="ident"><a href="../../../pkg/modernc.org/libc.html#name-parseLengthModifier" class="ident">parseLengthModifier</a></label>(<label for="r58" class="ident">format</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>) (<label for="r59" class="ident">_</label> <a href="../../../pkg/builtin.html#name-uintptr" class="ident">uintptr</a>, <label for="r60" class="ident">n</label> <a href="../../../pkg/builtin.html#name-int" class="ident">int</a>) {</code></span>
+<span class="codeline" id="line-556"><code>	<span class="keyword">switch</span> <label for="r61" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r58" class="ident">format</label>)); <label for="r61" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-557"><code>	<span class="keyword">case</span> <span class="lit-number">'h'</span>:</code></span>
+<span class="codeline" id="line-558"><code>		<label for="r58" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-559"><code>		<label for="r60" class="ident">n</label> = <a href="#line-18" class="ident">modH</a></code></span>
+<span class="codeline" id="line-560"><code>		<span class="keyword">switch</span> <label for="r62" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r58" class="ident">format</label>)); <label for="r62" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-561"><code>		<span class="keyword">case</span> <span class="lit-number">'h'</span>:</code></span>
+<span class="codeline" id="line-562"><code>			<label for="r58" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-563"><code>			<label for="r60" class="ident">n</label> = <a href="#line-17" class="ident">modHH</a></code></span>
+<span class="codeline" id="line-564"><code>		}</code></span>
+<span class="codeline" id="line-565"><code>		<span class="keyword">return</span> <label for="r58" class="ident">format</label>, <label for="r60" class="ident">n</label></code></span>
+<span class="codeline" id="line-566"><code>	<span class="keyword">case</span> <span class="lit-number">'l'</span>:</code></span>
+<span class="codeline" id="line-567"><code>		<label for="r58" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-568"><code>		<label for="r60" class="ident">n</label> = <a href="#line-19" class="ident">modL</a></code></span>
+<span class="codeline" id="line-569"><code>		<span class="keyword">switch</span> <label for="r63" class="ident">c</label> := *(*<a href="../../../pkg/builtin.html#name-byte" class="ident">byte</a>)(<a href="../../../pkg/unsafe.html" class="ident i4">unsafe</a>.<a href="../../../pkg/unsafe.html#name-Pointer" class="ident">Pointer</a>(<label for="r58" class="ident">format</label>)); <label for="r63" class="ident">c</label> {</code></span>
+<span class="codeline" id="line-570"><code>		<span class="keyword">case</span> <span class="lit-number">'l'</span>:</code></span>
+<span class="codeline" id="line-571"><code>			<label for="r58" class="ident">format</label>++</code></span>
+<span class="codeline" id="line-572"><code>			<label for="r60" class="ident">n</label> = <a href="#line-20" class="ident">modLL</a></code></span>
+<span class="codeline" id="line-573"><code>		}</code></span>
+<span class="codeline" id="line-574"><code>		<span class="keyword">return</span> <label for="r58" class="ident">format</label>, <label for="r60" class="ident">n</label></code></span>
+<span class="codeline" id="line-575"><code>	<span class="keyword">case</span> <span class="lit-number">'q'</span>:</code></span>
+<span class="codeline" id="line-576"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-577"><code>	<span class="keyword">case</span> <span class="lit-number">'L'</span>:</code></span>
+<span class="codeline" id="line-578"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-579"><code>	<span class="keyword">case</span> <span class="lit-number">'j'</span>:</code></span>
+<span class="codeline" id="line-580"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-581"><code>	<span class="keyword">case</span> <span class="lit-number">'z'</span>:</code></span>
+<span class="codeline" id="line-582"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-583"><code>	<span class="keyword">case</span> <span class="lit-number">'Z'</span>:</code></span>
+<span class="codeline" id="line-584"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-585"><code>	<span class="keyword">case</span> <span class="lit-number">'t'</span>:</code></span>
+<span class="codeline" id="line-586"><code>		<a href="../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<a href="etc.go.html#line-88" class="ident">todo</a>(<span class="lit-string">""</span>))</code></span>
+<span class="codeline" id="line-587"><code>	<span class="keyword">default</span>:</code></span>
+<span class="codeline" id="line-588"><code>		<span class="keyword">return</span> <label for="r58" class="ident">format</label>, <span class="lit-number">0</span></code></span>
+<span class="codeline" id="line-589"><code>	}</code></span>
+<span class="codeline" id="line-590"><code>}</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

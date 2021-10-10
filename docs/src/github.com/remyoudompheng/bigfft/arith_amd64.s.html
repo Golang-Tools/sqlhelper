@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: arith_amd64.s in package github.com/remyoudompheng/bigfft</title>
+<link href="../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	arith_amd64.s
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../pkg/github.com/remyoudompheng/bigfft.html">github.com/remyoudompheng/bigfft</a>
+</code></pre>
+
+<pre class="line-numbers">
+<span class="codeline" id="line-1"><code>// Trampolines to math/big assembly implementations.</code></span>
+<span class="codeline" id="line-2"><code></code></span>
+<span class="codeline" id="line-3"><code>#include "textflag.h"</code></span>
+<span class="codeline" id="line-4"><code></code></span>
+<span class="codeline" id="line-5"><code>// func addVV(z, x, y []Word) (c Word)</code></span>
+<span class="codeline" id="line-6"><code>TEXT ·addVV(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-7"><code>	JMP	math∕big·addVV(SB)</code></span>
+<span class="codeline" id="line-8"><code></code></span>
+<span class="codeline" id="line-9"><code>// func subVV(z, x, y []Word) (c Word)</code></span>
+<span class="codeline" id="line-10"><code>// (same as addVV except for SBBQ instead of ADCQ and label names)</code></span>
+<span class="codeline" id="line-11"><code>TEXT ·subVV(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-12"><code>	JMP	math∕big·subVV(SB)</code></span>
+<span class="codeline" id="line-13"><code></code></span>
+<span class="codeline" id="line-14"><code>// func addVW(z, x []Word, y Word) (c Word)</code></span>
+<span class="codeline" id="line-15"><code>TEXT ·addVW(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-16"><code>	JMP	math∕big·addVW(SB)</code></span>
+<span class="codeline" id="line-17"><code></code></span>
+<span class="codeline" id="line-18"><code>// func subVW(z, x []Word, y Word) (c Word)</code></span>
+<span class="codeline" id="line-19"><code>// (same as addVW except for SUBQ/SBBQ instead of ADDQ/ADCQ and label names)</code></span>
+<span class="codeline" id="line-20"><code>TEXT ·subVW(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-21"><code>	JMP	math∕big·subVW(SB)</code></span>
+<span class="codeline" id="line-22"><code></code></span>
+<span class="codeline" id="line-23"><code>// func shlVU(z, x []Word, s uint) (c Word)</code></span>
+<span class="codeline" id="line-24"><code>TEXT ·shlVU(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-25"><code>	JMP	math∕big·shlVU(SB)</code></span>
+<span class="codeline" id="line-26"><code></code></span>
+<span class="codeline" id="line-27"><code>// func shrVU(z, x []Word, s uint) (c Word)</code></span>
+<span class="codeline" id="line-28"><code>TEXT ·shrVU(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-29"><code>	JMP	math∕big·shrVU(SB)</code></span>
+<span class="codeline" id="line-30"><code></code></span>
+<span class="codeline" id="line-31"><code>// func mulAddVWW(z, x []Word, y, r Word) (c Word)</code></span>
+<span class="codeline" id="line-32"><code>TEXT ·mulAddVWW(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-33"><code>	JMP	math∕big·mulAddVWW(SB)</code></span>
+<span class="codeline" id="line-34"><code></code></span>
+<span class="codeline" id="line-35"><code>// func addMulVVW(z, x []Word, y Word) (c Word)</code></span>
+<span class="codeline" id="line-36"><code>TEXT ·addMulVVW(SB),NOSPLIT,$0</code></span>
+<span class="codeline" id="line-37"><code>	JMP	math∕big·addMulVVW(SB)</code></span>
+<span class="codeline" id="line-38"><code></code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

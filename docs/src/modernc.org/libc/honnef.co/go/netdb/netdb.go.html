@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source: netdb.go in package modernc.org/libc/honnef.co/go/netdb</title>
+<link href="../../../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="header"><code><span class="title">Source File</span>
+	netdb.go
+
+<span class="title">Belonging Package</span>
+	<a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html">modernc.org/libc/honnef.co/go/netdb</a>
+</code></pre>
+<style>input[type=radio] {display: none;}
+input[id=r0]:checked ~pre label[for=r0],
+input[id=r1]:checked ~pre label[for=r1],
+input[id=r2]:checked ~pre label[for=r2],
+input[id=r3]:checked ~pre label[for=r3],
+input[id=r4]:checked ~pre label[for=r4],
+input[id=r5]:checked ~pre label[for=r5],
+input[id=r6]:checked ~pre label[for=r6],
+input[id=r7]:checked ~pre label[for=r7],
+input[id=r8]:checked ~pre label[for=r8],
+input[id=r9]:checked ~pre label[for=r9],
+input[id=r10]:checked ~pre label[for=r10],
+input[id=r11]:checked ~pre label[for=r11],
+input[id=r12]:checked ~pre label[for=r12],
+input[id=r13]:checked ~pre label[for=r13],
+input[id=r14]:checked ~pre label[for=r14],
+input[id=r15]:checked ~pre label[for=r15],
+input[id=r16]:checked ~pre label[for=r16],
+input[id=r17]:checked ~pre label[for=r17],
+input[id=r18]:checked ~pre label[for=r18],
+input[id=r19]:checked ~pre label[for=r19],
+input[id=r20]:checked ~pre label[for=r20],
+input[id=r21]:checked ~pre label[for=r21],
+input[id=r22]:checked ~pre label[for=r22],
+input[id=r23]:checked ~pre label[for=r23],
+input[id=r24]:checked ~pre label[for=r24],
+input[id=r25]:checked ~pre label[for=r25],
+input[id=r26]:checked ~pre label[for=r26],
+input[id=r27]:checked ~pre label[for=r27],
+input[id=r28]:checked ~pre label[for=r28],
+input[id=r29]:checked ~pre label[for=r29],
+input[id=r30]:checked ~pre label[for=r30],
+input[id=r31]:checked ~pre label[for=r31],
+input[id=r32]:checked ~pre label[for=r32],
+input[id=r33]:checked ~pre label[for=r33],
+input[id=r34]:checked ~pre label[for=r34],
+input[id=r35]:checked ~pre label[for=r35],
+input[id=r36]:checked ~pre label[for=r36],
+input[id=r37]:checked ~pre label[for=r37],
+input[id=r38]:checked ~pre label[for=r38],
+input[id=r39]:checked ~pre label[for=r39],
+input[id=r40]:checked ~pre label[for=r40],
+input[id=r41]:checked ~pre label[for=r41],
+input[id=r42]:checked ~pre label[for=r42],
+input[id=r43]:checked ~pre label[for=r43],
+input[id=r44]:checked ~pre label[for=r44],
+input[id=r45]:checked ~pre label[for=r45],
+input[id=r46]:checked ~pre label[for=r46],
+input[id=r47]:checked ~pre label[for=r47],
+input[id=r48]:checked ~pre label[for=r48],
+input[id=r49]:checked ~pre label[for=r49],
+input[id=r50]:checked ~pre label[for=r50],
+input[id=r51]:checked ~pre label[for=r51]
+{background: #226; color: #ff8;}
+input[id=i0]:checked ~pre .i0,
+input[id=i1]:checked ~pre .i1,
+input[id=i2]:checked ~pre .i2,
+input[id=i3]:checked ~pre .i3
+{background: brown; color: #eed;}
+</style><input id="r0" type="radio" name="g"/>
+<input id="r1" type="radio" name="g"/>
+<input id="r2" type="radio" name="g"/>
+<input id="r3" type="radio" name="g"/>
+<input id="r4" type="radio" name="g"/>
+<input id="r5" type="radio" name="g"/>
+<input id="r6" type="radio" name="g"/>
+<input id="r7" type="radio" name="g"/>
+<input id="r8" type="radio" name="g"/>
+<input id="r9" type="radio" name="g"/>
+<input id="r10" type="radio" name="g"/>
+<input id="r11" type="radio" name="g"/>
+<input id="r12" type="radio" name="g"/>
+<input id="r13" type="radio" name="g"/>
+<input id="r14" type="radio" name="g"/>
+<input id="r15" type="radio" name="g"/>
+<input id="r16" type="radio" name="g"/>
+<input id="r17" type="radio" name="g"/>
+<input id="r18" type="radio" name="g"/>
+<input id="r19" type="radio" name="g"/>
+<input id="r20" type="radio" name="g"/>
+<input id="r21" type="radio" name="g"/>
+<input id="r22" type="radio" name="g"/>
+<input id="r23" type="radio" name="g"/>
+<input id="r24" type="radio" name="g"/>
+<input id="r25" type="radio" name="g"/>
+<input id="r26" type="radio" name="g"/>
+<input id="r27" type="radio" name="g"/>
+<input id="r28" type="radio" name="g"/>
+<input id="r29" type="radio" name="g"/>
+<input id="r30" type="radio" name="g"/>
+<input id="r31" type="radio" name="g"/>
+<input id="r32" type="radio" name="g"/>
+<input id="r33" type="radio" name="g"/>
+<input id="r34" type="radio" name="g"/>
+<input id="r35" type="radio" name="g"/>
+<input id="r36" type="radio" name="g"/>
+<input id="r37" type="radio" name="g"/>
+<input id="r38" type="radio" name="g"/>
+<input id="r39" type="radio" name="g"/>
+<input id="r40" type="radio" name="g"/>
+<input id="r41" type="radio" name="g"/>
+<input id="r42" type="radio" name="g"/>
+<input id="r43" type="radio" name="g"/>
+<input id="r44" type="radio" name="g"/>
+<input id="r45" type="radio" name="g"/>
+<input id="r46" type="radio" name="g"/>
+<input id="r47" type="radio" name="g"/>
+<input id="r48" type="radio" name="g"/>
+<input id="r49" type="radio" name="g"/>
+<input id="r50" type="radio" name="g"/>
+<input id="r51" type="radio" name="g"/>
+<input id="i0" type="radio" name="i"/>
+<input id="i1" type="radio" name="i"/>
+<input id="i2" type="radio" name="i"/>
+<input id="i3" type="radio" name="i"/>
+
+<pre class="line-numbers">
+<div class="anchor" id="doc"><span class="codeline" id="line-1"><code><span class="comment">// Package netdb provides a Go interface for the protoent and servent</span></code></span>
+<span class="codeline" id="line-2"><code><span class="comment">// structures as defined in netdb.h</span></code></span>
+<span class="codeline" id="line-3"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-4"><code><span class="comment">// A pure Go implementation is used by parsing /etc/protocols and</span></code></span>
+<span class="codeline" id="line-5"><code><span class="comment">// /etc/services</span></code></span>
+<span class="codeline" id="line-6"><code><span class="comment">//</span></code></span>
+<span class="codeline" id="line-7"><code><span class="comment">// All return values are pointers that point to the entries in the</span></code></span>
+<span class="codeline" id="line-8"><code><span class="comment">// original list of protocols and services. Manipulating the entries</span></code></span>
+<span class="codeline" id="line-9"><code><span class="comment">// would affect the entire program.</span></code></span></div><span class="codeline" id="line-10"><code><span class="keyword">package</span> netdb <span class="comment">// import "modernc.org/libc/honnef.co/go/netdb"</span></code></span>
+<span class="codeline" id="line-11"><code></code></span>
+<span class="codeline" id="line-12"><code><span class="comment">// Modifications Copyright 2020 The Libc Authors. All rights reserved.</span></code></span>
+<span class="codeline" id="line-13"><code><span class="comment">// Use of this source code is governed by a BSD-style</span></code></span>
+<span class="codeline" id="line-14"><code><span class="comment">// license that can be found in the LICENSE file.</span></code></span>
+<span class="codeline" id="line-15"><code></code></span>
+<span class="codeline" id="line-16"><code><span class="keyword">import</span> (</code></span>
+<span class="codeline" id="line-17"><code>	<label for="i0"><span class="lit-string i0">"io/ioutil"</span></label></code></span>
+<span class="codeline" id="line-18"><code>	<label for="i1"><span class="lit-string i1">"os"</span></label></code></span>
+<span class="codeline" id="line-19"><code>	<label for="i2"><span class="lit-string i2">"strconv"</span></label></code></span>
+<span class="codeline" id="line-20"><code>	<label for="i3"><span class="lit-string i3">"strings"</span></label></code></span>
+<span class="codeline" id="line-21"><code>)</code></span>
+<span class="codeline" id="line-22"><code></code></span>
+<span class="codeline" id="line-23"><code><span class="keyword">const</span> (</code></span>
+<span class="codeline" id="line-24"><code>	<a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-protocols" class="ident">protocols</a> = <span class="lit-string">`</span></code></span>
+<span class="codeline" id="line-25"><code><span class="lit-string"># Internet (IP) protocols</span></code></span>
+<span class="codeline" id="line-26"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-27"><code><span class="lit-string"># Updated from http://www.iana.org/assignments/protocol-numbers and other</span></code></span>
+<span class="codeline" id="line-28"><code><span class="lit-string"># sources.</span></code></span>
+<span class="codeline" id="line-29"><code><span class="lit-string"># New protocols will be added on request if they have been officially</span></code></span>
+<span class="codeline" id="line-30"><code><span class="lit-string"># assigned by IANA and are not historical.</span></code></span>
+<span class="codeline" id="line-31"><code><span class="lit-string"># If you need a huge list of used numbers please install the nmap package.</span></code></span>
+<span class="codeline" id="line-32"><code></code></span>
+<span class="codeline" id="line-33"><code><span class="lit-string">ip	0	IP		# internet protocol, pseudo protocol number</span></code></span>
+<span class="codeline" id="line-34"><code><span class="lit-string">hopopt	0	HOPOPT		# IPv6 Hop-by-Hop Option [RFC1883]</span></code></span>
+<span class="codeline" id="line-35"><code><span class="lit-string">icmp	1	ICMP		# internet control message protocol</span></code></span>
+<span class="codeline" id="line-36"><code><span class="lit-string">igmp	2	IGMP		# Internet Group Management</span></code></span>
+<span class="codeline" id="line-37"><code><span class="lit-string">ggp	3	GGP		# gateway-gateway protocol</span></code></span>
+<span class="codeline" id="line-38"><code><span class="lit-string">ipencap	4	IP-ENCAP	# IP encapsulated in IP (officially "IP")</span></code></span>
+<span class="codeline" id="line-39"><code><span class="lit-string">st	5	ST		# ST datagram mode</span></code></span>
+<span class="codeline" id="line-40"><code><span class="lit-string">tcp	6	TCP		# transmission control protocol</span></code></span>
+<span class="codeline" id="line-41"><code><span class="lit-string">egp	8	EGP		# exterior gateway protocol</span></code></span>
+<span class="codeline" id="line-42"><code><span class="lit-string">igp	9	IGP		# any private interior gateway (Cisco)</span></code></span>
+<span class="codeline" id="line-43"><code><span class="lit-string">pup	12	PUP		# PARC universal packet protocol</span></code></span>
+<span class="codeline" id="line-44"><code><span class="lit-string">udp	17	UDP		# user datagram protocol</span></code></span>
+<span class="codeline" id="line-45"><code><span class="lit-string">hmp	20	HMP		# host monitoring protocol</span></code></span>
+<span class="codeline" id="line-46"><code><span class="lit-string">xns-idp	22	XNS-IDP		# Xerox NS IDP</span></code></span>
+<span class="codeline" id="line-47"><code><span class="lit-string">rdp	27	RDP		# "reliable datagram" protocol</span></code></span>
+<span class="codeline" id="line-48"><code><span class="lit-string">iso-tp4	29	ISO-TP4		# ISO Transport Protocol class 4 [RFC905]</span></code></span>
+<span class="codeline" id="line-49"><code><span class="lit-string">dccp	33	DCCP		# Datagram Congestion Control Prot. [RFC4340]</span></code></span>
+<span class="codeline" id="line-50"><code><span class="lit-string">xtp	36	XTP		# Xpress Transfer Protocol</span></code></span>
+<span class="codeline" id="line-51"><code><span class="lit-string">ddp	37	DDP		# Datagram Delivery Protocol</span></code></span>
+<span class="codeline" id="line-52"><code><span class="lit-string">idpr-cmtp 38	IDPR-CMTP	# IDPR Control Message Transport</span></code></span>
+<span class="codeline" id="line-53"><code><span class="lit-string">ipv6	41	IPv6		# Internet Protocol, version 6</span></code></span>
+<span class="codeline" id="line-54"><code><span class="lit-string">ipv6-route 43	IPv6-Route	# Routing Header for IPv6</span></code></span>
+<span class="codeline" id="line-55"><code><span class="lit-string">ipv6-frag 44	IPv6-Frag	# Fragment Header for IPv6</span></code></span>
+<span class="codeline" id="line-56"><code><span class="lit-string">idrp	45	IDRP		# Inter-Domain Routing Protocol</span></code></span>
+<span class="codeline" id="line-57"><code><span class="lit-string">rsvp	46	RSVP		# Reservation Protocol</span></code></span>
+<span class="codeline" id="line-58"><code><span class="lit-string">gre	47	GRE		# General Routing Encapsulation</span></code></span>
+<span class="codeline" id="line-59"><code><span class="lit-string">esp	50	IPSEC-ESP	# Encap Security Payload [RFC2406]</span></code></span>
+<span class="codeline" id="line-60"><code><span class="lit-string">ah	51	IPSEC-AH	# Authentication Header [RFC2402]</span></code></span>
+<span class="codeline" id="line-61"><code><span class="lit-string">skip	57	SKIP		# SKIP</span></code></span>
+<span class="codeline" id="line-62"><code><span class="lit-string">ipv6-icmp 58	IPv6-ICMP	# ICMP for IPv6</span></code></span>
+<span class="codeline" id="line-63"><code><span class="lit-string">ipv6-nonxt 59	IPv6-NoNxt	# No Next Header for IPv6</span></code></span>
+<span class="codeline" id="line-64"><code><span class="lit-string">ipv6-opts 60	IPv6-Opts	# Destination Options for IPv6</span></code></span>
+<span class="codeline" id="line-65"><code><span class="lit-string">rspf	73	RSPF CPHB	# Radio Shortest Path First (officially CPHB)</span></code></span>
+<span class="codeline" id="line-66"><code><span class="lit-string">vmtp	81	VMTP		# Versatile Message Transport</span></code></span>
+<span class="codeline" id="line-67"><code><span class="lit-string">eigrp	88	EIGRP		# Enhanced Interior Routing Protocol (Cisco)</span></code></span>
+<span class="codeline" id="line-68"><code><span class="lit-string">ospf	89	OSPFIGP		# Open Shortest Path First IGP</span></code></span>
+<span class="codeline" id="line-69"><code><span class="lit-string">ax.25	93	AX.25		# AX.25 frames</span></code></span>
+<span class="codeline" id="line-70"><code><span class="lit-string">ipip	94	IPIP		# IP-within-IP Encapsulation Protocol</span></code></span>
+<span class="codeline" id="line-71"><code><span class="lit-string">etherip	97	ETHERIP		# Ethernet-within-IP Encapsulation [RFC3378]</span></code></span>
+<span class="codeline" id="line-72"><code><span class="lit-string">encap	98	ENCAP		# Yet Another IP encapsulation [RFC1241]</span></code></span>
+<span class="codeline" id="line-73"><code><span class="lit-string">#	99			# any private encryption scheme</span></code></span>
+<span class="codeline" id="line-74"><code><span class="lit-string">pim	103	PIM		# Protocol Independent Multicast</span></code></span>
+<span class="codeline" id="line-75"><code><span class="lit-string">ipcomp	108	IPCOMP		# IP Payload Compression Protocol</span></code></span>
+<span class="codeline" id="line-76"><code><span class="lit-string">vrrp	112	VRRP		# Virtual Router Redundancy Protocol [RFC5798]</span></code></span>
+<span class="codeline" id="line-77"><code><span class="lit-string">l2tp	115	L2TP		# Layer Two Tunneling Protocol [RFC2661]</span></code></span>
+<span class="codeline" id="line-78"><code><span class="lit-string">isis	124	ISIS		# IS-IS over IPv4</span></code></span>
+<span class="codeline" id="line-79"><code><span class="lit-string">sctp	132	SCTP		# Stream Control Transmission Protocol</span></code></span>
+<span class="codeline" id="line-80"><code><span class="lit-string">fc	133	FC		# Fibre Channel</span></code></span>
+<span class="codeline" id="line-81"><code><span class="lit-string">mobility-header 135 Mobility-Header # Mobility Support for IPv6 [RFC3775]</span></code></span>
+<span class="codeline" id="line-82"><code><span class="lit-string">udplite	136	UDPLite		# UDP-Lite [RFC3828]</span></code></span>
+<span class="codeline" id="line-83"><code><span class="lit-string">mpls-in-ip 137	MPLS-in-IP	# MPLS-in-IP [RFC4023]</span></code></span>
+<span class="codeline" id="line-84"><code><span class="lit-string">manet	138			# MANET Protocols [RFC5498]</span></code></span>
+<span class="codeline" id="line-85"><code><span class="lit-string">hip	139	HIP		# Host Identity Protocol</span></code></span>
+<span class="codeline" id="line-86"><code><span class="lit-string">shim6	140	Shim6		# Shim6 Protocol [RFC5533]</span></code></span>
+<span class="codeline" id="line-87"><code><span class="lit-string">wesp	141	WESP		# Wrapped Encapsulating Security Payload</span></code></span>
+<span class="codeline" id="line-88"><code><span class="lit-string">rohc	142	ROHC		# Robust Header Compression</span></code></span>
+<span class="codeline" id="line-89"><code><span class="lit-string">`</span></code></span>
+<span class="codeline" id="line-90"><code></code></span>
+<span class="codeline" id="line-91"><code>	<a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-services" class="ident">services</a> = <span class="lit-string">`</span></code></span>
+<span class="codeline" id="line-92"><code><span class="lit-string"># Network services, Internet style</span></code></span>
+<span class="codeline" id="line-93"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-94"><code><span class="lit-string"># Note that it is presently the policy of IANA to assign a single well-known</span></code></span>
+<span class="codeline" id="line-95"><code><span class="lit-string"># port number for both TCP and UDP; hence, officially ports have two entries</span></code></span>
+<span class="codeline" id="line-96"><code><span class="lit-string"># even if the protocol doesn't support UDP operations.</span></code></span>
+<span class="codeline" id="line-97"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-98"><code><span class="lit-string"># Updated from https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml .</span></code></span>
+<span class="codeline" id="line-99"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-100"><code><span class="lit-string"># New ports will be added on request if they have been officially assigned</span></code></span>
+<span class="codeline" id="line-101"><code><span class="lit-string"># by IANA and used in the real-world or are needed by a debian package.</span></code></span>
+<span class="codeline" id="line-102"><code><span class="lit-string"># If you need a huge list of used numbers please install the nmap package.</span></code></span>
+<span class="codeline" id="line-103"><code></code></span>
+<span class="codeline" id="line-104"><code><span class="lit-string">tcpmux		1/tcp				# TCP port service multiplexer</span></code></span>
+<span class="codeline" id="line-105"><code><span class="lit-string">echo		7/tcp</span></code></span>
+<span class="codeline" id="line-106"><code><span class="lit-string">echo		7/udp</span></code></span>
+<span class="codeline" id="line-107"><code><span class="lit-string">discard		9/tcp		sink null</span></code></span>
+<span class="codeline" id="line-108"><code><span class="lit-string">discard		9/udp		sink null</span></code></span>
+<span class="codeline" id="line-109"><code><span class="lit-string">systat		11/tcp		users</span></code></span>
+<span class="codeline" id="line-110"><code><span class="lit-string">daytime		13/tcp</span></code></span>
+<span class="codeline" id="line-111"><code><span class="lit-string">daytime		13/udp</span></code></span>
+<span class="codeline" id="line-112"><code><span class="lit-string">netstat		15/tcp</span></code></span>
+<span class="codeline" id="line-113"><code><span class="lit-string">qotd		17/tcp		quote</span></code></span>
+<span class="codeline" id="line-114"><code><span class="lit-string">msp		18/tcp				# message send protocol</span></code></span>
+<span class="codeline" id="line-115"><code><span class="lit-string">msp		18/udp</span></code></span>
+<span class="codeline" id="line-116"><code><span class="lit-string">chargen		19/tcp		ttytst source</span></code></span>
+<span class="codeline" id="line-117"><code><span class="lit-string">chargen		19/udp		ttytst source</span></code></span>
+<span class="codeline" id="line-118"><code><span class="lit-string">ftp-data	20/tcp</span></code></span>
+<span class="codeline" id="line-119"><code><span class="lit-string">ftp		21/tcp</span></code></span>
+<span class="codeline" id="line-120"><code><span class="lit-string">fsp		21/udp		fspd</span></code></span>
+<span class="codeline" id="line-121"><code><span class="lit-string">ssh		22/tcp				# SSH Remote Login Protocol</span></code></span>
+<span class="codeline" id="line-122"><code><span class="lit-string">telnet		23/tcp</span></code></span>
+<span class="codeline" id="line-123"><code><span class="lit-string">smtp		25/tcp		mail</span></code></span>
+<span class="codeline" id="line-124"><code><span class="lit-string">time		37/tcp		timserver</span></code></span>
+<span class="codeline" id="line-125"><code><span class="lit-string">time		37/udp		timserver</span></code></span>
+<span class="codeline" id="line-126"><code><span class="lit-string">rlp		39/udp		resource	# resource location</span></code></span>
+<span class="codeline" id="line-127"><code><span class="lit-string">nameserver	42/tcp		name		# IEN 116</span></code></span>
+<span class="codeline" id="line-128"><code><span class="lit-string">whois		43/tcp		nicname</span></code></span>
+<span class="codeline" id="line-129"><code><span class="lit-string">tacacs		49/tcp				# Login Host Protocol (TACACS)</span></code></span>
+<span class="codeline" id="line-130"><code><span class="lit-string">tacacs		49/udp</span></code></span>
+<span class="codeline" id="line-131"><code><span class="lit-string">domain		53/tcp				# Domain Name Server</span></code></span>
+<span class="codeline" id="line-132"><code><span class="lit-string">domain		53/udp</span></code></span>
+<span class="codeline" id="line-133"><code><span class="lit-string">bootps		67/udp</span></code></span>
+<span class="codeline" id="line-134"><code><span class="lit-string">bootpc		68/udp</span></code></span>
+<span class="codeline" id="line-135"><code><span class="lit-string">tftp		69/udp</span></code></span>
+<span class="codeline" id="line-136"><code><span class="lit-string">gopher		70/tcp				# Internet Gopher</span></code></span>
+<span class="codeline" id="line-137"><code><span class="lit-string">finger		79/tcp</span></code></span>
+<span class="codeline" id="line-138"><code><span class="lit-string">http		80/tcp		www		# WorldWideWeb HTTP</span></code></span>
+<span class="codeline" id="line-139"><code><span class="lit-string">link		87/tcp		ttylink</span></code></span>
+<span class="codeline" id="line-140"><code><span class="lit-string">kerberos	88/tcp		kerberos5 krb5 kerberos-sec	# Kerberos v5</span></code></span>
+<span class="codeline" id="line-141"><code><span class="lit-string">kerberos	88/udp		kerberos5 krb5 kerberos-sec	# Kerberos v5</span></code></span>
+<span class="codeline" id="line-142"><code><span class="lit-string">iso-tsap	102/tcp		tsap		# part of ISODE</span></code></span>
+<span class="codeline" id="line-143"><code><span class="lit-string">acr-nema	104/tcp		dicom		# Digital Imag. &amp; Comm. 300</span></code></span>
+<span class="codeline" id="line-144"><code><span class="lit-string">pop3		110/tcp		pop-3		# POP version 3</span></code></span>
+<span class="codeline" id="line-145"><code><span class="lit-string">sunrpc		111/tcp		portmapper	# RPC 4.0 portmapper</span></code></span>
+<span class="codeline" id="line-146"><code><span class="lit-string">sunrpc		111/udp		portmapper</span></code></span>
+<span class="codeline" id="line-147"><code><span class="lit-string">auth		113/tcp		authentication tap ident</span></code></span>
+<span class="codeline" id="line-148"><code><span class="lit-string">sftp		115/tcp</span></code></span>
+<span class="codeline" id="line-149"><code><span class="lit-string">nntp		119/tcp		readnews untp	# USENET News Transfer Protocol</span></code></span>
+<span class="codeline" id="line-150"><code><span class="lit-string">ntp		123/udp				# Network Time Protocol</span></code></span>
+<span class="codeline" id="line-151"><code><span class="lit-string">epmap		135/tcp		loc-srv		# DCE endpoint resolution</span></code></span>
+<span class="codeline" id="line-152"><code><span class="lit-string">epmap		135/udp		loc-srv</span></code></span>
+<span class="codeline" id="line-153"><code><span class="lit-string">netbios-ns	137/tcp				# NETBIOS Name Service</span></code></span>
+<span class="codeline" id="line-154"><code><span class="lit-string">netbios-ns	137/udp</span></code></span>
+<span class="codeline" id="line-155"><code><span class="lit-string">netbios-dgm	138/tcp				# NETBIOS Datagram Service</span></code></span>
+<span class="codeline" id="line-156"><code><span class="lit-string">netbios-dgm	138/udp</span></code></span>
+<span class="codeline" id="line-157"><code><span class="lit-string">netbios-ssn	139/tcp				# NETBIOS session service</span></code></span>
+<span class="codeline" id="line-158"><code><span class="lit-string">netbios-ssn	139/udp</span></code></span>
+<span class="codeline" id="line-159"><code><span class="lit-string">imap2		143/tcp		imap		# Interim Mail Access P 2 and 4</span></code></span>
+<span class="codeline" id="line-160"><code><span class="lit-string">snmp		161/tcp				# Simple Net Mgmt Protocol</span></code></span>
+<span class="codeline" id="line-161"><code><span class="lit-string">snmp		161/udp</span></code></span>
+<span class="codeline" id="line-162"><code><span class="lit-string">snmp-trap	162/tcp		snmptrap	# Traps for SNMP</span></code></span>
+<span class="codeline" id="line-163"><code><span class="lit-string">snmp-trap	162/udp		snmptrap</span></code></span>
+<span class="codeline" id="line-164"><code><span class="lit-string">cmip-man	163/tcp				# ISO mgmt over IP (CMOT)</span></code></span>
+<span class="codeline" id="line-165"><code><span class="lit-string">cmip-man	163/udp</span></code></span>
+<span class="codeline" id="line-166"><code><span class="lit-string">cmip-agent	164/tcp</span></code></span>
+<span class="codeline" id="line-167"><code><span class="lit-string">cmip-agent	164/udp</span></code></span>
+<span class="codeline" id="line-168"><code><span class="lit-string">mailq		174/tcp			# Mailer transport queue for Zmailer</span></code></span>
+<span class="codeline" id="line-169"><code><span class="lit-string">mailq		174/udp</span></code></span>
+<span class="codeline" id="line-170"><code><span class="lit-string">xdmcp		177/tcp				# X Display Mgr. Control Proto</span></code></span>
+<span class="codeline" id="line-171"><code><span class="lit-string">xdmcp		177/udp</span></code></span>
+<span class="codeline" id="line-172"><code><span class="lit-string">nextstep	178/tcp		NeXTStep NextStep	# NeXTStep window</span></code></span>
+<span class="codeline" id="line-173"><code><span class="lit-string">nextstep	178/udp		NeXTStep NextStep	#  server</span></code></span>
+<span class="codeline" id="line-174"><code><span class="lit-string">bgp		179/tcp				# Border Gateway Protocol</span></code></span>
+<span class="codeline" id="line-175"><code><span class="lit-string">irc		194/tcp				# Internet Relay Chat</span></code></span>
+<span class="codeline" id="line-176"><code><span class="lit-string">irc		194/udp</span></code></span>
+<span class="codeline" id="line-177"><code><span class="lit-string">smux		199/tcp				# SNMP Unix Multiplexer</span></code></span>
+<span class="codeline" id="line-178"><code><span class="lit-string">smux		199/udp</span></code></span>
+<span class="codeline" id="line-179"><code><span class="lit-string">at-rtmp		201/tcp				# AppleTalk routing</span></code></span>
+<span class="codeline" id="line-180"><code><span class="lit-string">at-rtmp		201/udp</span></code></span>
+<span class="codeline" id="line-181"><code><span class="lit-string">at-nbp		202/tcp				# AppleTalk name binding</span></code></span>
+<span class="codeline" id="line-182"><code><span class="lit-string">at-nbp		202/udp</span></code></span>
+<span class="codeline" id="line-183"><code><span class="lit-string">at-echo		204/tcp				# AppleTalk echo</span></code></span>
+<span class="codeline" id="line-184"><code><span class="lit-string">at-echo		204/udp</span></code></span>
+<span class="codeline" id="line-185"><code><span class="lit-string">at-zis		206/tcp				# AppleTalk zone information</span></code></span>
+<span class="codeline" id="line-186"><code><span class="lit-string">at-zis		206/udp</span></code></span>
+<span class="codeline" id="line-187"><code><span class="lit-string">qmtp		209/tcp				# Quick Mail Transfer Protocol</span></code></span>
+<span class="codeline" id="line-188"><code><span class="lit-string">qmtp		209/udp</span></code></span>
+<span class="codeline" id="line-189"><code><span class="lit-string">z3950		210/tcp		wais		# NISO Z39.50 database</span></code></span>
+<span class="codeline" id="line-190"><code><span class="lit-string">z3950		210/udp		wais</span></code></span>
+<span class="codeline" id="line-191"><code><span class="lit-string">ipx		213/tcp				# IPX</span></code></span>
+<span class="codeline" id="line-192"><code><span class="lit-string">ipx		213/udp</span></code></span>
+<span class="codeline" id="line-193"><code><span class="lit-string">ptp-event	319/udp</span></code></span>
+<span class="codeline" id="line-194"><code><span class="lit-string">ptp-general	320/udp</span></code></span>
+<span class="codeline" id="line-195"><code><span class="lit-string">pawserv		345/tcp				# Perf Analysis Workbench</span></code></span>
+<span class="codeline" id="line-196"><code><span class="lit-string">pawserv		345/udp</span></code></span>
+<span class="codeline" id="line-197"><code><span class="lit-string">zserv		346/tcp				# Zebra server</span></code></span>
+<span class="codeline" id="line-198"><code><span class="lit-string">zserv		346/udp</span></code></span>
+<span class="codeline" id="line-199"><code><span class="lit-string">fatserv		347/tcp				# Fatmen Server</span></code></span>
+<span class="codeline" id="line-200"><code><span class="lit-string">fatserv		347/udp</span></code></span>
+<span class="codeline" id="line-201"><code><span class="lit-string">rpc2portmap	369/tcp</span></code></span>
+<span class="codeline" id="line-202"><code><span class="lit-string">rpc2portmap	369/udp				# Coda portmapper</span></code></span>
+<span class="codeline" id="line-203"><code><span class="lit-string">codaauth2	370/tcp</span></code></span>
+<span class="codeline" id="line-204"><code><span class="lit-string">codaauth2	370/udp				# Coda authentication server</span></code></span>
+<span class="codeline" id="line-205"><code><span class="lit-string">clearcase	371/tcp		Clearcase</span></code></span>
+<span class="codeline" id="line-206"><code><span class="lit-string">clearcase	371/udp		Clearcase</span></code></span>
+<span class="codeline" id="line-207"><code><span class="lit-string">ulistserv	372/tcp				# UNIX Listserv</span></code></span>
+<span class="codeline" id="line-208"><code><span class="lit-string">ulistserv	372/udp</span></code></span>
+<span class="codeline" id="line-209"><code><span class="lit-string">ldap		389/tcp			# Lightweight Directory Access Protocol</span></code></span>
+<span class="codeline" id="line-210"><code><span class="lit-string">ldap		389/udp</span></code></span>
+<span class="codeline" id="line-211"><code><span class="lit-string">imsp		406/tcp			# Interactive Mail Support Protocol</span></code></span>
+<span class="codeline" id="line-212"><code><span class="lit-string">imsp		406/udp</span></code></span>
+<span class="codeline" id="line-213"><code><span class="lit-string">svrloc		427/tcp				# Server Location</span></code></span>
+<span class="codeline" id="line-214"><code><span class="lit-string">svrloc		427/udp</span></code></span>
+<span class="codeline" id="line-215"><code><span class="lit-string">https		443/tcp				# http protocol over TLS/SSL</span></code></span>
+<span class="codeline" id="line-216"><code><span class="lit-string">snpp		444/tcp				# Simple Network Paging Protocol</span></code></span>
+<span class="codeline" id="line-217"><code><span class="lit-string">snpp		444/udp</span></code></span>
+<span class="codeline" id="line-218"><code><span class="lit-string">microsoft-ds	445/tcp				# Microsoft Naked CIFS</span></code></span>
+<span class="codeline" id="line-219"><code><span class="lit-string">microsoft-ds	445/udp</span></code></span>
+<span class="codeline" id="line-220"><code><span class="lit-string">kpasswd		464/tcp</span></code></span>
+<span class="codeline" id="line-221"><code><span class="lit-string">kpasswd		464/udp</span></code></span>
+<span class="codeline" id="line-222"><code><span class="lit-string">submissions	465/tcp		ssmtp smtps urd # Submission over TLS [RFC8314]</span></code></span>
+<span class="codeline" id="line-223"><code><span class="lit-string">saft		487/tcp			# Simple Asynchronous File Transfer</span></code></span>
+<span class="codeline" id="line-224"><code><span class="lit-string">saft		487/udp</span></code></span>
+<span class="codeline" id="line-225"><code><span class="lit-string">isakmp		500/tcp			# IPsec - Internet Security Association</span></code></span>
+<span class="codeline" id="line-226"><code><span class="lit-string">isakmp		500/udp			#  and Key Management Protocol</span></code></span>
+<span class="codeline" id="line-227"><code><span class="lit-string">rtsp		554/tcp			# Real Time Stream Control Protocol</span></code></span>
+<span class="codeline" id="line-228"><code><span class="lit-string">rtsp		554/udp</span></code></span>
+<span class="codeline" id="line-229"><code><span class="lit-string">nqs		607/tcp				# Network Queuing system</span></code></span>
+<span class="codeline" id="line-230"><code><span class="lit-string">nqs		607/udp</span></code></span>
+<span class="codeline" id="line-231"><code><span class="lit-string">npmp-local	610/tcp		dqs313_qmaster		# npmp-local / DQS</span></code></span>
+<span class="codeline" id="line-232"><code><span class="lit-string">npmp-local	610/udp		dqs313_qmaster</span></code></span>
+<span class="codeline" id="line-233"><code><span class="lit-string">npmp-gui	611/tcp		dqs313_execd		# npmp-gui / DQS</span></code></span>
+<span class="codeline" id="line-234"><code><span class="lit-string">npmp-gui	611/udp		dqs313_execd</span></code></span>
+<span class="codeline" id="line-235"><code><span class="lit-string">hmmp-ind	612/tcp		dqs313_intercell	# HMMP Indication / DQS</span></code></span>
+<span class="codeline" id="line-236"><code><span class="lit-string">hmmp-ind	612/udp		dqs313_intercell</span></code></span>
+<span class="codeline" id="line-237"><code><span class="lit-string">asf-rmcp	623/udp		# ASF Remote Management and Control Protocol</span></code></span>
+<span class="codeline" id="line-238"><code><span class="lit-string">qmqp		628/tcp</span></code></span>
+<span class="codeline" id="line-239"><code><span class="lit-string">qmqp		628/udp</span></code></span>
+<span class="codeline" id="line-240"><code><span class="lit-string">ipp		631/tcp				# Internet Printing Protocol</span></code></span>
+<span class="codeline" id="line-241"><code><span class="lit-string">ipp		631/udp</span></code></span>
+<span class="codeline" id="line-242"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-243"><code><span class="lit-string"># UNIX specific services</span></code></span>
+<span class="codeline" id="line-244"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-245"><code><span class="lit-string">exec		512/tcp</span></code></span>
+<span class="codeline" id="line-246"><code><span class="lit-string">biff		512/udp		comsat</span></code></span>
+<span class="codeline" id="line-247"><code><span class="lit-string">login		513/tcp</span></code></span>
+<span class="codeline" id="line-248"><code><span class="lit-string">who		513/udp		whod</span></code></span>
+<span class="codeline" id="line-249"><code><span class="lit-string">shell		514/tcp		cmd		# no passwords used</span></code></span>
+<span class="codeline" id="line-250"><code><span class="lit-string">syslog		514/udp</span></code></span>
+<span class="codeline" id="line-251"><code><span class="lit-string">printer		515/tcp		spooler		# line printer spooler</span></code></span>
+<span class="codeline" id="line-252"><code><span class="lit-string">talk		517/udp</span></code></span>
+<span class="codeline" id="line-253"><code><span class="lit-string">ntalk		518/udp</span></code></span>
+<span class="codeline" id="line-254"><code><span class="lit-string">route		520/udp		router routed	# RIP</span></code></span>
+<span class="codeline" id="line-255"><code><span class="lit-string">timed		525/udp		timeserver</span></code></span>
+<span class="codeline" id="line-256"><code><span class="lit-string">tempo		526/tcp		newdate</span></code></span>
+<span class="codeline" id="line-257"><code><span class="lit-string">courier		530/tcp		rpc</span></code></span>
+<span class="codeline" id="line-258"><code><span class="lit-string">conference	531/tcp		chat</span></code></span>
+<span class="codeline" id="line-259"><code><span class="lit-string">netnews		532/tcp		readnews</span></code></span>
+<span class="codeline" id="line-260"><code><span class="lit-string">netwall		533/udp				# for emergency broadcasts</span></code></span>
+<span class="codeline" id="line-261"><code><span class="lit-string">gdomap		538/tcp				# GNUstep distributed objects</span></code></span>
+<span class="codeline" id="line-262"><code><span class="lit-string">gdomap		538/udp</span></code></span>
+<span class="codeline" id="line-263"><code><span class="lit-string">uucp		540/tcp		uucpd		# uucp daemon</span></code></span>
+<span class="codeline" id="line-264"><code><span class="lit-string">klogin		543/tcp				# Kerberized 'rlogin' (v5)</span></code></span>
+<span class="codeline" id="line-265"><code><span class="lit-string">kshell		544/tcp		krcmd		# Kerberized 'rsh' (v5)</span></code></span>
+<span class="codeline" id="line-266"><code><span class="lit-string">dhcpv6-client	546/tcp</span></code></span>
+<span class="codeline" id="line-267"><code><span class="lit-string">dhcpv6-client	546/udp</span></code></span>
+<span class="codeline" id="line-268"><code><span class="lit-string">dhcpv6-server	547/tcp</span></code></span>
+<span class="codeline" id="line-269"><code><span class="lit-string">dhcpv6-server	547/udp</span></code></span>
+<span class="codeline" id="line-270"><code><span class="lit-string">afpovertcp	548/tcp				# AFP over TCP</span></code></span>
+<span class="codeline" id="line-271"><code><span class="lit-string">afpovertcp	548/udp</span></code></span>
+<span class="codeline" id="line-272"><code><span class="lit-string">idfp		549/tcp</span></code></span>
+<span class="codeline" id="line-273"><code><span class="lit-string">idfp		549/udp</span></code></span>
+<span class="codeline" id="line-274"><code><span class="lit-string">remotefs	556/tcp		rfs_server rfs	# Brunhoff remote filesystem</span></code></span>
+<span class="codeline" id="line-275"><code><span class="lit-string">nntps		563/tcp		snntp		# NNTP over SSL</span></code></span>
+<span class="codeline" id="line-276"><code><span class="lit-string">submission	587/tcp				# Submission [RFC4409]</span></code></span>
+<span class="codeline" id="line-277"><code><span class="lit-string">ldaps		636/tcp				# LDAP over SSL</span></code></span>
+<span class="codeline" id="line-278"><code><span class="lit-string">ldaps		636/udp</span></code></span>
+<span class="codeline" id="line-279"><code><span class="lit-string">tinc		655/tcp				# tinc control port</span></code></span>
+<span class="codeline" id="line-280"><code><span class="lit-string">tinc		655/udp</span></code></span>
+<span class="codeline" id="line-281"><code><span class="lit-string">silc		706/tcp</span></code></span>
+<span class="codeline" id="line-282"><code><span class="lit-string">silc		706/udp</span></code></span>
+<span class="codeline" id="line-283"><code><span class="lit-string">kerberos-adm	749/tcp				# Kerberos 'kadmin' (v5)</span></code></span>
+<span class="codeline" id="line-284"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-285"><code><span class="lit-string">webster		765/tcp				# Network dictionary</span></code></span>
+<span class="codeline" id="line-286"><code><span class="lit-string">webster		765/udp</span></code></span>
+<span class="codeline" id="line-287"><code><span class="lit-string">domain-s	853/tcp				# DNS over TLS [RFC7858]</span></code></span>
+<span class="codeline" id="line-288"><code><span class="lit-string">domain-s	853/udp				# DNS over DTLS [RFC8094]</span></code></span>
+<span class="codeline" id="line-289"><code><span class="lit-string">rsync		873/tcp</span></code></span>
+<span class="codeline" id="line-290"><code><span class="lit-string">ftps-data	989/tcp				# FTP over SSL (data)</span></code></span>
+<span class="codeline" id="line-291"><code><span class="lit-string">ftps		990/tcp</span></code></span>
+<span class="codeline" id="line-292"><code><span class="lit-string">telnets		992/tcp				# Telnet over SSL</span></code></span>
+<span class="codeline" id="line-293"><code><span class="lit-string">imaps		993/tcp				# IMAP over SSL</span></code></span>
+<span class="codeline" id="line-294"><code><span class="lit-string">pop3s		995/tcp				# POP-3 over SSL</span></code></span>
+<span class="codeline" id="line-295"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-296"><code><span class="lit-string"># From "ssigned Numbers":</span></code></span>
+<span class="codeline" id="line-297"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-298"><code><span class="lit-string">#&gt; The Registered Ports are not controlled by the IANA and on most systems</span></code></span>
+<span class="codeline" id="line-299"><code><span class="lit-string">#&gt; can be used by ordinary user processes or programs executed by ordinary</span></code></span>
+<span class="codeline" id="line-300"><code><span class="lit-string">#&gt; users.</span></code></span>
+<span class="codeline" id="line-301"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-302"><code><span class="lit-string">#&gt; Ports are used in the TCP [45,106] to name the ends of logical</span></code></span>
+<span class="codeline" id="line-303"><code><span class="lit-string">#&gt; connections which carry long term conversations.  For the purpose of</span></code></span>
+<span class="codeline" id="line-304"><code><span class="lit-string">#&gt; providing services to unknown callers, a service contact port is</span></code></span>
+<span class="codeline" id="line-305"><code><span class="lit-string">#&gt; defined.  This list specifies the port used by the server process as its</span></code></span>
+<span class="codeline" id="line-306"><code><span class="lit-string">#&gt; contact port.  While the IANA can not control uses of these ports it</span></code></span>
+<span class="codeline" id="line-307"><code><span class="lit-string">#&gt; does register or list uses of these ports as a convienence to the</span></code></span>
+<span class="codeline" id="line-308"><code><span class="lit-string">#&gt; community.</span></code></span>
+<span class="codeline" id="line-309"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-310"><code><span class="lit-string">socks		1080/tcp			# socks proxy server</span></code></span>
+<span class="codeline" id="line-311"><code><span class="lit-string">socks		1080/udp</span></code></span>
+<span class="codeline" id="line-312"><code><span class="lit-string">proofd		1093/tcp</span></code></span>
+<span class="codeline" id="line-313"><code><span class="lit-string">proofd		1093/udp</span></code></span>
+<span class="codeline" id="line-314"><code><span class="lit-string">rootd		1094/tcp</span></code></span>
+<span class="codeline" id="line-315"><code><span class="lit-string">rootd		1094/udp</span></code></span>
+<span class="codeline" id="line-316"><code><span class="lit-string">openvpn		1194/tcp</span></code></span>
+<span class="codeline" id="line-317"><code><span class="lit-string">openvpn		1194/udp</span></code></span>
+<span class="codeline" id="line-318"><code><span class="lit-string">rmiregistry	1099/tcp			# Java RMI Registry</span></code></span>
+<span class="codeline" id="line-319"><code><span class="lit-string">rmiregistry	1099/udp</span></code></span>
+<span class="codeline" id="line-320"><code><span class="lit-string">kazaa		1214/tcp</span></code></span>
+<span class="codeline" id="line-321"><code><span class="lit-string">kazaa		1214/udp</span></code></span>
+<span class="codeline" id="line-322"><code><span class="lit-string">nessus		1241/tcp			# Nessus vulnerability</span></code></span>
+<span class="codeline" id="line-323"><code><span class="lit-string">nessus		1241/udp			#  assessment scanner</span></code></span>
+<span class="codeline" id="line-324"><code><span class="lit-string">lotusnote	1352/tcp	lotusnotes	# Lotus Note</span></code></span>
+<span class="codeline" id="line-325"><code><span class="lit-string">lotusnote	1352/udp	lotusnotes</span></code></span>
+<span class="codeline" id="line-326"><code><span class="lit-string">ms-sql-s	1433/tcp			# Microsoft SQL Server</span></code></span>
+<span class="codeline" id="line-327"><code><span class="lit-string">ms-sql-s	1433/udp</span></code></span>
+<span class="codeline" id="line-328"><code><span class="lit-string">ms-sql-m	1434/tcp			# Microsoft SQL Monitor</span></code></span>
+<span class="codeline" id="line-329"><code><span class="lit-string">ms-sql-m	1434/udp</span></code></span>
+<span class="codeline" id="line-330"><code><span class="lit-string">ingreslock	1524/tcp</span></code></span>
+<span class="codeline" id="line-331"><code><span class="lit-string">ingreslock	1524/udp</span></code></span>
+<span class="codeline" id="line-332"><code><span class="lit-string">datametrics	1645/tcp	old-radius</span></code></span>
+<span class="codeline" id="line-333"><code><span class="lit-string">datametrics	1645/udp	old-radius</span></code></span>
+<span class="codeline" id="line-334"><code><span class="lit-string">sa-msg-port	1646/tcp	old-radacct</span></code></span>
+<span class="codeline" id="line-335"><code><span class="lit-string">sa-msg-port	1646/udp	old-radacct</span></code></span>
+<span class="codeline" id="line-336"><code><span class="lit-string">kermit		1649/tcp</span></code></span>
+<span class="codeline" id="line-337"><code><span class="lit-string">kermit		1649/udp</span></code></span>
+<span class="codeline" id="line-338"><code><span class="lit-string">groupwise	1677/tcp</span></code></span>
+<span class="codeline" id="line-339"><code><span class="lit-string">groupwise	1677/udp</span></code></span>
+<span class="codeline" id="line-340"><code><span class="lit-string">l2f		1701/tcp	l2tp</span></code></span>
+<span class="codeline" id="line-341"><code><span class="lit-string">l2f		1701/udp	l2tp</span></code></span>
+<span class="codeline" id="line-342"><code><span class="lit-string">radius		1812/tcp</span></code></span>
+<span class="codeline" id="line-343"><code><span class="lit-string">radius		1812/udp</span></code></span>
+<span class="codeline" id="line-344"><code><span class="lit-string">radius-acct	1813/tcp	radacct		# Radius Accounting</span></code></span>
+<span class="codeline" id="line-345"><code><span class="lit-string">radius-acct	1813/udp	radacct</span></code></span>
+<span class="codeline" id="line-346"><code><span class="lit-string">msnp		1863/tcp			# MSN Messenger</span></code></span>
+<span class="codeline" id="line-347"><code><span class="lit-string">msnp		1863/udp</span></code></span>
+<span class="codeline" id="line-348"><code><span class="lit-string">unix-status	1957/tcp			# remstats unix-status server</span></code></span>
+<span class="codeline" id="line-349"><code><span class="lit-string">log-server	1958/tcp			# remstats log server</span></code></span>
+<span class="codeline" id="line-350"><code><span class="lit-string">remoteping	1959/tcp			# remstats remoteping server</span></code></span>
+<span class="codeline" id="line-351"><code><span class="lit-string">cisco-sccp	2000/tcp			# Cisco SCCP</span></code></span>
+<span class="codeline" id="line-352"><code><span class="lit-string">cisco-sccp	2000/udp</span></code></span>
+<span class="codeline" id="line-353"><code><span class="lit-string">search		2010/tcp	ndtp</span></code></span>
+<span class="codeline" id="line-354"><code><span class="lit-string">pipe-server	2010/tcp	pipe_server</span></code></span>
+<span class="codeline" id="line-355"><code><span class="lit-string">nfs		2049/tcp			# Network File System</span></code></span>
+<span class="codeline" id="line-356"><code><span class="lit-string">nfs		2049/udp			# Network File System</span></code></span>
+<span class="codeline" id="line-357"><code><span class="lit-string">gnunet		2086/tcp</span></code></span>
+<span class="codeline" id="line-358"><code><span class="lit-string">gnunet		2086/udp</span></code></span>
+<span class="codeline" id="line-359"><code><span class="lit-string">rtcm-sc104	2101/tcp			# RTCM SC-104 IANA 1/29/99</span></code></span>
+<span class="codeline" id="line-360"><code><span class="lit-string">rtcm-sc104	2101/udp</span></code></span>
+<span class="codeline" id="line-361"><code><span class="lit-string">gsigatekeeper	2119/tcp</span></code></span>
+<span class="codeline" id="line-362"><code><span class="lit-string">gsigatekeeper	2119/udp</span></code></span>
+<span class="codeline" id="line-363"><code><span class="lit-string">gris		2135/tcp		# Grid Resource Information Server</span></code></span>
+<span class="codeline" id="line-364"><code><span class="lit-string">gris		2135/udp</span></code></span>
+<span class="codeline" id="line-365"><code><span class="lit-string">cvspserver	2401/tcp			# CVS client/server operations</span></code></span>
+<span class="codeline" id="line-366"><code><span class="lit-string">cvspserver	2401/udp</span></code></span>
+<span class="codeline" id="line-367"><code><span class="lit-string">venus		2430/tcp			# codacon port</span></code></span>
+<span class="codeline" id="line-368"><code><span class="lit-string">venus		2430/udp			# Venus callback/wbc interface</span></code></span>
+<span class="codeline" id="line-369"><code><span class="lit-string">venus-se	2431/tcp			# tcp side effects</span></code></span>
+<span class="codeline" id="line-370"><code><span class="lit-string">venus-se	2431/udp			# udp sftp side effect</span></code></span>
+<span class="codeline" id="line-371"><code><span class="lit-string">codasrv		2432/tcp			# not used</span></code></span>
+<span class="codeline" id="line-372"><code><span class="lit-string">codasrv		2432/udp			# server port</span></code></span>
+<span class="codeline" id="line-373"><code><span class="lit-string">codasrv-se	2433/tcp			# tcp side effects</span></code></span>
+<span class="codeline" id="line-374"><code><span class="lit-string">codasrv-se	2433/udp			# udp sftp side effect</span></code></span>
+<span class="codeline" id="line-375"><code><span class="lit-string">mon		2583/tcp			# MON traps</span></code></span>
+<span class="codeline" id="line-376"><code><span class="lit-string">mon		2583/udp</span></code></span>
+<span class="codeline" id="line-377"><code><span class="lit-string">dict		2628/tcp			# Dictionary server</span></code></span>
+<span class="codeline" id="line-378"><code><span class="lit-string">dict		2628/udp</span></code></span>
+<span class="codeline" id="line-379"><code><span class="lit-string">f5-globalsite	2792/tcp</span></code></span>
+<span class="codeline" id="line-380"><code><span class="lit-string">f5-globalsite	2792/udp</span></code></span>
+<span class="codeline" id="line-381"><code><span class="lit-string">gsiftp		2811/tcp</span></code></span>
+<span class="codeline" id="line-382"><code><span class="lit-string">gsiftp		2811/udp</span></code></span>
+<span class="codeline" id="line-383"><code><span class="lit-string">gpsd		2947/tcp</span></code></span>
+<span class="codeline" id="line-384"><code><span class="lit-string">gpsd		2947/udp</span></code></span>
+<span class="codeline" id="line-385"><code><span class="lit-string">gds-db		3050/tcp	gds_db		# InterBase server</span></code></span>
+<span class="codeline" id="line-386"><code><span class="lit-string">gds-db		3050/udp	gds_db</span></code></span>
+<span class="codeline" id="line-387"><code><span class="lit-string">icpv2		3130/tcp	icp		# Internet Cache Protocol</span></code></span>
+<span class="codeline" id="line-388"><code><span class="lit-string">icpv2		3130/udp	icp</span></code></span>
+<span class="codeline" id="line-389"><code><span class="lit-string">isns		3205/tcp			# iSNS Server Port</span></code></span>
+<span class="codeline" id="line-390"><code><span class="lit-string">isns		3205/udp			# iSNS Server Port</span></code></span>
+<span class="codeline" id="line-391"><code><span class="lit-string">iscsi-target	3260/tcp</span></code></span>
+<span class="codeline" id="line-392"><code><span class="lit-string">mysql		3306/tcp</span></code></span>
+<span class="codeline" id="line-393"><code><span class="lit-string">mysql		3306/udp</span></code></span>
+<span class="codeline" id="line-394"><code><span class="lit-string">nut		3493/tcp			# Network UPS Tools</span></code></span>
+<span class="codeline" id="line-395"><code><span class="lit-string">nut		3493/udp</span></code></span>
+<span class="codeline" id="line-396"><code><span class="lit-string">distcc		3632/tcp			# distributed compiler</span></code></span>
+<span class="codeline" id="line-397"><code><span class="lit-string">distcc		3632/udp</span></code></span>
+<span class="codeline" id="line-398"><code><span class="lit-string">daap		3689/tcp			# Digital Audio Access Protocol</span></code></span>
+<span class="codeline" id="line-399"><code><span class="lit-string">daap		3689/udp</span></code></span>
+<span class="codeline" id="line-400"><code><span class="lit-string">svn		3690/tcp	subversion	# Subversion protocol</span></code></span>
+<span class="codeline" id="line-401"><code><span class="lit-string">svn		3690/udp	subversion</span></code></span>
+<span class="codeline" id="line-402"><code><span class="lit-string">suucp		4031/tcp			# UUCP over SSL</span></code></span>
+<span class="codeline" id="line-403"><code><span class="lit-string">suucp		4031/udp</span></code></span>
+<span class="codeline" id="line-404"><code><span class="lit-string">sysrqd		4094/tcp			# sysrq daemon</span></code></span>
+<span class="codeline" id="line-405"><code><span class="lit-string">sysrqd		4094/udp</span></code></span>
+<span class="codeline" id="line-406"><code><span class="lit-string">sieve		4190/tcp			# ManageSieve Protocol</span></code></span>
+<span class="codeline" id="line-407"><code><span class="lit-string">epmd		4369/tcp			# Erlang Port Mapper Daemon</span></code></span>
+<span class="codeline" id="line-408"><code><span class="lit-string">epmd		4369/udp</span></code></span>
+<span class="codeline" id="line-409"><code><span class="lit-string">remctl		4373/tcp		# Remote Authenticated Command Service</span></code></span>
+<span class="codeline" id="line-410"><code><span class="lit-string">remctl		4373/udp</span></code></span>
+<span class="codeline" id="line-411"><code><span class="lit-string">f5-iquery	4353/tcp			# F5 iQuery</span></code></span>
+<span class="codeline" id="line-412"><code><span class="lit-string">f5-iquery	4353/udp</span></code></span>
+<span class="codeline" id="line-413"><code><span class="lit-string">ipsec-nat-t	4500/udp			# IPsec NAT-Traversal [RFC3947]</span></code></span>
+<span class="codeline" id="line-414"><code><span class="lit-string">iax		4569/tcp			# Inter-Asterisk eXchange</span></code></span>
+<span class="codeline" id="line-415"><code><span class="lit-string">iax		4569/udp</span></code></span>
+<span class="codeline" id="line-416"><code><span class="lit-string">mtn		4691/tcp			# monotone Netsync Protocol</span></code></span>
+<span class="codeline" id="line-417"><code><span class="lit-string">mtn		4691/udp</span></code></span>
+<span class="codeline" id="line-418"><code><span class="lit-string">radmin-port	4899/tcp			# RAdmin Port</span></code></span>
+<span class="codeline" id="line-419"><code><span class="lit-string">radmin-port	4899/udp</span></code></span>
+<span class="codeline" id="line-420"><code><span class="lit-string">rfe		5002/udp			# Radio Free Ethernet</span></code></span>
+<span class="codeline" id="line-421"><code><span class="lit-string">rfe		5002/tcp</span></code></span>
+<span class="codeline" id="line-422"><code><span class="lit-string">mmcc		5050/tcp	# multimedia conference control tool (Yahoo IM)</span></code></span>
+<span class="codeline" id="line-423"><code><span class="lit-string">mmcc		5050/udp</span></code></span>
+<span class="codeline" id="line-424"><code><span class="lit-string">sip		5060/tcp			# Session Initiation Protocol</span></code></span>
+<span class="codeline" id="line-425"><code><span class="lit-string">sip		5060/udp</span></code></span>
+<span class="codeline" id="line-426"><code><span class="lit-string">sip-tls		5061/tcp</span></code></span>
+<span class="codeline" id="line-427"><code><span class="lit-string">sip-tls		5061/udp</span></code></span>
+<span class="codeline" id="line-428"><code><span class="lit-string">aol		5190/tcp			# AIM</span></code></span>
+<span class="codeline" id="line-429"><code><span class="lit-string">aol		5190/udp</span></code></span>
+<span class="codeline" id="line-430"><code><span class="lit-string">xmpp-client	5222/tcp	jabber-client	# Jabber Client Connection</span></code></span>
+<span class="codeline" id="line-431"><code><span class="lit-string">xmpp-client	5222/udp	jabber-client</span></code></span>
+<span class="codeline" id="line-432"><code><span class="lit-string">xmpp-server	5269/tcp	jabber-server	# Jabber Server Connection</span></code></span>
+<span class="codeline" id="line-433"><code><span class="lit-string">xmpp-server	5269/udp	jabber-server</span></code></span>
+<span class="codeline" id="line-434"><code><span class="lit-string">cfengine	5308/tcp</span></code></span>
+<span class="codeline" id="line-435"><code><span class="lit-string">cfengine	5308/udp</span></code></span>
+<span class="codeline" id="line-436"><code><span class="lit-string">mdns		5353/tcp			# Multicast DNS</span></code></span>
+<span class="codeline" id="line-437"><code><span class="lit-string">mdns		5353/udp</span></code></span>
+<span class="codeline" id="line-438"><code><span class="lit-string">postgresql	5432/tcp	postgres	# PostgreSQL Database</span></code></span>
+<span class="codeline" id="line-439"><code><span class="lit-string">postgresql	5432/udp	postgres</span></code></span>
+<span class="codeline" id="line-440"><code><span class="lit-string">freeciv		5556/tcp	rptp		# Freeciv gameplay</span></code></span>
+<span class="codeline" id="line-441"><code><span class="lit-string">freeciv		5556/udp</span></code></span>
+<span class="codeline" id="line-442"><code><span class="lit-string">amqps		5671/tcp			# AMQP protocol over TLS/SSL</span></code></span>
+<span class="codeline" id="line-443"><code><span class="lit-string">amqp		5672/tcp</span></code></span>
+<span class="codeline" id="line-444"><code><span class="lit-string">amqp		5672/udp</span></code></span>
+<span class="codeline" id="line-445"><code><span class="lit-string">amqp		5672/sctp</span></code></span>
+<span class="codeline" id="line-446"><code><span class="lit-string">ggz		5688/tcp			# GGZ Gaming Zone</span></code></span>
+<span class="codeline" id="line-447"><code><span class="lit-string">ggz		5688/udp</span></code></span>
+<span class="codeline" id="line-448"><code><span class="lit-string">x11		6000/tcp	x11-0		# X Window System</span></code></span>
+<span class="codeline" id="line-449"><code><span class="lit-string">x11		6000/udp	x11-0</span></code></span>
+<span class="codeline" id="line-450"><code><span class="lit-string">x11-1		6001/tcp</span></code></span>
+<span class="codeline" id="line-451"><code><span class="lit-string">x11-1		6001/udp</span></code></span>
+<span class="codeline" id="line-452"><code><span class="lit-string">x11-2		6002/tcp</span></code></span>
+<span class="codeline" id="line-453"><code><span class="lit-string">x11-2		6002/udp</span></code></span>
+<span class="codeline" id="line-454"><code><span class="lit-string">x11-3		6003/tcp</span></code></span>
+<span class="codeline" id="line-455"><code><span class="lit-string">x11-3		6003/udp</span></code></span>
+<span class="codeline" id="line-456"><code><span class="lit-string">x11-4		6004/tcp</span></code></span>
+<span class="codeline" id="line-457"><code><span class="lit-string">x11-4		6004/udp</span></code></span>
+<span class="codeline" id="line-458"><code><span class="lit-string">x11-5		6005/tcp</span></code></span>
+<span class="codeline" id="line-459"><code><span class="lit-string">x11-5		6005/udp</span></code></span>
+<span class="codeline" id="line-460"><code><span class="lit-string">x11-6		6006/tcp</span></code></span>
+<span class="codeline" id="line-461"><code><span class="lit-string">x11-6		6006/udp</span></code></span>
+<span class="codeline" id="line-462"><code><span class="lit-string">x11-7		6007/tcp</span></code></span>
+<span class="codeline" id="line-463"><code><span class="lit-string">x11-7		6007/udp</span></code></span>
+<span class="codeline" id="line-464"><code><span class="lit-string">gnutella-svc	6346/tcp			# gnutella</span></code></span>
+<span class="codeline" id="line-465"><code><span class="lit-string">gnutella-svc	6346/udp</span></code></span>
+<span class="codeline" id="line-466"><code><span class="lit-string">gnutella-rtr	6347/tcp			# gnutella</span></code></span>
+<span class="codeline" id="line-467"><code><span class="lit-string">gnutella-rtr	6347/udp</span></code></span>
+<span class="codeline" id="line-468"><code><span class="lit-string">sge-qmaster	6444/tcp	sge_qmaster	# Grid Engine Qmaster Service</span></code></span>
+<span class="codeline" id="line-469"><code><span class="lit-string">sge-qmaster	6444/udp	sge_qmaster</span></code></span>
+<span class="codeline" id="line-470"><code><span class="lit-string">sge-execd	6445/tcp	sge_execd	# Grid Engine Execution Service</span></code></span>
+<span class="codeline" id="line-471"><code><span class="lit-string">sge-execd	6445/udp	sge_execd</span></code></span>
+<span class="codeline" id="line-472"><code><span class="lit-string">mysql-proxy	6446/tcp			# MySQL Proxy</span></code></span>
+<span class="codeline" id="line-473"><code><span class="lit-string">mysql-proxy	6446/udp</span></code></span>
+<span class="codeline" id="line-474"><code><span class="lit-string">babel		6696/udp			# Babel Routing Protocol</span></code></span>
+<span class="codeline" id="line-475"><code><span class="lit-string">ircs-u		6697/tcp		# Internet Relay Chat via TLS/SSL</span></code></span>
+<span class="codeline" id="line-476"><code><span class="lit-string">afs3-fileserver 7000/tcp	bbs		# file server itself</span></code></span>
+<span class="codeline" id="line-477"><code><span class="lit-string">afs3-fileserver 7000/udp	bbs</span></code></span>
+<span class="codeline" id="line-478"><code><span class="lit-string">afs3-callback	7001/tcp			# callbacks to cache managers</span></code></span>
+<span class="codeline" id="line-479"><code><span class="lit-string">afs3-callback	7001/udp</span></code></span>
+<span class="codeline" id="line-480"><code><span class="lit-string">afs3-prserver	7002/tcp			# users &amp; groups database</span></code></span>
+<span class="codeline" id="line-481"><code><span class="lit-string">afs3-prserver	7002/udp</span></code></span>
+<span class="codeline" id="line-482"><code><span class="lit-string">afs3-vlserver	7003/tcp			# volume location database</span></code></span>
+<span class="codeline" id="line-483"><code><span class="lit-string">afs3-vlserver	7003/udp</span></code></span>
+<span class="codeline" id="line-484"><code><span class="lit-string">afs3-kaserver	7004/tcp			# AFS/Kerberos authentication</span></code></span>
+<span class="codeline" id="line-485"><code><span class="lit-string">afs3-kaserver	7004/udp</span></code></span>
+<span class="codeline" id="line-486"><code><span class="lit-string">afs3-volser	7005/tcp			# volume managment server</span></code></span>
+<span class="codeline" id="line-487"><code><span class="lit-string">afs3-volser	7005/udp</span></code></span>
+<span class="codeline" id="line-488"><code><span class="lit-string">afs3-errors	7006/tcp			# error interpretation service</span></code></span>
+<span class="codeline" id="line-489"><code><span class="lit-string">afs3-errors	7006/udp</span></code></span>
+<span class="codeline" id="line-490"><code><span class="lit-string">afs3-bos	7007/tcp			# basic overseer process</span></code></span>
+<span class="codeline" id="line-491"><code><span class="lit-string">afs3-bos	7007/udp</span></code></span>
+<span class="codeline" id="line-492"><code><span class="lit-string">afs3-update	7008/tcp			# server-to-server updater</span></code></span>
+<span class="codeline" id="line-493"><code><span class="lit-string">afs3-update	7008/udp</span></code></span>
+<span class="codeline" id="line-494"><code><span class="lit-string">afs3-rmtsys	7009/tcp			# remote cache manager service</span></code></span>
+<span class="codeline" id="line-495"><code><span class="lit-string">afs3-rmtsys	7009/udp</span></code></span>
+<span class="codeline" id="line-496"><code><span class="lit-string">font-service	7100/tcp	xfs		# X Font Service</span></code></span>
+<span class="codeline" id="line-497"><code><span class="lit-string">font-service	7100/udp	xfs</span></code></span>
+<span class="codeline" id="line-498"><code><span class="lit-string">http-alt	8080/tcp	webcache	# WWW caching service</span></code></span>
+<span class="codeline" id="line-499"><code><span class="lit-string">http-alt	8080/udp</span></code></span>
+<span class="codeline" id="line-500"><code><span class="lit-string">puppet		8140/tcp			# The Puppet master service</span></code></span>
+<span class="codeline" id="line-501"><code><span class="lit-string">bacula-dir	9101/tcp			# Bacula Director</span></code></span>
+<span class="codeline" id="line-502"><code><span class="lit-string">bacula-dir	9101/udp</span></code></span>
+<span class="codeline" id="line-503"><code><span class="lit-string">bacula-fd	9102/tcp			# Bacula File Daemon</span></code></span>
+<span class="codeline" id="line-504"><code><span class="lit-string">bacula-fd	9102/udp</span></code></span>
+<span class="codeline" id="line-505"><code><span class="lit-string">bacula-sd	9103/tcp			# Bacula Storage Daemon</span></code></span>
+<span class="codeline" id="line-506"><code><span class="lit-string">bacula-sd	9103/udp</span></code></span>
+<span class="codeline" id="line-507"><code><span class="lit-string">xmms2		9667/tcp	# Cross-platform Music Multiplexing System</span></code></span>
+<span class="codeline" id="line-508"><code><span class="lit-string">xmms2		9667/udp</span></code></span>
+<span class="codeline" id="line-509"><code><span class="lit-string">nbd		10809/tcp			# Linux Network Block Device</span></code></span>
+<span class="codeline" id="line-510"><code><span class="lit-string">zabbix-agent	10050/tcp			# Zabbix Agent</span></code></span>
+<span class="codeline" id="line-511"><code><span class="lit-string">zabbix-agent	10050/udp</span></code></span>
+<span class="codeline" id="line-512"><code><span class="lit-string">zabbix-trapper	10051/tcp			# Zabbix Trapper</span></code></span>
+<span class="codeline" id="line-513"><code><span class="lit-string">zabbix-trapper	10051/udp</span></code></span>
+<span class="codeline" id="line-514"><code><span class="lit-string">amanda		10080/tcp			# amanda backup services</span></code></span>
+<span class="codeline" id="line-515"><code><span class="lit-string">amanda		10080/udp</span></code></span>
+<span class="codeline" id="line-516"><code><span class="lit-string">dicom		11112/tcp</span></code></span>
+<span class="codeline" id="line-517"><code><span class="lit-string">hkp		11371/tcp			# OpenPGP HTTP Keyserver</span></code></span>
+<span class="codeline" id="line-518"><code><span class="lit-string">hkp		11371/udp</span></code></span>
+<span class="codeline" id="line-519"><code><span class="lit-string">bprd		13720/tcp			# VERITAS NetBackup</span></code></span>
+<span class="codeline" id="line-520"><code><span class="lit-string">bprd		13720/udp</span></code></span>
+<span class="codeline" id="line-521"><code><span class="lit-string">bpdbm		13721/tcp			# VERITAS NetBackup</span></code></span>
+<span class="codeline" id="line-522"><code><span class="lit-string">bpdbm		13721/udp</span></code></span>
+<span class="codeline" id="line-523"><code><span class="lit-string">bpjava-msvc	13722/tcp			# BP Java MSVC Protocol</span></code></span>
+<span class="codeline" id="line-524"><code><span class="lit-string">bpjava-msvc	13722/udp</span></code></span>
+<span class="codeline" id="line-525"><code><span class="lit-string">vnetd		13724/tcp			# Veritas Network Utility</span></code></span>
+<span class="codeline" id="line-526"><code><span class="lit-string">vnetd		13724/udp</span></code></span>
+<span class="codeline" id="line-527"><code><span class="lit-string">bpcd		13782/tcp			# VERITAS NetBackup</span></code></span>
+<span class="codeline" id="line-528"><code><span class="lit-string">bpcd		13782/udp</span></code></span>
+<span class="codeline" id="line-529"><code><span class="lit-string">vopied		13783/tcp			# VERITAS NetBackup</span></code></span>
+<span class="codeline" id="line-530"><code><span class="lit-string">vopied		13783/udp</span></code></span>
+<span class="codeline" id="line-531"><code><span class="lit-string">db-lsp		17500/tcp			# Dropbox LanSync Protocol</span></code></span>
+<span class="codeline" id="line-532"><code><span class="lit-string">dcap		22125/tcp			# dCache Access Protocol</span></code></span>
+<span class="codeline" id="line-533"><code><span class="lit-string">gsidcap		22128/tcp			# GSI dCache Access Protocol</span></code></span>
+<span class="codeline" id="line-534"><code><span class="lit-string">wnn6		22273/tcp			# wnn6</span></code></span>
+<span class="codeline" id="line-535"><code><span class="lit-string">wnn6		22273/udp</span></code></span>
+<span class="codeline" id="line-536"><code></code></span>
+<span class="codeline" id="line-537"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-538"><code><span class="lit-string"># Datagram Delivery Protocol services</span></code></span>
+<span class="codeline" id="line-539"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-540"><code><span class="lit-string">rtmp		1/ddp			# Routing Table Maintenance Protocol</span></code></span>
+<span class="codeline" id="line-541"><code><span class="lit-string">nbp		2/ddp			# Name Binding Protocol</span></code></span>
+<span class="codeline" id="line-542"><code><span class="lit-string">echo		4/ddp			# AppleTalk Echo Protocol</span></code></span>
+<span class="codeline" id="line-543"><code><span class="lit-string">zip		6/ddp			# Zone Information Protocol</span></code></span>
+<span class="codeline" id="line-544"><code></code></span>
+<span class="codeline" id="line-545"><code><span class="lit-string">#=========================================================================</span></code></span>
+<span class="codeline" id="line-546"><code><span class="lit-string"># The remaining port numbers are not as allocated by IANA.</span></code></span>
+<span class="codeline" id="line-547"><code><span class="lit-string">#=========================================================================</span></code></span>
+<span class="codeline" id="line-548"><code></code></span>
+<span class="codeline" id="line-549"><code><span class="lit-string"># Kerberos (Project Athena/MIT) services</span></code></span>
+<span class="codeline" id="line-550"><code><span class="lit-string"># Note that these are for Kerberos v4, and are unofficial.  Sites running</span></code></span>
+<span class="codeline" id="line-551"><code><span class="lit-string"># v4 should uncomment these and comment out the v5 entries above.</span></code></span>
+<span class="codeline" id="line-552"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-553"><code><span class="lit-string">kerberos4	750/udp		kerberos-iv kdc	# Kerberos (server)</span></code></span>
+<span class="codeline" id="line-554"><code><span class="lit-string">kerberos4	750/tcp		kerberos-iv kdc</span></code></span>
+<span class="codeline" id="line-555"><code><span class="lit-string">kerberos-master	751/udp		kerberos_master	# Kerberos authentication</span></code></span>
+<span class="codeline" id="line-556"><code><span class="lit-string">kerberos-master	751/tcp</span></code></span>
+<span class="codeline" id="line-557"><code><span class="lit-string">passwd-server	752/udp		passwd_server	# Kerberos passwd server</span></code></span>
+<span class="codeline" id="line-558"><code><span class="lit-string">krb-prop	754/tcp		krb_prop krb5_prop hprop # Kerberos slave propagation</span></code></span>
+<span class="codeline" id="line-559"><code><span class="lit-string">krbupdate	760/tcp		kreg		# Kerberos registration</span></code></span>
+<span class="codeline" id="line-560"><code><span class="lit-string">swat		901/tcp				# swat</span></code></span>
+<span class="codeline" id="line-561"><code><span class="lit-string">kpop		1109/tcp			# Pop with Kerberos</span></code></span>
+<span class="codeline" id="line-562"><code><span class="lit-string">knetd		2053/tcp			# Kerberos de-multiplexor</span></code></span>
+<span class="codeline" id="line-563"><code><span class="lit-string">zephyr-srv	2102/udp			# Zephyr server</span></code></span>
+<span class="codeline" id="line-564"><code><span class="lit-string">zephyr-clt	2103/udp			# Zephyr serv-hm connection</span></code></span>
+<span class="codeline" id="line-565"><code><span class="lit-string">zephyr-hm	2104/udp			# Zephyr hostmanager</span></code></span>
+<span class="codeline" id="line-566"><code><span class="lit-string">eklogin		2105/tcp			# Kerberos encrypted rlogin</span></code></span>
+<span class="codeline" id="line-567"><code><span class="lit-string"># Hmmm. Are we using Kv4 or Kv5 now? Worrying.</span></code></span>
+<span class="codeline" id="line-568"><code><span class="lit-string"># The following is probably Kerberos v5  --- ajt@debian.org (11/02/2000)</span></code></span>
+<span class="codeline" id="line-569"><code><span class="lit-string">kx		2111/tcp			# X over Kerberos</span></code></span>
+<span class="codeline" id="line-570"><code><span class="lit-string">iprop		2121/tcp			# incremental propagation</span></code></span>
+<span class="codeline" id="line-571"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-572"><code><span class="lit-string"># Unofficial but necessary (for NetBSD) services</span></code></span>
+<span class="codeline" id="line-573"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-574"><code><span class="lit-string">supfilesrv	871/tcp				# SUP server</span></code></span>
+<span class="codeline" id="line-575"><code><span class="lit-string">supfiledbg	1127/tcp			# SUP debugging</span></code></span>
+<span class="codeline" id="line-576"><code></code></span>
+<span class="codeline" id="line-577"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-578"><code><span class="lit-string"># Services added for the Debian GNU/Linux distribution</span></code></span>
+<span class="codeline" id="line-579"><code><span class="lit-string">#</span></code></span>
+<span class="codeline" id="line-580"><code><span class="lit-string">poppassd	106/tcp				# Eudora</span></code></span>
+<span class="codeline" id="line-581"><code><span class="lit-string">poppassd	106/udp</span></code></span>
+<span class="codeline" id="line-582"><code><span class="lit-string">moira-db	775/tcp		moira_db	# Moira database</span></code></span>
+<span class="codeline" id="line-583"><code><span class="lit-string">moira-update	777/tcp		moira_update	# Moira update protocol</span></code></span>
+<span class="codeline" id="line-584"><code><span class="lit-string">moira-ureg	779/udp		moira_ureg	# Moira user registration</span></code></span>
+<span class="codeline" id="line-585"><code><span class="lit-string">spamd		783/tcp				# spamassassin daemon</span></code></span>
+<span class="codeline" id="line-586"><code><span class="lit-string">omirr		808/tcp		omirrd		# online mirror</span></code></span>
+<span class="codeline" id="line-587"><code><span class="lit-string">omirr		808/udp		omirrd</span></code></span>
+<span class="codeline" id="line-588"><code><span class="lit-string">customs		1001/tcp			# pmake customs server</span></code></span>
+<span class="codeline" id="line-589"><code><span class="lit-string">customs		1001/udp</span></code></span>
+<span class="codeline" id="line-590"><code><span class="lit-string">skkserv		1178/tcp			# skk jisho server port</span></code></span>
+<span class="codeline" id="line-591"><code><span class="lit-string">predict		1210/udp			# predict -- satellite tracking</span></code></span>
+<span class="codeline" id="line-592"><code><span class="lit-string">rmtcfg		1236/tcp			# Gracilis Packeten remote config server</span></code></span>
+<span class="codeline" id="line-593"><code><span class="lit-string">wipld		1300/tcp			# Wipl network monitor</span></code></span>
+<span class="codeline" id="line-594"><code><span class="lit-string">xtel		1313/tcp			# french minitel</span></code></span>
+<span class="codeline" id="line-595"><code><span class="lit-string">xtelw		1314/tcp			# french minitel</span></code></span>
+<span class="codeline" id="line-596"><code><span class="lit-string">support		1529/tcp			# GNATS</span></code></span>
+<span class="codeline" id="line-597"><code><span class="lit-string">cfinger		2003/tcp			# GNU Finger</span></code></span>
+<span class="codeline" id="line-598"><code><span class="lit-string">frox		2121/tcp			# frox: caching ftp proxy</span></code></span>
+<span class="codeline" id="line-599"><code><span class="lit-string">ninstall	2150/tcp			# ninstall service</span></code></span>
+<span class="codeline" id="line-600"><code><span class="lit-string">ninstall	2150/udp</span></code></span>
+<span class="codeline" id="line-601"><code><span class="lit-string">zebrasrv	2600/tcp			# zebra service</span></code></span>
+<span class="codeline" id="line-602"><code><span class="lit-string">zebra		2601/tcp			# zebra vty</span></code></span>
+<span class="codeline" id="line-603"><code><span class="lit-string">ripd		2602/tcp			# ripd vty (zebra)</span></code></span>
+<span class="codeline" id="line-604"><code><span class="lit-string">ripngd		2603/tcp			# ripngd vty (zebra)</span></code></span>
+<span class="codeline" id="line-605"><code><span class="lit-string">ospfd		2604/tcp			# ospfd vty (zebra)</span></code></span>
+<span class="codeline" id="line-606"><code><span class="lit-string">bgpd		2605/tcp			# bgpd vty (zebra)</span></code></span>
+<span class="codeline" id="line-607"><code><span class="lit-string">ospf6d		2606/tcp			# ospf6d vty (zebra)</span></code></span>
+<span class="codeline" id="line-608"><code><span class="lit-string">ospfapi		2607/tcp			# OSPF-API</span></code></span>
+<span class="codeline" id="line-609"><code><span class="lit-string">isisd		2608/tcp			# ISISd vty (zebra)</span></code></span>
+<span class="codeline" id="line-610"><code><span class="lit-string">afbackup	2988/tcp			# Afbackup system</span></code></span>
+<span class="codeline" id="line-611"><code><span class="lit-string">afbackup	2988/udp</span></code></span>
+<span class="codeline" id="line-612"><code><span class="lit-string">afmbackup	2989/tcp			# Afmbackup system</span></code></span>
+<span class="codeline" id="line-613"><code><span class="lit-string">afmbackup	2989/udp</span></code></span>
+<span class="codeline" id="line-614"><code><span class="lit-string">xtell		4224/tcp			# xtell server</span></code></span>
+<span class="codeline" id="line-615"><code><span class="lit-string">fax		4557/tcp			# FAX transmission service (old)</span></code></span>
+<span class="codeline" id="line-616"><code><span class="lit-string">hylafax		4559/tcp			# HylaFAX client-server protocol (new)</span></code></span>
+<span class="codeline" id="line-617"><code><span class="lit-string">distmp3		4600/tcp			# distmp3host daemon</span></code></span>
+<span class="codeline" id="line-618"><code><span class="lit-string">munin		4949/tcp	lrrd		# Munin</span></code></span>
+<span class="codeline" id="line-619"><code><span class="lit-string">enbd-cstatd	5051/tcp			# ENBD client statd</span></code></span>
+<span class="codeline" id="line-620"><code><span class="lit-string">enbd-sstatd	5052/tcp			# ENBD server statd</span></code></span>
+<span class="codeline" id="line-621"><code><span class="lit-string">pcrd		5151/tcp			# PCR-1000 Daemon</span></code></span>
+<span class="codeline" id="line-622"><code><span class="lit-string">noclog		5354/tcp			# noclogd with TCP (nocol)</span></code></span>
+<span class="codeline" id="line-623"><code><span class="lit-string">noclog		5354/udp			# noclogd with UDP (nocol)</span></code></span>
+<span class="codeline" id="line-624"><code><span class="lit-string">hostmon		5355/tcp			# hostmon uses TCP (nocol)</span></code></span>
+<span class="codeline" id="line-625"><code><span class="lit-string">hostmon		5355/udp			# hostmon uses UDP (nocol)</span></code></span>
+<span class="codeline" id="line-626"><code><span class="lit-string">rplay		5555/udp			# RPlay audio service</span></code></span>
+<span class="codeline" id="line-627"><code><span class="lit-string">nrpe		5666/tcp			# Nagios Remote Plugin Executor</span></code></span>
+<span class="codeline" id="line-628"><code><span class="lit-string">nsca		5667/tcp			# Nagios Agent - NSCA</span></code></span>
+<span class="codeline" id="line-629"><code><span class="lit-string">mrtd		5674/tcp			# MRT Routing Daemon</span></code></span>
+<span class="codeline" id="line-630"><code><span class="lit-string">bgpsim		5675/tcp			# MRT Routing Simulator</span></code></span>
+<span class="codeline" id="line-631"><code><span class="lit-string">canna		5680/tcp			# cannaserver</span></code></span>
+<span class="codeline" id="line-632"><code><span class="lit-string">syslog-tls	6514/tcp			# Syslog over TLS [RFC5425]</span></code></span>
+<span class="codeline" id="line-633"><code><span class="lit-string">sane-port	6566/tcp	sane saned	# SANE network scanner daemon</span></code></span>
+<span class="codeline" id="line-634"><code><span class="lit-string">ircd		6667/tcp			# Internet Relay Chat</span></code></span>
+<span class="codeline" id="line-635"><code><span class="lit-string">zope-ftp	8021/tcp			# zope management by ftp</span></code></span>
+<span class="codeline" id="line-636"><code><span class="lit-string">tproxy		8081/tcp			# Transparent Proxy</span></code></span>
+<span class="codeline" id="line-637"><code><span class="lit-string">omniorb		8088/tcp			# OmniORB</span></code></span>
+<span class="codeline" id="line-638"><code><span class="lit-string">omniorb		8088/udp</span></code></span>
+<span class="codeline" id="line-639"><code><span class="lit-string">clc-build-daemon 8990/tcp			# Common lisp build daemon</span></code></span>
+<span class="codeline" id="line-640"><code><span class="lit-string">xinetd		9098/tcp</span></code></span>
+<span class="codeline" id="line-641"><code><span class="lit-string">mandelspawn	9359/udp	mandelbrot	# network mandelbrot</span></code></span>
+<span class="codeline" id="line-642"><code><span class="lit-string">git		9418/tcp			# Git Version Control System</span></code></span>
+<span class="codeline" id="line-643"><code><span class="lit-string">zope		9673/tcp			# zope server</span></code></span>
+<span class="codeline" id="line-644"><code><span class="lit-string">webmin		10000/tcp</span></code></span>
+<span class="codeline" id="line-645"><code><span class="lit-string">kamanda		10081/tcp			# amanda backup services (Kerberos)</span></code></span>
+<span class="codeline" id="line-646"><code><span class="lit-string">kamanda		10081/udp</span></code></span>
+<span class="codeline" id="line-647"><code><span class="lit-string">amandaidx	10082/tcp			# amanda backup services</span></code></span>
+<span class="codeline" id="line-648"><code><span class="lit-string">amidxtape	10083/tcp			# amanda backup services</span></code></span>
+<span class="codeline" id="line-649"><code><span class="lit-string">smsqp		11201/tcp			# Alamin SMS gateway</span></code></span>
+<span class="codeline" id="line-650"><code><span class="lit-string">smsqp		11201/udp</span></code></span>
+<span class="codeline" id="line-651"><code><span class="lit-string">xpilot		15345/tcp			# XPilot Contact Port</span></code></span>
+<span class="codeline" id="line-652"><code><span class="lit-string">xpilot		15345/udp</span></code></span>
+<span class="codeline" id="line-653"><code><span class="lit-string">sgi-cmsd	17001/udp		# Cluster membership services daemon</span></code></span>
+<span class="codeline" id="line-654"><code><span class="lit-string">sgi-crsd	17002/udp</span></code></span>
+<span class="codeline" id="line-655"><code><span class="lit-string">sgi-gcd		17003/udp			# SGI Group membership daemon</span></code></span>
+<span class="codeline" id="line-656"><code><span class="lit-string">sgi-cad		17004/tcp			# Cluster Admin daemon</span></code></span>
+<span class="codeline" id="line-657"><code><span class="lit-string">isdnlog		20011/tcp			# isdn logging system</span></code></span>
+<span class="codeline" id="line-658"><code><span class="lit-string">isdnlog		20011/udp</span></code></span>
+<span class="codeline" id="line-659"><code><span class="lit-string">vboxd		20012/tcp			# voice box system</span></code></span>
+<span class="codeline" id="line-660"><code><span class="lit-string">vboxd		20012/udp</span></code></span>
+<span class="codeline" id="line-661"><code><span class="lit-string">binkp		24554/tcp			# binkp fidonet protocol</span></code></span>
+<span class="codeline" id="line-662"><code><span class="lit-string">asp		27374/tcp			# Address Search Protocol</span></code></span>
+<span class="codeline" id="line-663"><code><span class="lit-string">asp		27374/udp</span></code></span>
+<span class="codeline" id="line-664"><code><span class="lit-string">csync2		30865/tcp			# cluster synchronization tool</span></code></span>
+<span class="codeline" id="line-665"><code><span class="lit-string">dircproxy	57000/tcp			# Detachable IRC Proxy</span></code></span>
+<span class="codeline" id="line-666"><code><span class="lit-string">tfido		60177/tcp			# fidonet EMSI over telnet</span></code></span>
+<span class="codeline" id="line-667"><code><span class="lit-string">fido		60179/tcp			# fidonet EMSI over TCP</span></code></span>
+<span class="codeline" id="line-668"><code></code></span>
+<span class="codeline" id="line-669"><code><span class="lit-string"># Local services</span></code></span>
+<span class="codeline" id="line-670"><code><span class="lit-string">`</span></code></span>
+<span class="codeline" id="line-671"><code>)</code></span>
+<span class="codeline" id="line-672"><code></code></span>
+<span class="codeline" id="line-673"><code><span class="keyword">type</span> <a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-Protoent" class="ident">Protoent</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-674"><code>	Name    <a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-675"><code>	Aliases []<a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-676"><code>	Number  <a href="../../../../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-677"><code>}</code></span>
+<span class="codeline" id="line-678"><code></code></span>
+<span class="codeline" id="line-679"><code><span class="keyword">type</span> <a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-Servent" class="ident">Servent</a> <span class="keyword">struct</span> {</code></span>
+<span class="codeline" id="line-680"><code>	Name     <a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-681"><code>	Aliases  []<a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a></code></span>
+<span class="codeline" id="line-682"><code>	Port     <a href="../../../../../../pkg/builtin.html#name-int" class="ident">int</a></code></span>
+<span class="codeline" id="line-683"><code>	Protocol *<a href="#line-673" class="ident">Protoent</a></code></span>
+<span class="codeline" id="line-684"><code>}</code></span>
+<span class="codeline" id="line-685"><code></code></span>
+<span class="codeline" id="line-686"><code><span class="comment">// These variables get populated from /etc/protocols and /etc/services</span></code></span>
+<span class="codeline" id="line-687"><code><span class="comment">// respectively.</span></code></span>
+<span class="codeline" id="line-688"><code><span class="keyword">var</span> (</code></span>
+<span class="codeline" id="line-689"><code>	<a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-Protocols" class="ident">Protocols</a> []*<a href="#line-673" class="ident">Protoent</a></code></span>
+<span class="codeline" id="line-690"><code>	<a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-Services" class="ident">Services</a>  []*<a href="#line-679" class="ident">Servent</a></code></span>
+<span class="codeline" id="line-691"><code>)</code></span>
+<span class="codeline" id="line-692"><code></code></span>
+<span class="codeline" id="line-693"><code><span class="keyword">func</span> <label for="r0" class="ident"><a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-init" class="ident">init</a></label>() {</code></span>
+<span class="codeline" id="line-694"><code>	<label for="r1" class="ident">protoMap</label> := <a href="../../../../../../pkg/builtin.html#name-make" class="ident">make</a>(<span class="keyword">map</span>[<a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a>]*<a href="#line-673" class="ident">Protoent</a>)</code></span>
+<span class="codeline" id="line-695"><code></code></span>
+<span class="codeline" id="line-696"><code>	<span class="comment">// Load protocols</span></code></span>
+<span class="codeline" id="line-697"><code>	<label for="r2" class="ident">data</label>, <label for="r3" class="ident">err</label> := <a href="../../../../../../pkg/io/ioutil.html" class="ident i0">ioutil</a>.<a href="../../../../../io/ioutil/ioutil.go.html#line-36" class="ident">ReadFile</a>(<span class="lit-string">"/etc/protocols"</span>)</code></span>
+<span class="codeline" id="line-698"><code>	<span class="keyword">if</span> <label for="r3" class="ident">err</label> != <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-699"><code>		<span class="keyword">if</span> !<a href="../../../../../../pkg/os.html" class="ident i1">os</a>.<a href="../../../../../os/error.go.html#line-92" class="ident">IsNotExist</a>(<label for="r3" class="ident">err</label>) {</code></span>
+<span class="codeline" id="line-700"><code>			<a href="../../../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<label for="r3" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-701"><code>		}</code></span>
+<span class="codeline" id="line-702"><code></code></span>
+<span class="codeline" id="line-703"><code>		<label for="r2" class="ident">data</label> = []<a href="../../../../../../pkg/builtin.html#name-byte" class="ident">byte</a>(<a href="#line-24" class="ident">protocols</a>)</code></span>
+<span class="codeline" id="line-704"><code>	}</code></span>
+<span class="codeline" id="line-705"><code></code></span>
+<span class="codeline" id="line-706"><code>	<span class="keyword">for</span> <label for="r4" class="ident">_</label>, <label for="r5" class="ident">line</label> := <span class="keyword">range</span> <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-299" class="ident">Split</a>(<a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a>(<label for="r2" class="ident">data</label>), <span class="lit-string">"\n"</span>) {</code></span>
+<span class="codeline" id="line-707"><code>		<label for="r5" class="ident">line</label> = <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-867" class="ident">TrimSpace</a>(<label for="r5" class="ident">line</label>)</code></span>
+<span class="codeline" id="line-708"><code>		<label for="r6" class="ident">split</label> := <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-273" class="ident">SplitN</a>(<label for="r5" class="ident">line</label>, <span class="lit-string">"#"</span>, <span class="lit-number">2</span>)</code></span>
+<span class="codeline" id="line-709"><code>		<label for="r7" class="ident">fields</label> := <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-320" class="ident">Fields</a>(<label for="r6" class="ident">split</label>[<span class="lit-number">0</span>])</code></span>
+<span class="codeline" id="line-710"><code>		<span class="keyword">if</span> <a href="../../../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r7" class="ident">fields</label>) &lt; <span class="lit-number">2</span> {</code></span>
+<span class="codeline" id="line-711"><code>			<span class="keyword">continue</span></code></span>
+<span class="codeline" id="line-712"><code>		}</code></span>
+<span class="codeline" id="line-713"><code></code></span>
+<span class="codeline" id="line-714"><code>		<label for="r8" class="ident">num</label>, <label for="r9" class="ident">err</label> := <a href="../../../../../../pkg/strconv.html" class="ident i2">strconv</a>.<a href="../../../../../strconv/atoi.go.html#line-179" class="ident">ParseInt</a>(<label for="r7" class="ident">fields</label>[<span class="lit-number">1</span>], <span class="lit-number">10</span>, <span class="lit-number">32</span>)</code></span>
+<span class="codeline" id="line-715"><code>		<span class="keyword">if</span> <label for="r9" class="ident">err</label> != <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-716"><code>			<a href="../../../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<label for="r9" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-717"><code>		}</code></span>
+<span class="codeline" id="line-718"><code></code></span>
+<span class="codeline" id="line-719"><code>		<label for="r10" class="ident">protoent</label> := &amp;<a href="#line-673" class="ident">Protoent</a>{</code></span>
+<span class="codeline" id="line-720"><code>			<a href="#line-674" class="ident">Name</a>:    <label for="r7" class="ident">fields</label>[<span class="lit-number">0</span>],</code></span>
+<span class="codeline" id="line-721"><code>			<a href="#line-675" class="ident">Aliases</a>: <label for="r7" class="ident">fields</label>[<span class="lit-number">2</span>:],</code></span>
+<span class="codeline" id="line-722"><code>			<a href="#line-676" class="ident">Number</a>:  <a href="../../../../../../pkg/builtin.html#name-int" class="ident">int</a>(<label for="r8" class="ident">num</label>),</code></span>
+<span class="codeline" id="line-723"><code>		}</code></span>
+<span class="codeline" id="line-724"><code>		<a href="#line-689" class="ident">Protocols</a> = <a href="../../../../../../pkg/builtin.html#name-append" class="ident">append</a>(<a href="#line-689" class="ident">Protocols</a>, <label for="r10" class="ident">protoent</label>)</code></span>
+<span class="codeline" id="line-725"><code></code></span>
+<span class="codeline" id="line-726"><code>		<label for="r1" class="ident">protoMap</label>[<label for="r7" class="ident">fields</label>[<span class="lit-number">0</span>]] = <label for="r10" class="ident">protoent</label></code></span>
+<span class="codeline" id="line-727"><code>	}</code></span>
+<span class="codeline" id="line-728"><code></code></span>
+<span class="codeline" id="line-729"><code>	<span class="comment">// Load services</span></code></span>
+<span class="codeline" id="line-730"><code>	<label for="r2" class="ident">data</label>, <label for="r3" class="ident">err</label> = <a href="../../../../../../pkg/io/ioutil.html" class="ident i0">ioutil</a>.<a href="../../../../../io/ioutil/ioutil.go.html#line-36" class="ident">ReadFile</a>(<span class="lit-string">"/etc/services"</span>)</code></span>
+<span class="codeline" id="line-731"><code>	<span class="keyword">if</span> <label for="r3" class="ident">err</label> != <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-732"><code>		<span class="keyword">if</span> !<a href="../../../../../../pkg/os.html" class="ident i1">os</a>.<a href="../../../../../os/error.go.html#line-92" class="ident">IsNotExist</a>(<label for="r3" class="ident">err</label>) {</code></span>
+<span class="codeline" id="line-733"><code>			<a href="../../../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<label for="r3" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-734"><code>		}</code></span>
+<span class="codeline" id="line-735"><code></code></span>
+<span class="codeline" id="line-736"><code>		<label for="r2" class="ident">data</label> = []<a href="../../../../../../pkg/builtin.html#name-byte" class="ident">byte</a>(<a href="#line-91" class="ident">services</a>)</code></span>
+<span class="codeline" id="line-737"><code>	}</code></span>
+<span class="codeline" id="line-738"><code></code></span>
+<span class="codeline" id="line-739"><code>	<span class="keyword">for</span> <label for="r11" class="ident">_</label>, <label for="r12" class="ident">line</label> := <span class="keyword">range</span> <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-299" class="ident">Split</a>(<a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a>(<label for="r2" class="ident">data</label>), <span class="lit-string">"\n"</span>) {</code></span>
+<span class="codeline" id="line-740"><code>		<label for="r12" class="ident">line</label> = <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-867" class="ident">TrimSpace</a>(<label for="r12" class="ident">line</label>)</code></span>
+<span class="codeline" id="line-741"><code>		<label for="r13" class="ident">split</label> := <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-273" class="ident">SplitN</a>(<label for="r12" class="ident">line</label>, <span class="lit-string">"#"</span>, <span class="lit-number">2</span>)</code></span>
+<span class="codeline" id="line-742"><code>		<label for="r14" class="ident">fields</label> := <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-320" class="ident">Fields</a>(<label for="r13" class="ident">split</label>[<span class="lit-number">0</span>])</code></span>
+<span class="codeline" id="line-743"><code>		<span class="keyword">if</span> <a href="../../../../../../pkg/builtin.html#name-len" class="ident">len</a>(<label for="r14" class="ident">fields</label>) &lt; <span class="lit-number">2</span> {</code></span>
+<span class="codeline" id="line-744"><code>			<span class="keyword">continue</span></code></span>
+<span class="codeline" id="line-745"><code>		}</code></span>
+<span class="codeline" id="line-746"><code></code></span>
+<span class="codeline" id="line-747"><code>		<label for="r15" class="ident">name</label> := <label for="r14" class="ident">fields</label>[<span class="lit-number">0</span>]</code></span>
+<span class="codeline" id="line-748"><code>		<label for="r16" class="ident">portproto</label> := <a href="../../../../../../pkg/strings.html" class="ident i3">strings</a>.<a href="../../../../../strings/strings.go.html#line-273" class="ident">SplitN</a>(<label for="r14" class="ident">fields</label>[<span class="lit-number">1</span>], <span class="lit-string">"/"</span>, <span class="lit-number">2</span>)</code></span>
+<span class="codeline" id="line-749"><code>		<label for="r17" class="ident">port</label>, <label for="r18" class="ident">err</label> := <a href="../../../../../../pkg/strconv.html" class="ident i2">strconv</a>.<a href="../../../../../strconv/atoi.go.html#line-179" class="ident">ParseInt</a>(<label for="r16" class="ident">portproto</label>[<span class="lit-number">0</span>], <span class="lit-number">10</span>, <span class="lit-number">32</span>)</code></span>
+<span class="codeline" id="line-750"><code>		<span class="keyword">if</span> <label for="r18" class="ident">err</label> != <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-751"><code>			<a href="../../../../../../pkg/builtin.html#name-panic" class="ident">panic</a>(<label for="r18" class="ident">err</label>)</code></span>
+<span class="codeline" id="line-752"><code>		}</code></span>
+<span class="codeline" id="line-753"><code></code></span>
+<span class="codeline" id="line-754"><code>		<label for="r19" class="ident">proto</label> := <label for="r16" class="ident">portproto</label>[<span class="lit-number">1</span>]</code></span>
+<span class="codeline" id="line-755"><code>		<label for="r20" class="ident">aliases</label> := <label for="r14" class="ident">fields</label>[<span class="lit-number">2</span>:]</code></span>
+<span class="codeline" id="line-756"><code></code></span>
+<span class="codeline" id="line-757"><code>		<a href="#line-690" class="ident">Services</a> = <a href="../../../../../../pkg/builtin.html#name-append" class="ident">append</a>(<a href="#line-690" class="ident">Services</a>, &amp;<a href="#line-679" class="ident">Servent</a>{</code></span>
+<span class="codeline" id="line-758"><code>			<a href="#line-680" class="ident">Name</a>:     <label for="r15" class="ident">name</label>,</code></span>
+<span class="codeline" id="line-759"><code>			<a href="#line-681" class="ident">Aliases</a>:  <label for="r20" class="ident">aliases</label>,</code></span>
+<span class="codeline" id="line-760"><code>			<a href="#line-682" class="ident">Port</a>:     <a href="../../../../../../pkg/builtin.html#name-int" class="ident">int</a>(<label for="r17" class="ident">port</label>),</code></span>
+<span class="codeline" id="line-761"><code>			<a href="#line-683" class="ident">Protocol</a>: <label for="r1" class="ident">protoMap</label>[<label for="r19" class="ident">proto</label>],</code></span>
+<span class="codeline" id="line-762"><code>		})</code></span>
+<span class="codeline" id="line-763"><code>	}</code></span>
+<span class="codeline" id="line-764"><code>}</code></span>
+<span class="codeline" id="line-765"><code></code></span>
+<span class="codeline" id="line-766"><code><span class="comment">// Equal checks if two Protoents are the same, which is the case if</span></code></span>
+<span class="codeline" id="line-767"><code><span class="comment">// their protocol numbers are identical or when both Protoents are</span></code></span>
+<span class="codeline" id="line-768"><code><span class="comment">// nil.</span></code></span>
+<span class="codeline" id="line-769"><code><span class="keyword">func</span> (<label for="r21" class="ident">this</label> *<a href="#line-673" class="ident">Protoent</a>) <label for="r22" class="ident">Equal</label>(<label for="r23" class="ident">other</label> *<a href="#line-673" class="ident">Protoent</a>) <a href="../../../../../../pkg/builtin.html#name-bool" class="ident">bool</a> {</code></span>
+<span class="codeline" id="line-770"><code>	<span class="keyword">if</span> <label for="r21" class="ident">this</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> &amp;&amp; <label for="r23" class="ident">other</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-771"><code>		<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-772"><code>	}</code></span>
+<span class="codeline" id="line-773"><code></code></span>
+<span class="codeline" id="line-774"><code>	<span class="keyword">if</span> <label for="r21" class="ident">this</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> || <label for="r23" class="ident">other</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-775"><code>		<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-false" class="ident">false</a></code></span>
+<span class="codeline" id="line-776"><code>	}</code></span>
+<span class="codeline" id="line-777"><code></code></span>
+<span class="codeline" id="line-778"><code>	<span class="keyword">return</span> <label for="r21" class="ident">this</label>.<a href="#line-676" class="ident">Number</a> == <label for="r23" class="ident">other</label>.<a href="#line-676" class="ident">Number</a></code></span>
+<span class="codeline" id="line-779"><code>}</code></span>
+<span class="codeline" id="line-780"><code></code></span>
+<span class="codeline" id="line-781"><code><span class="comment">// Equal checks if two Servents are the same, which is the case if</span></code></span>
+<span class="codeline" id="line-782"><code><span class="comment">// their port numbers and protocols are identical or when both</span></code></span>
+<span class="codeline" id="line-783"><code><span class="comment">// Servents are nil.</span></code></span>
+<span class="codeline" id="line-784"><code><span class="keyword">func</span> (<label for="r24" class="ident">this</label> *<a href="#line-679" class="ident">Servent</a>) <label for="r25" class="ident">Equal</label>(<label for="r26" class="ident">other</label> *<a href="#line-679" class="ident">Servent</a>) <a href="../../../../../../pkg/builtin.html#name-bool" class="ident">bool</a> {</code></span>
+<span class="codeline" id="line-785"><code>	<span class="keyword">if</span> <label for="r24" class="ident">this</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> &amp;&amp; <label for="r26" class="ident">other</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-786"><code>		<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-true" class="ident">true</a></code></span>
+<span class="codeline" id="line-787"><code>	}</code></span>
+<span class="codeline" id="line-788"><code></code></span>
+<span class="codeline" id="line-789"><code>	<span class="keyword">if</span> <label for="r24" class="ident">this</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> || <label for="r26" class="ident">other</label> == <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a> {</code></span>
+<span class="codeline" id="line-790"><code>		<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-false" class="ident">false</a></code></span>
+<span class="codeline" id="line-791"><code>	}</code></span>
+<span class="codeline" id="line-792"><code></code></span>
+<span class="codeline" id="line-793"><code>	<span class="keyword">return</span> <label for="r24" class="ident">this</label>.<a href="#line-682" class="ident">Port</a> == <label for="r26" class="ident">other</label>.<a href="#line-682" class="ident">Port</a> &amp;&amp;</code></span>
+<span class="codeline" id="line-794"><code>		<label for="r24" class="ident">this</label>.<a href="#line-683" class="ident">Protocol</a>.<a href="#line-769" class="ident">Equal</a>(<label for="r26" class="ident">other</label>.<a href="#line-683" class="ident">Protocol</a>)</code></span>
+<span class="codeline" id="line-795"><code>}</code></span>
+<span class="codeline" id="line-796"><code></code></span>
+<span class="codeline" id="line-797"><code><span class="comment">// GetProtoByNumber returns the Protoent for a given protocol number.</span></code></span>
+<span class="codeline" id="line-798"><code><span class="keyword">func</span> <label for="r27" class="ident"><a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-GetProtoByNumber" class="ident">GetProtoByNumber</a></label>(<label for="r28" class="ident">num</label> <a href="../../../../../../pkg/builtin.html#name-int" class="ident">int</a>) (<label for="r29" class="ident">protoent</label> *<a href="#line-673" class="ident">Protoent</a>) {</code></span>
+<span class="codeline" id="line-799"><code>	<span class="keyword">for</span> <label for="r30" class="ident">_</label>, <label for="r31" class="ident">protoent</label> := <span class="keyword">range</span> <a href="#line-689" class="ident">Protocols</a> {</code></span>
+<span class="codeline" id="line-800"><code>		<span class="keyword">if</span> <label for="r31" class="ident">protoent</label>.<a href="#line-676" class="ident">Number</a> == <label for="r28" class="ident">num</label> {</code></span>
+<span class="codeline" id="line-801"><code>			<span class="keyword">return</span> <label for="r31" class="ident">protoent</label></code></span>
+<span class="codeline" id="line-802"><code>		}</code></span>
+<span class="codeline" id="line-803"><code>	}</code></span>
+<span class="codeline" id="line-804"><code>	<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-805"><code>}</code></span>
+<span class="codeline" id="line-806"><code></code></span>
+<span class="codeline" id="line-807"><code><span class="comment">// GetProtoByName returns the Protoent whose name or any of its</span></code></span>
+<span class="codeline" id="line-808"><code><span class="comment">// aliases matches the argument.</span></code></span>
+<span class="codeline" id="line-809"><code><span class="keyword">func</span> <label for="r32" class="ident"><a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-GetProtoByName" class="ident">GetProtoByName</a></label>(<label for="r33" class="ident">name</label> <a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a>) (<label for="r34" class="ident">protoent</label> *<a href="#line-673" class="ident">Protoent</a>) {</code></span>
+<span class="codeline" id="line-810"><code>	<span class="keyword">for</span> <label for="r35" class="ident">_</label>, <label for="r36" class="ident">protoent</label> := <span class="keyword">range</span> <a href="#line-689" class="ident">Protocols</a> {</code></span>
+<span class="codeline" id="line-811"><code>		<span class="keyword">if</span> <label for="r36" class="ident">protoent</label>.<a href="#line-674" class="ident">Name</a> == <label for="r33" class="ident">name</label> {</code></span>
+<span class="codeline" id="line-812"><code>			<span class="keyword">return</span> <label for="r36" class="ident">protoent</label></code></span>
+<span class="codeline" id="line-813"><code>		}</code></span>
+<span class="codeline" id="line-814"><code></code></span>
+<span class="codeline" id="line-815"><code>		<span class="keyword">for</span> <label for="r37" class="ident">_</label>, <label for="r38" class="ident">alias</label> := <span class="keyword">range</span> <label for="r36" class="ident">protoent</label>.<a href="#line-675" class="ident">Aliases</a> {</code></span>
+<span class="codeline" id="line-816"><code>			<span class="keyword">if</span> <label for="r38" class="ident">alias</label> == <label for="r33" class="ident">name</label> {</code></span>
+<span class="codeline" id="line-817"><code>				<span class="keyword">return</span> <label for="r36" class="ident">protoent</label></code></span>
+<span class="codeline" id="line-818"><code>			}</code></span>
+<span class="codeline" id="line-819"><code>		}</code></span>
+<span class="codeline" id="line-820"><code>	}</code></span>
+<span class="codeline" id="line-821"><code></code></span>
+<span class="codeline" id="line-822"><code>	<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-823"><code>}</code></span>
+<span class="codeline" id="line-824"><code></code></span>
+<span class="codeline" id="line-825"><code><span class="comment">// GetServByName returns the Servent for a given service name or alias</span></code></span>
+<span class="codeline" id="line-826"><code><span class="comment">// and protocol. If the protocol is nil, the first service matching</span></code></span>
+<span class="codeline" id="line-827"><code><span class="comment">// the service name is returned.</span></code></span>
+<span class="codeline" id="line-828"><code><span class="keyword">func</span> <label for="r39" class="ident"><a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-GetServByName" class="ident">GetServByName</a></label>(<label for="r40" class="ident">name</label> <a href="../../../../../../pkg/builtin.html#name-string" class="ident">string</a>, <label for="r41" class="ident">protocol</label> *<a href="#line-673" class="ident">Protoent</a>) (<label for="r42" class="ident">servent</label> *<a href="#line-679" class="ident">Servent</a>) {</code></span>
+<span class="codeline" id="line-829"><code>	<span class="keyword">for</span> <label for="r43" class="ident">_</label>, <label for="r44" class="ident">servent</label> := <span class="keyword">range</span> <a href="#line-690" class="ident">Services</a> {</code></span>
+<span class="codeline" id="line-830"><code>		<span class="keyword">if</span> !<label for="r44" class="ident">servent</label>.<a href="#line-683" class="ident">Protocol</a>.<a href="#line-769" class="ident">Equal</a>(<label for="r41" class="ident">protocol</label>) {</code></span>
+<span class="codeline" id="line-831"><code>			<span class="keyword">continue</span></code></span>
+<span class="codeline" id="line-832"><code>		}</code></span>
+<span class="codeline" id="line-833"><code></code></span>
+<span class="codeline" id="line-834"><code>		<span class="keyword">if</span> <label for="r44" class="ident">servent</label>.<a href="#line-680" class="ident">Name</a> == <label for="r40" class="ident">name</label> {</code></span>
+<span class="codeline" id="line-835"><code>			<span class="keyword">return</span> <label for="r44" class="ident">servent</label></code></span>
+<span class="codeline" id="line-836"><code>		}</code></span>
+<span class="codeline" id="line-837"><code></code></span>
+<span class="codeline" id="line-838"><code>		<span class="keyword">for</span> <label for="r45" class="ident">_</label>, <label for="r46" class="ident">alias</label> := <span class="keyword">range</span> <label for="r44" class="ident">servent</label>.<a href="#line-681" class="ident">Aliases</a> {</code></span>
+<span class="codeline" id="line-839"><code>			<span class="keyword">if</span> <label for="r46" class="ident">alias</label> == <label for="r40" class="ident">name</label> {</code></span>
+<span class="codeline" id="line-840"><code>				<span class="keyword">return</span> <label for="r44" class="ident">servent</label></code></span>
+<span class="codeline" id="line-841"><code>			}</code></span>
+<span class="codeline" id="line-842"><code>		}</code></span>
+<span class="codeline" id="line-843"><code>	}</code></span>
+<span class="codeline" id="line-844"><code></code></span>
+<span class="codeline" id="line-845"><code>	<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-846"><code>}</code></span>
+<span class="codeline" id="line-847"><code></code></span>
+<span class="codeline" id="line-848"><code><span class="comment">// GetServByPort returns the Servent for a given port number and</span></code></span>
+<span class="codeline" id="line-849"><code><span class="comment">// protocol. If the protocol is nil, the first service matching the</span></code></span>
+<span class="codeline" id="line-850"><code><span class="comment">// port number is returned.</span></code></span>
+<span class="codeline" id="line-851"><code><span class="keyword">func</span> <label for="r47" class="ident"><a href="../../../../../../pkg/modernc.org/libc/honnef.co/go/netdb.html#name-GetServByPort" class="ident">GetServByPort</a></label>(<label for="r48" class="ident">port</label> <a href="../../../../../../pkg/builtin.html#name-int" class="ident">int</a>, <label for="r49" class="ident">protocol</label> *<a href="#line-673" class="ident">Protoent</a>) *<a href="#line-679" class="ident">Servent</a> {</code></span>
+<span class="codeline" id="line-852"><code>	<span class="keyword">for</span> <label for="r50" class="ident">_</label>, <label for="r51" class="ident">servent</label> := <span class="keyword">range</span> <a href="#line-690" class="ident">Services</a> {</code></span>
+<span class="codeline" id="line-853"><code>		<span class="keyword">if</span> <label for="r51" class="ident">servent</label>.<a href="#line-682" class="ident">Port</a> == <label for="r48" class="ident">port</label> &amp;&amp; <label for="r51" class="ident">servent</label>.<a href="#line-683" class="ident">Protocol</a>.<a href="#line-769" class="ident">Equal</a>(<label for="r49" class="ident">protocol</label>) {</code></span>
+<span class="codeline" id="line-854"><code>			<span class="keyword">return</span> <label for="r51" class="ident">servent</label></code></span>
+<span class="codeline" id="line-855"><code>		}</code></span>
+<span class="codeline" id="line-856"><code>	}</code></span>
+<span class="codeline" id="line-857"><code></code></span>
+<span class="codeline" id="line-858"><code>	<span class="keyword">return</span> <a href="../../../../../../pkg/builtin.html#name-nil" class="ident">nil</a></code></span>
+<span class="codeline" id="line-859"><code>}</code></span>
+</pre><pre id="footer">
+<table><tr><td><img src="../../../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>

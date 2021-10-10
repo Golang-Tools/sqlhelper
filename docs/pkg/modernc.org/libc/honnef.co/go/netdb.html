@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Package: modernc.org/libc/honnef.co/go/netdb</title>
+<link href="../../../../../css/light-v0.3.6.css" rel="stylesheet">
+<script src="../../../../../jvs/golds-v0.3.6.js"></script>
+<body onload="onPageLoad()"><div>
+
+<pre id="package-details"><code><span style="font-size:xx-large;">package <b>netdb</b></span>
+
+<span class="title">Import Path</span>
+	<a href="../../../../../index.html#pkg-modernc.org/libc/honnef.co/go/netdb">modernc.org/libc/honnef.co/go/netdb</a><i> (on <a href="https://pkg.go.dev/modernc.org/libc/honnef.co/go/netdb" target="_blank">go.dev</a>)</i>
+
+<span class="title">Dependency Relation</span>
+	imports <a href="../../../../../dep/modernc.org/libc/honnef.co/go/netdb.html">4 packages</a>, and imported by <a href="../../../../../dep/modernc.org/libc/honnef.co/go/netdb.html#imported-by">one package</a>
+
+<div id="files"><span class="title">Involved Source Files</span>
+
+	<input type='checkbox' checked class="fold" id="file-0-fold-content"><label for="file-0-fold-content">   <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#doc">#d</a> <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html">netdb.go</a></label><span id='file-0-fold-content-items' class="fold-items">
+		Package netdb provides a Go interface for the protoent and servent
+		structures as defined in netdb.h
+
+		A pure Go implementation is used by parsing /etc/protocols and
+		/etc/services
+
+		All return values are pointers that point to the entries in the
+		original list of protocols and services. Manipulating the entries
+		would affect the entire program.</span></div>
+<div id="exported-types"><span class="title">Package-Level Type Names<span class="title-stat"><i> (total 2, both are exported)</i></span></span>
+
+<div id="exported-types-buttons" class="js-on">	/* sort exporteds by: <label id="sort-types-by-alphabet" class="button">alphabet</label> | <label id="sort-types-by-popularity" class="button">popularity</label> */</div><div class="anchor type-res" id="name-Protoent" data-popularity="305">	<input type='checkbox' class="fold" id="Protoent-fold-content"><label for="Protoent-fold-content"> type <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-673">Protoent</a> <i>(struct)</i></label><span id='Protoent-fold-content-docs' class="fold-docs">
+
+		<input type='checkbox' class="fold" id="Protoent-fold-fields"><label for="Protoent-fold-fields">Fields (<i>total 3, all are exported</i>)</label><span id='Protoent-fold-fields-items' class="fold-items"><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-675">Aliases</a> <i>[]<a href="../../../../builtin.html#name-string">string</a></i></span></span><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-674">Name</a> <i><a href="../../../../builtin.html#name-string">string</a></i></span></span><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-676">Number</a> <i><a href="../../../../builtin.html#name-int">int</a></i></span></span></span>
+		<input type='checkbox' class="fold" id="Protoent-fold-methods"><label for="Protoent-fold-methods">Methods (<i>only one, which is exported</i>)</label><span id='Protoent-fold-methods-items' class="fold-items"><span>
+			<input type='checkbox' class="fold" id="Protoent-fold-method-Equal"><label for="Protoent-fold-method-Equal">(*T) <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-769">Equal</a>(other *<b>Protoent</b>) <a href="../../../../builtin.html#name-bool">bool</a></label><span id='Protoent-fold-method-Equal-docs' class="fold-docs">
+				Equal checks if two Protoents are the same, which is the case if
+				their protocol numbers are identical or when both Protoents are
+				nil.
+</span></span></span>
+		<input type='checkbox' class="fold" id="Protoent-fold-results"><label for="Protoent-fold-results">As Outputs Of (<i>at least 2, both are exported</i>)</label><span id='Protoent-fold-results-items' class="fold-items"><span>
+			func <a href="#name-GetProtoByName">GetProtoByName</a>(name <a href="../../../../builtin.html#name-string">string</a>) (protoent *<b>Protoent</b>)</span><span>
+			func <a href="#name-GetProtoByNumber">GetProtoByNumber</a>(num <a href="../../../../builtin.html#name-int">int</a>) (protoent *<b>Protoent</b>)</span></span>
+		<input type='checkbox' class="fold" id="Protoent-fold-params"><label for="Protoent-fold-params">As Inputs Of (<i>at least 3, all are exported</i>)</label><span id='Protoent-fold-params-items' class="fold-items"><span>
+			func <a href="#name-GetServByName">GetServByName</a>(name <a href="../../../../builtin.html#name-string">string</a>, protocol *<b>Protoent</b>) (servent *<a href="#name-Servent">Servent</a>)</span><span>
+			func <a href="#name-GetServByPort">GetServByPort</a>(port <a href="../../../../builtin.html#name-int">int</a>, protocol *<b>Protoent</b>) *<a href="#name-Servent">Servent</a></span><span>
+			func (*Protoent).<a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-769">Equal</a>(other *<b>Protoent</b>) <a href="../../../../builtin.html#name-bool">bool</a></span></span>
+
+</span></div><div class="anchor type-res" id="name-Servent" data-popularity="235">	<input type='checkbox' class="fold" id="Servent-fold-content"><label for="Servent-fold-content"> type <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-679">Servent</a> <i>(struct)</i></label><span id='Servent-fold-content-docs' class="fold-docs">
+
+		<input type='checkbox' class="fold" id="Servent-fold-fields"><label for="Servent-fold-fields">Fields (<i>total 4, all are exported</i>)</label><span id='Servent-fold-fields-items' class="fold-items"><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-681">Aliases</a> <i>[]<a href="../../../../builtin.html#name-string">string</a></i></span></span><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-680">Name</a> <i><a href="../../../../builtin.html#name-string">string</a></i></span></span><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-682">Port</a> <i><a href="../../../../builtin.html#name-int">int</a></i></span></span><span>
+			<span class="nodocs"><a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-683">Protocol</a> <i>*<a href="#name-Protoent">Protoent</a></i></span></span></span>
+		<input type='checkbox' class="fold" id="Servent-fold-methods"><label for="Servent-fold-methods">Methods (<i>only one, which is exported</i>)</label><span id='Servent-fold-methods-items' class="fold-items"><span>
+			<input type='checkbox' class="fold" id="Servent-fold-method-Equal"><label for="Servent-fold-method-Equal">(*T) <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-784">Equal</a>(other *<b>Servent</b>) <a href="../../../../builtin.html#name-bool">bool</a></label><span id='Servent-fold-method-Equal-docs' class="fold-docs">
+				Equal checks if two Servents are the same, which is the case if
+				their port numbers and protocols are identical or when both
+				Servents are nil.
+</span></span></span>
+		<input type='checkbox' class="fold" id="Servent-fold-results"><label for="Servent-fold-results">As Outputs Of (<i>at least 2, both are exported</i>)</label><span id='Servent-fold-results-items' class="fold-items"><span>
+			func <a href="#name-GetServByName">GetServByName</a>(name <a href="../../../../builtin.html#name-string">string</a>, protocol *<a href="#name-Protoent">Protoent</a>) (servent *<b>Servent</b>)</span><span>
+			func <a href="#name-GetServByPort">GetServByPort</a>(port <a href="../../../../builtin.html#name-int">int</a>, protocol *<a href="#name-Protoent">Protoent</a>) *<b>Servent</b></span></span>
+		<input type='checkbox' class="fold" id="Servent-fold-params"><label for="Servent-fold-params">As Inputs Of (<i>at least one exported</i>)</label><span id='Servent-fold-params-items' class="fold-items"><span>
+			func (*Servent).<a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-784">Equal</a>(other *<b>Servent</b>) <a href="../../../../builtin.html#name-bool">bool</a></span></span>
+
+</span></div></div>
+<div id="exported-functions"><span class="title">Package-Level Functions<span class="title-stat"><i> (total 5, in which 4 are exported)</i></span></span>
+
+<div class="anchor value-res" id="name-GetProtoByName">	<input type='checkbox' class="fold" id="GetProtoByName-fold-content"><label for="GetProtoByName-fold-content"> func <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-809">GetProtoByName</a>(name <a href="../../../../builtin.html#name-string">string</a>) (protoent *<a href="#name-Protoent">Protoent</a>)</label><span id='GetProtoByName-fold-content-docs' class="fold-docs">
+		GetProtoByName returns the Protoent whose name or any of its
+		aliases matches the argument.
+
+</span></div><div class="anchor value-res" id="name-GetProtoByNumber">	<input type='checkbox' class="fold" id="GetProtoByNumber-fold-content"><label for="GetProtoByNumber-fold-content"> func <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-798">GetProtoByNumber</a>(num <a href="../../../../builtin.html#name-int">int</a>) (protoent *<a href="#name-Protoent">Protoent</a>)</label><span id='GetProtoByNumber-fold-content-docs' class="fold-docs">
+		GetProtoByNumber returns the Protoent for a given protocol number.
+
+</span></div><div class="anchor value-res" id="name-GetServByName">	<input type='checkbox' class="fold" id="GetServByName-fold-content"><label for="GetServByName-fold-content"> func <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-828">GetServByName</a>(name <a href="../../../../builtin.html#name-string">string</a>, protocol *<a href="#name-Protoent">Protoent</a>) (servent *<a href="#name-Servent">Servent</a>)</label><span id='GetServByName-fold-content-docs' class="fold-docs">
+		GetServByName returns the Servent for a given service name or alias
+		and protocol. If the protocol is nil, the first service matching
+		the service name is returned.
+
+</span></div><div class="anchor value-res" id="name-GetServByPort">	<input type='checkbox' class="fold" id="GetServByPort-fold-content"><label for="GetServByPort-fold-content"> func <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-851">GetServByPort</a>(port <a href="../../../../builtin.html#name-int">int</a>, protocol *<a href="#name-Protoent">Protoent</a>) *<a href="#name-Servent">Servent</a></label><span id='GetServByPort-fold-content-docs' class="fold-docs">
+		GetServByPort returns the Servent for a given port number and
+		protocol. If the protocol is nil, the first service matching the
+		port number is returned.
+
+</span></div>	<input type='checkbox' class="showhide" id="unexported-functions-showhide"><i><label for="unexported-functions-showhide" class="show-inline">/* one unexported ... */</label><label for="unexported-functions-showhide" class="hide-inline">/* one unexported: */</label></i><div class="anchor value-res hidden" id="name-init"><i>	<span class="nodocs"> func <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-693">init</a>()</span></i></div></div>
+<div id="exported-variables"><span class="title">Package-Level Variables<span class="title-stat"><i> (total 2, both are exported)</i></span></span>
+
+<div class="anchor value-res" id="name-Protocols">	<input type='checkbox' class="fold" id="Protocols-fold-content"><label for="Protocols-fold-content">  var <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-689">Protocols</a> []*<a href="#name-Protoent">Protoent</a></label><span id='Protocols-fold-content-docs' class="fold-docs">
+		These variables get populated from /etc/protocols and /etc/services
+		respectively.
+
+</span></div><div class="anchor value-res" id="name-Services">	<input type='checkbox' class="fold" id="Services-fold-content"><label for="Services-fold-content">  var <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-690">Services</a> []*<a href="#name-Servent">Servent</a></label><span id='Services-fold-content-docs' class="fold-docs">
+		These variables get populated from /etc/protocols and /etc/services
+		respectively.
+
+</span></div></div>
+<div id="exported-constants"><span class="title">Package-Level Constants<span class="title-stat"><i> (total 2, neither is exported)</i></span></span>
+
+	<input type='checkbox' class="showhide" id="unexported-constants-showhide"><i><label for="unexported-constants-showhide" class="show-inline">/* 2 unexporteds ... */</label><label for="unexported-constants-showhide" class="hide-inline">/* 2 unexporteds: */</label></i><div class="anchor value-res hidden" id="name-protocols"><i>	<span class="nodocs">const <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-24">protocols</a> = "\n# Internet (IP) protocols\n#\n# Updated from http://www.iana.org/a...</span></i></div><div class="anchor value-res hidden" id="name-services"><i>	<span class="nodocs">const <a href="../../../../../src/modernc.org/libc/honnef.co/go/netdb/netdb.go.html#line-91">services</a> = "\n# Network services, Internet style\n#\n# Note that it is presently...</span></i></div></div></code></pre><pre id="footer">
+<table><tr><td><img src="../../../../../png/go101-twitter.png"></td>
+<td>The pages are generated with <a href="https://go101.org/article/tool-golds.html"><b>Golds</b></a> <i>v0.3.6</i>. (GOOS=darwin GOARCH=amd64)
+<b>Golds</b> is a <a href="https://go101.org">Go 101</a> project developed by <a href="https://tapirgames.com">Tapir Liu</a>.
+PR and bug reports are welcome and can be submitted to <a href="https://github.com/go101/golds">the issue list</a>.
+Please follow <a href="https://twitter.com/go100and1">@Go100and1</a> (reachable from the left QR code) to get the latest news of <b>Golds</b>.</td></tr></table></pre>
