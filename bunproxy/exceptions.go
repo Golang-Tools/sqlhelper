@@ -1,4 +1,4 @@
-package sqlhelper
+package bunproxy
 
 import (
 	"errors"

@@ -1,4 +1,4 @@
-package sqlhelper
+package bunproxy
 
 import (
 	"context"
@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-	"time"
 
-	log "github.com/Golang-Tools/loggerhelper"
+	log "github.com/Golang-Tools/loggerhelper/v2"
+	"github.com/Golang-Tools/optparams"
 
+	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/oiime/logrusbun"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/mssqldialect"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
@@ -20,14 +22,22 @@ import (
 	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
+var Logger *log.Log
+
+func init() {
+	log.Set(log.WithExtFields(log.Dict{"module": "bun-proxy"}))
+	Logger = log.Export()
+	log.Set(log.WithExtFields(log.Dict{}))
+}
+
 //Callback redis操作的回调函数
 type Callback func(cli *bun.DB) error
 
 //Proxy bun客户端的代理
 type Proxy struct {
 	*bun.DB
-	callBacks    []Callback
-	queryTimeout time.Duration
+	callBacks []Callback
+	Opt       Options
 }
 
 // New 创建一个新的数据库客户端代理
@@ -41,20 +51,14 @@ func (proxy *Proxy) IsOk() bool {
 	return proxy.DB != nil
 }
 
-//SetQueryTimeout 设置连接的请求超时
-//@params timeout time.Duration
-func (proxy *Proxy) SetQueryTimeout(timeout time.Duration) {
-	proxy.queryTimeout = timeout
-}
-
 //SetConnect 设置连接的客户端
 //@params cli *bun.DB bun的DB对象
-func (proxy *Proxy) SetConnect(cli *bun.DB, parallelcallback bool) error {
+func (proxy *Proxy) SetConnect(cli *bun.DB) error {
 	if proxy.IsOk() {
 		return ErrProxyAllreadySettedUniversalClient
 	}
 	proxy.DB = cli
-	if parallelcallback {
+	if proxy.Opt.Parallelcallback {
 		for _, cb := range proxy.callBacks {
 			go func(cb Callback) {
 				err := cb(proxy.DB)
@@ -95,6 +99,7 @@ func SetPool(sqldb *sql.DB, opts *Options) {
 }
 
 func NewDB(URL string, dopts *Options) (*bun.DB, error) {
+
 	U, err := url.Parse(URL)
 	if err != nil {
 		return nil, err
@@ -103,7 +108,7 @@ func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 	switch U.Scheme {
 	case "postgres":
 		{
-			sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dopts.URL)))
+			sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(URL)))
 			SetPool(sqldb, dopts)
 			if dopts.DiscardUnknownColumns {
 				cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
@@ -135,9 +140,22 @@ func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 				cli = bun.NewDB(sqldb, mysqldialect.New())
 			}
 		}
+	case "sqlserver":
+		{
+			sqldb, err := sql.Open("sqlserver", URL)
+			if err != nil {
+				return nil, err
+			}
+			SetPool(sqldb, dopts)
+			if dopts.DiscardUnknownColumns {
+				cli = bun.NewDB(sqldb, mssqldialect.New(), bun.WithDiscardUnknownColumns())
+			} else {
+				cli = bun.NewDB(sqldb, mssqldialect.New())
+			}
+		}
 	case "sqlite":
 		{
-			dataSourceName := strings.ReplaceAll(dopts.URL, fmt.Sprintf("%s://", U.Scheme), "")
+			dataSourceName := strings.ReplaceAll(URL, fmt.Sprintf("%s://", U.Scheme), "")
 			sqldb, err := sql.Open(sqliteshim.ShimName, fmt.Sprintf("file:%s", dataSourceName))
 			if err != nil {
 				return nil, err
@@ -159,29 +177,22 @@ func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 			return nil, ErrUnSupportSchema
 		}
 	}
-	if dopts.Logger != nil {
-		cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: dopts.Logger}))
-	}
+
+	cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: Logger.GetLogger()}))
 	return cli, nil
 }
 
 // Init 初始化代理对象
-func (proxy *Proxy) Init(opts ...Option) error {
-	dopts := DefaultOpts
-	for _, opt := range opts {
-		opt.Apply(&dopts)
-	}
+func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
+	optparams.GetOption(&proxy.Opt, opts...)
 	var cli *bun.DB
-	if dopts.Cli != nil {
-		cli = dopts.Cli
-	} else {
-		_cli, err := NewDB(dopts.URL, &dopts)
-		if err != nil {
-			return err
-		}
-		cli = _cli
+	_cli, err := NewDB(URL, &proxy.Opt)
+	if err != nil {
+		return err
 	}
-	return proxy.SetConnect(cli, dopts.Parallelcallback)
+	cli = _cli
+
+	return proxy.SetConnect(cli)
 }
 
 // Regist 注册回调函数,在init执行后执行回调函数
@@ -196,13 +207,13 @@ func (proxy *Proxy) Regist(cb Callback) error {
 
 // NewCtx 根据注册的超时时间构造一个上下文
 func (proxy *Proxy) NewCtx() (ctx context.Context, cancel context.CancelFunc) {
-	if proxy.queryTimeout > 0 {
-		ctx, cancel = context.WithTimeout(context.Background(), proxy.queryTimeout)
+	if proxy.Opt.QueryTimeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), proxy.Opt.QueryTimeout)
 	} else {
 		ctx, cancel = context.WithCancel(context.Background())
 	}
 	return
 }
 
-//DB 默认的数据库代理对象
-var DB = New()
+//Default 默认的数据库代理对象
+var Default = New()
