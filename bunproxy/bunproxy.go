@@ -30,10 +30,10 @@ func init() {
 	log.Set(log.WithExtFields(log.Dict{}))
 }
 
-//Callback redis操作的回调函数
+// Callback redis操作的回调函数
 type Callback func(cli *bun.DB) error
 
-//Proxy bun客户端的代理
+// Proxy bun客户端的代理
 type Proxy struct {
 	*bun.DB
 	callBacks []Callback
@@ -51,8 +51,8 @@ func (proxy *Proxy) IsOk() bool {
 	return proxy.DB != nil
 }
 
-//SetConnect 设置连接的客户端
-//@params cli *bun.DB bun的DB对象
+// SetConnect 设置连接的客户端
+// @params cli *bun.DB bun的DB对象
 func (proxy *Proxy) SetConnect(cli *bun.DB) error {
 	if proxy.IsOk() {
 		return ErrProxyAllreadySettedUniversalClient
@@ -178,7 +178,10 @@ func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 		}
 	}
 
-	cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: Logger.GetLogger()}))
+	// cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.QueryHookOptions{Logger: Logger.GetLogger()}))
+
+	cli.AddQueryHook(logrusbun.NewQueryHook(logrusbun.WithQueryHookOptions(logrusbun.QueryHookOptions{Logger: Logger.GetLogger()})))
+
 	return cli, nil
 }
 
@@ -196,7 +199,7 @@ func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
 }
 
 // Regist 注册回调函数,在init执行后执行回调函数
-//如果对象已经设置了被代理客户端则无法再注册回调函数
+// 如果对象已经设置了被代理客户端则无法再注册回调函数
 func (proxy *Proxy) Regist(cb Callback) error {
 	if proxy.IsOk() {
 		return ErrProxyAllreadySettedUniversalClient
@@ -215,5 +218,5 @@ func (proxy *Proxy) NewCtx() (ctx context.Context, cancel context.CancelFunc) {
 	return
 }
 
-//Default 默认的数据库代理对象
+// Default 默认的数据库代理对象
 var Default = New()
