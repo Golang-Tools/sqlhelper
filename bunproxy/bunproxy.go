@@ -48,9 +48,16 @@ func New() *Proxy {
 	return proxy
 }
 
-// IsOk 检查代理是否已经可用
-func (proxy *Proxy) IsOk() bool {
+// IsReady 检查代理是否已经可用
+func (proxy *Proxy) IsReady() bool {
 	return proxy.Client() != nil
+}
+
+// IsOk 检查代理是否已经可用
+//
+// Deprecated: 命名语义不明确,请使用 IsReady
+func (proxy *Proxy) IsOk() bool {
+	return proxy.IsReady()
 }
 
 // Client 返回底层bun.DB对象,代理未初始化或已关闭时返回nil
@@ -209,10 +216,19 @@ func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 	return cli, nil
 }
 
-// Init 初始化代理对象
+// Init 初始化代理对象,等价于使用 context.Background 的 InitContext
 // 初始化时会校验连接可用性,校验失败或回调失败都会释放已创建的连接
 // 已经初始化过时直接返回ErrProxyAlreadySetClient,不会重复创建连接
+//
+// Init/Close 属于生命周期操作,约定只在应用启动/退出阶段串行调用
 func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
+	return proxy.InitContext(context.Background(), URL, opts...)
+}
+
+// InitContext 与 Init 相同,但支持通过 ctx 取消初始化或为整个初始化设置超时
+// 重试等待与连通性校验都会受 ctx 约束
+func (proxy *Proxy) InitContext(ctx context.Context, URL string, opts ...optparams.Option[Options]) error {
+	ctx = nonNilContext(ctx)
 	if proxy.Client() != nil {
 		return ErrProxyAlreadySetClient
 	}
@@ -222,7 +238,7 @@ func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
 	opt := *optparams.GetOption(&proxy.Opt, opts...)
 	proxy.mu.RUnlock()
 
-	cli, err := proxy.dial(URL, &opt)
+	cli, err := proxy.dial(ctx, URL, &opt)
 	if err != nil {
 		return err
 	}
@@ -242,7 +258,7 @@ func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
 
 // dial 建立连接并按配置做连通性校验与重试
 // 只有连通性校验失败才会重试,DSN非法等配置类错误会直接返回
-func (proxy *Proxy) dial(URL string, opt *Options) (*bun.DB, error) {
+func (proxy *Proxy) dial(ctx context.Context, URL string, opt *Options) (*bun.DB, error) {
 	attempts := opt.attempts()
 	var lastErr error
 	for attempt := 1; attempt <= attempts; attempt++ {
@@ -254,7 +270,11 @@ func (proxy *Proxy) dial(URL string, opt *Options) (*bun.DB, error) {
 				"interval": interval.String(),
 				"URL":      RedactDSN(URL),
 			})
-			time.Sleep(interval)
+			select {
+			case <-time.After(interval):
+			case <-ctx.Done():
+				return nil, fmt.Errorf("等待重试建立数据库连接被取消: %w", ctx.Err())
+			}
 		}
 
 		cli, err := NewDB(URL, opt)
@@ -267,8 +287,8 @@ func (proxy *Proxy) dial(URL string, opt *Options) (*bun.DB, error) {
 			return cli, nil
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), opt.pingTimeout())
-		lastErr = cli.PingContext(ctx)
+		pingCtx, cancel := context.WithTimeout(ctx, opt.pingTimeout())
+		lastErr = cli.PingContext(pingCtx)
 		cancel()
 		if lastErr == nil {
 			return cli, nil
@@ -280,9 +300,9 @@ func (proxy *Proxy) dial(URL string, opt *Options) (*bun.DB, error) {
 	return nil, fmt.Errorf("%w, URL: %s, %w", ErrPingFailed, RedactDSN(URL), lastErr)
 }
 
-// Regist 注册回调函数,在init执行后执行回调函数
+// Register 注册回调函数,在Init执行后执行回调函数
 // 如果对象已经设置了被代理客户端则无法再注册回调函数
-func (proxy *Proxy) Regist(cb Callback) error {
+func (proxy *Proxy) Register(cb Callback) error {
 	if cb == nil {
 		return ErrNilCallback
 	}
@@ -291,9 +311,11 @@ func (proxy *Proxy) Regist(cb Callback) error {
 	})
 }
 
-// Register Regist的别名,命名更符合Go的惯例
-func (proxy *Proxy) Register(cb Callback) error {
-	return proxy.Regist(cb)
+// Regist 注册回调函数,在Init执行后执行回调函数
+//
+// Deprecated: 拼写不规范,请使用 Register
+func (proxy *Proxy) Regist(cb Callback) error {
+	return proxy.Register(cb)
 }
 
 // RegisterContext 注册带上下文的回调函数

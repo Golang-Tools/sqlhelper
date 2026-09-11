@@ -972,6 +972,59 @@ func TestConnectRetrySkipsConfigError(t *testing.T) {
 	}
 }
 
+// TestInitContextCanceled 验证可取消初始化
+func TestInitContextCanceled(t *testing.T) {
+	proxy := New()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	err := proxy.InitContext(ctx, memoryURL)
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("已取消的ctx应让InitContext返回context.Canceled, 实际: %v", err)
+	}
+	if proxy.IsReady() {
+		t.Fatal("初始化失败后代理不应处于可用状态")
+	}
+}
+
+// TestInitContextCanceledDuringRetry 验证重试等待期间可以被ctx打断
+func TestInitContextCanceledDuringRetry(t *testing.T) {
+	proxy := New()
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+	start := time.Now()
+	err := proxy.InitContext(ctx, unreachableURL,
+		WithPingTimeoutMS(200),
+		WithConnectRetry(5, 2*time.Second),
+	)
+	elapsed := time.Since(start)
+	if !errors.Is(err, context.DeadlineExceeded) && !errors.Is(err, context.Canceled) {
+		t.Fatalf("应返回ctx相关错误, 实际: %v", err)
+	}
+	if elapsed > time.Second {
+		t.Fatalf("重试等待应被ctx打断, 实际耗时: %v", elapsed)
+	}
+	if proxy.IsReady() {
+		t.Fatal("初始化失败后代理不应处于可用状态")
+	}
+}
+
+// TestIsReadyAlias 验证IsReady与IsOk语义一致
+func TestIsReadyAlias(t *testing.T) {
+	proxy := New()
+	if proxy.IsReady() || proxy.IsOk() {
+		t.Fatal("新建代理不应处于可用状态")
+	}
+	if err := proxy.Init(memoryURL); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = proxy.Close()
+	}()
+	if !proxy.IsReady() || !proxy.IsOk() {
+		t.Fatal("初始化后两种判断都应返回可用")
+	}
+}
+
 func BenchmarkNewDBStub(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {

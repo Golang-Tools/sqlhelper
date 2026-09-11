@@ -15,10 +15,8 @@ var (
 	//ErrProxyNotSetClient 代理还未设置客户端对象
 	ErrProxyNotSetClient = errors.New("代理还未设置客户端对象")
 
-	//ErrUnknownClientType 未知的客户端类型
-	ErrUnknownClientType = errors.New("未知的客户端类型")
-
 	//ErrUnsupportedSchema 未支持的数据库管理服务类型
+	//通常意味着对应驱动子模块没有导入,错误信息中会给出已注册的驱动列表
 	ErrUnsupportedSchema = errors.New("未支持的数据库管理服务类型")
 
 	//ErrNilDB 客户端对象为nil

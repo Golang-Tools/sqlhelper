@@ -1,10 +1,14 @@
-# sqlhelper/v3
+# sqlhelper/v4
 
-`uptrace/bun` 的代理对象,用于解决对常见关系数据库 pg、mysql、sqlserver 和 sqlite3 的连接与生命周期管理问题。
+`uptrace/bun` 的代理对象,用于解决 PostgreSQL、MySQL、SQL Server 与 SQLite 的连接、连接池与生命周期管理问题。
 
-v3 是在 v2 基础上做的一次现代化改造:**尽量保持 API 形状不变,重点修 bug、补并发与生命周期能力、补齐工程基线**。模块路径为 `github.com/Golang-Tools/sqlhelper/v3`,可以与 v2 在同一个项目中并存,便于灰度迁移。
+v4 的核心变化:**数据库驱动改为按需引入的独立子模块**,核心模块不再依赖任何具体数据库实现。
 
-> API 文档见 [pkg.go.dev](https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v3/bunproxy);迁移请参考 [MIGRATION_v2_to_v3.md](./MIGRATION_v2_to_v3.md),变更明细见 [CHANGELOG.md](./CHANGELOG.md)。
+- **用法与 v3 基本一致**:代理对象常驻,数据库还没连上时业务代码就可以正常书写、构建查询
+- **需要哪个后端就导入哪个驱动**,不需要的后端不会进入你的依赖(例如只用 postgres 时不会引入 SQLite 的 `modernc` 依赖)
+- 核心模块只依赖 `bun` 与 `database/sql`
+
+> API 文档见 [pkg.go.dev](https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v4/bunproxy);从 v3 升级请参考 [MIGRATION_v3_to_v4.md](./MIGRATION_v3_to_v4.md),变更明细见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ## 为什么选择 bun
 
@@ -15,10 +19,57 @@ v3 是在 v2 基础上做的一次现代化改造:**尽量保持 API 形状不�
 ## 安装
 
 ```bash
-go get github.com/Golang-Tools/sqlhelper/v3
+go get github.com/Golang-Tools/sqlhelper/v4
 ```
 
-本模块要求 **Go 1.25.0 及以上**。原因是 `github.com/uptrace/bun/driver/sqliteshim` 依赖的 `modernc.org/sqlite` 以及 `golang.org/x/*` 系列依赖自身声明的最低版本为 Go 1.25。如果需要支持更低的 Go 版本,需要同时降级 sqliteshim / modernc 系列依赖。
+然后按需引入驱动(空导入即启用对应的 URL scheme):
+
+```bash
+go get github.com/Golang-Tools/sqlhelper/driver/postgres/v4
+```
+
+本模块要求 **Go 1.25.0 及以上**(由 `modernc.org/sqlite` 与 `golang.org/x/*` 依赖链决定)。
+
+## 驱动
+
+| 后端 | 模块路径 | URL scheme | 发布 tag |
+| --- | --- | --- | --- |
+| PostgreSQL | `github.com/Golang-Tools/sqlhelper/driver/postgres/v4` | `postgres` | `driver/postgres/v4.0.0` |
+| MySQL | `github.com/Golang-Tools/sqlhelper/driver/mysql/v4` | `mysql` | `driver/mysql/v4.0.0` |
+| SQL Server | `github.com/Golang-Tools/sqlhelper/driver/sqlserver/v4` | `sqlserver` | `driver/sqlserver/v4.0.0` |
+| SQLite | `github.com/Golang-Tools/sqlhelper/driver/sqlite/v4` | `sqlite` | `driver/sqlite/v4.0.0` |
+| 全部后端 | `github.com/Golang-Tools/sqlhelper/driver/all/v4` | 上述全部 | `driver/all/v4.0.0` |
+
+```go
+import (
+	// 需要哪个就导哪个;一次性引入全部可用 driver/all/v4
+	_ "github.com/Golang-Tools/sqlhelper/driver/postgres/v4"
+	_ "github.com/Golang-Tools/sqlhelper/driver/sqlite/v4"
+)
+```
+
+未导入的 scheme 在 `Init` 时会返回 `ErrUnsupportedSchema`,错误信息里会列出**当前已注册的驱动**并提示需要导入哪个包——服务启动阶段即可发现"配置与二进制不匹配"。
+
+### 同一个二进制支持多个后端
+
+这是本模块的常见用法:**停机改配置、重启即切换后端**,无需改动代码或重新编译(只要该后端在编译期被引入)。
+
+```go
+import (
+	"github.com/Golang-Tools/sqlhelper/v4/bunproxy"
+	_ "github.com/Golang-Tools/sqlhelper/driver/all/v4" // 一次引入四家
+)
+
+func main() {
+	// 启动日志里打印实际支持的后端,便于运维核对配置
+	log.Println("supported backends:", bunproxy.RegisteredSchemes())
+
+	// URL 来自配置:dev 用 sqlite,staging 用 mysql,prod 用 postgres
+	if err := bunproxy.Default.Init(cfg.DatabaseURL); err != nil {
+		log.Fatalf("数据库初始化失败: %v", err)
+	}
+}
+```
 
 ## 快速开始
 
@@ -29,7 +80,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Golang-Tools/sqlhelper/v3/bunproxy"
+	//空导入即启用 sqlite://,换成其它后端只需改这一行
+	_ "github.com/Golang-Tools/sqlhelper/driver/sqlite/v4"
+	"github.com/Golang-Tools/sqlhelper/v4/bunproxy"
 )
 
 func main() {
@@ -64,44 +117,42 @@ func main() {
 }
 ```
 
-## 支持的数据库
+## 支持的连接串
 
-| 数据库 | scheme | 连接串示例 |
-| --- | --- | --- |
-| PostgreSQL | `postgres` | `postgres://user:pwd@localhost:5432/db?sslmode=disable` |
-| MySQL | `mysql` | `mysql://user:pwd@localhost:3306/db?charset=utf8mb4` |
-| SQL Server | `sqlserver` | `sqlserver://sa:pwd@localhost:1433?database=master` |
-| SQLite | `sqlite` | `sqlite://test.db`、`sqlite://:memory:` |
-
-其他 scheme 会返回 `bunproxy.ErrUnsupportedSchema`(可用 `errors.Is` 判断)。
+| 数据库 | 连接串示例 |
+| --- | --- |
+| PostgreSQL | `postgres://user:pwd@localhost:5432/db?sslmode=disable` |
+| MySQL | `mysql://user:pwd@localhost:3306/db?charset=utf8mb4` |
+| SQL Server | `sqlserver://sa:pwd@localhost:1433?database=master` |
+| SQLite | `sqlite://test.db`、`sqlite://:memory:` |
 
 补充说明:
 
 - MySQL 的连接串**可以不带库名**(如 `mysql://root:pwd@localhost:3306`),库名在 `?` 参数或 SQL 中指定即可
-- SQLite 的连接串支持直接写 sqlite 原生 DSN:已带 `file:` 前缀时不会被重复拼接,例如 `sqlite://file::memory:?cache=shared`、`sqlite://file:test.db?_pragma=busy_timeout(5000)`
-- SQLite 的私有内存库(`:memory:` 且未声明 `cache=shared`)会被自动限制为单连接(`MaxOpenConns(1)`),避免不同连接看到不同的数据库副本;声明了 `cache=shared` 时按配置的连接池参数处理
+- SQLite 支持直接写原生 DSN:已带 `file:` 前缀时不会被重复拼接,例如 `sqlite://file::memory:?cache=shared`
+- SQLite 的私有内存库(`:memory:` 且未声明 `cache=shared`)会被自动限制为单连接,避免不同连接看到不同的数据库副本
 
 ## 生命周期
 
 ```go
-proxy := bunproxy.New()      // 创建代理,此时不可用
-proxy.Regist(cb)             // 注册回调(只能在初始化前)
+proxy := bunproxy.New()      // 创建代理,此时不可用但可以持有、可以提前构建查询
+proxy.Register(cb)           // 注册回调(只能在初始化前)
 proxy.Init(url, opts...)     // 建立连接 -> 校验可用性 -> 执行回调
-proxy.IsOk()                 // 是否已经可用
+proxy.IsReady()              // 是否已经可用(IsOk 为兼容别名)
 proxy.Client()               // 获取 *bun.DB
 proxy.PingContext(ctx)       // 连通性探测
-proxy.Health(ctx)            // 带默认查询超时的连通性探测
+proxy.Health(ctx)            // 带连通性探测超时的健康检查
 proxy.Close()                // 关闭连接池并回到未初始化状态
 ```
 
 约定:
 
-- **创建者负责关闭**:`NewDB` 返回的 `*bun.DB` 在不再使用时必须 `Close`;`Init` 创建的连接由代理负责关闭。
-- **失败即释放**:`Init` 在连接校验失败或 `SetConnect` 失败时会主动关闭刚创建的连接池,不会泄漏连接。
-- **可以重来**:`Close` 之后代理回到未初始化状态,可以再次 `Init`。
-- **关闭会清空回调**:`Close` 会清空已注册的回调,避免重新 `Init` 时重复执行回调里的副作用操作;需要时在重新 `Init` 前再次 `Register` 即可。
-- **关闭后的错误可识别**:`Close` 之后 `Client()` 返回 `nil`、`IsOk()` 为 `false`,`PingContext`/`Health`/再次 `Close` 均返回 `ErrProxyNotSetClient`。
-- **关闭不再改写连接指针**:`Close` 只关闭连接池并置位内部状态,因此关闭路径与业务查询并发时不会产生数据竞争(关闭后直接使用 `proxy.DB` 会得到 `sql: database is closed` 错误,而不是空指针 panic)。
+- **代理常驻**:`Proxy`(尤其是 `bunproxy.Default`)从进程启动就存在且地址稳定,业务代码可以长期持有;`Init` 只是"稍后把连接接上"
+- **`Init`/`Close` 是生命周期操作**:约定只在应用启动/退出阶段串行调用,不要与业务查询并发
+- **初始化可取消**:需要整体超时或可取消的初始化用 `proxy.InitContext(ctx, url, ...)`
+- **创建者负责关闭**:`NewDB` 返回的 `*bun.DB` 在不再使用时必须 `Close`;`Init` 创建的连接由代理负责关闭
+- **失败即释放**:`Init` 在连接校验失败或回调失败时会主动关闭刚创建的连接池
+- **关闭会清空回调**:避免重新 `Init` 时重复执行回调里的副作用操作;需要时再次 `Register` 即可
 
 ## 配置项
 
@@ -152,38 +203,34 @@ WithConnectRetry(attempts int, interval time.Duration)
 
 ```go
 proxy := bunproxy.New()
-_ = proxy.Regist(func(cli *bun.DB) error {
+_ = proxy.Register(func(cli *bun.DB) error {
 	_, err := cli.ExecContext(context.Background(), "CREATE TABLE IF NOT EXISTS t_user (id INTEGER)")
 	return err
 })
 _ = proxy.Init("sqlite://test.db")
 ```
 
-- 回调只能在初始化前注册,初始化后再注册会返回 `ErrProxyAlreadySetClient`
-- 串行回调按注册顺序执行;`WithParallelCallback()` 时并行执行,但 `Init` 会**等待全部回调结束**后才返回
-- 回调 panic 会被捕获并转换为 `ErrCallbackPanic`,不会导致进程崩溃
-- 回调返回的错误会被聚合,可以通过 `errors.Is/As` 获取到原始错误与回调下标(`*CallbackError`)
-- 需要兼容旧版本"回调错误只记日志"的行为时,使用 `WithIgnoreCallbackError()`
-
-需要做带超时保护的操作时,用 `RegisterContext` 注册带上下文的回调:
+需要超时保护的操作可以用带上下文的回调:
 
 ```go
 _ = proxy.RegisterContext(func(ctx context.Context, cli *bun.DB) error {
-	// ctx 会带上 CallbackTimeout 配置的超时,可用于建表、预热、健康探测等操作
+	// ctx 会带上 CallbackTimeout 配置的超时
 	return cli.PingContext(ctx)
 })
 _ = proxy.Init(url, bunproxy.WithCallbackTimeoutMS(5000))
 ```
 
-- `RegisterContext` 与 `Regist` 注册的回调**按注册顺序统一执行**,并行模式下也一并并行
-- 只有 `RegisterContext` 注册的回调会收到带超时的上下文;`CallbackTimeout` 为 `0`(默认)表示不限制
-- 超时后回调会收到 `context.DeadlineExceeded`,`Init` 会因此失败并回滚连接
+- 回调只能在初始化前注册,初始化后再注册会返回 `ErrProxyAlreadySetClient`
+- `Register` 与 `RegisterContext` 注册的回调**按注册顺序统一执行**;`WithParallelCallback()` 时并行执行,但 `Init` 会等待全部回调结束
+- 回调 panic 会被捕获并转换为 `ErrCallbackPanic`,不会导致进程崩溃
+- 回调返回的错误会被聚合,可以通过 `errors.Is/As` 获取原始错误与回调下标(`*CallbackError`)
+- 需要兼容旧版本"回调错误只记日志"的行为时,使用 `WithIgnoreCallbackError()`
 
 ## 超时与上下文
 
 ```go
-ctx, cancel := proxy.NewCtx()                       // 基于配置的 QueryTimeout
-ctx, cancel := proxy.NewCtxWithParent(reqCtx)       // 继承请求上下文,推荐
+ctx, cancel := proxy.NewCtx()                 // 基于配置的 QueryTimeout
+ctx, cancel := proxy.NewCtxWithParent(reqCtx) // 继承请求上下文,推荐
 timeout := proxy.DefaultQueryTimeout()
 ```
 
@@ -204,16 +251,16 @@ timeout := proxy.DefaultQueryTimeout()
 
 ```go
 if err := proxy.Init(url,
-	bunproxy.WithConnectRetry(5, 500*time.Millisecond), // 总尝试5次,首次等待500ms
+	bunproxy.WithConnectRetry(5, 500*time.Millisecond),
 	bunproxy.WithPingTimeoutMS(2000),
 ); err != nil {
 	// 重试耗尽后会返回 ErrPingFailed
 }
 ```
 
-- 重试只针对**连通性校验失败**(`ErrPingFailed`);DSN 非法、scheme 不支持等配置类错误会立即返回,不会重试
+- 重试只针对**连通性校验失败**(`ErrPingFailed`);DSN 非法、scheme 不支持等配置类错误会立即返回
 - 等待时间按指数退避增长,单次上限 5s;`ConnectRetryAttempts` 为 `0`/`1` 时保持原有的一次性行为
-- `WithDisablePingOnInit()` 关闭了连通性校验时没有可重试的判定依据,重试不会生效
+- 使用 `InitContext` 时,重试等待会随 ctx 一起取消
 
 ## 日志与安全
 
@@ -225,7 +272,7 @@ bunproxy.WithQueryLogArgs()   // 额外记录参数值,存在泄漏风险,谨慎
 ```
 
 - SQL 中的字符串字面量会被替换为 `'?'`、数字字面量会被替换为 `?`,连续空白会被压缩,超长 SQL 会被截断
-- 带数字的标识符(如 `col1`、`utf8mb4`)、问号占位符与 postgres 的位置占位符(`$1`)不会被误伤,`NULL`/`TRUE` 等关键字保持原样以便对照
+- 带数字的标识符(如 `col1`、`utf8mb4`)、问号占位符与 postgres 的位置占位符(`$1`)不会被误伤
 - `bunproxy.RedactDSN(dsn)` 用于对连接串脱敏,`bunproxy.SanitizeSQL(sql)` 用于对 SQL 脱敏
 - `Init` 的错误信息中的连接串已经过脱敏处理,不会带出明文密码
 - 动态输入必须走 bun 的参数化 API,禁止使用 `fmt.Sprintf` 拼接 SQL
@@ -235,8 +282,7 @@ bunproxy.WithQueryLogArgs()   // 额外记录参数值,存在泄漏风险,谨慎
 | 错误 | 说明 |
 | --- | --- |
 | `ErrEmptyURL` | 连接串为空 |
-| `ErrUnsupportedSchema` | 未支持的数据库类型 |
-| `ErrUnknownClientType` | 未知的客户端类型 |
+| `ErrUnsupportedSchema` | 未支持的数据库类型(通常是漏了驱动导入) |
 | `ErrProxyAlreadySetClient` | 代理已经设置过客户端 |
 | `ErrProxyNotSetClient` | 代理还未设置客户端 |
 | `ErrNilDB` / `ErrNilCallback` | 入参为 nil |
@@ -255,44 +301,37 @@ if err := proxy.Init(url); err != nil {
 }
 ```
 
-v2 的历史命名(`ErrProxyAllreadySettedUniversalClient`、`ErrProxyNotYetSettedUniversalClient`、`ErrUnSupportSchema`)仍然保留,并且与新命名指向同一个错误值,`errors.Is` 对两者都成立。
+## 常见问题
 
-## 并发说明
+**启动时报 `ErrUnsupportedSchema`?**
+通常是二进制里没有编入该后端的驱动。错误信息会列出当前已注册的驱动,对照配置的 URL scheme 补上对应的 `import` 即可;也可以导入 `driver/all/v4` 一次性支持全部后端。
 
-- `IsOk`、`Client`、`PingContext`、`Health`、`Regist`、`Close`、`DefaultQueryTimeout` 以及回调执行都受内部读写锁保护
-- `Init` 与 `Close` 属于生命周期操作,应在应用启动/退出阶段串行调用,不要与业务查询并发执行
-- 回调在锁外执行,但**不要在回调里调用代理的 `Init`/`Close`**,否则可能造成死锁
+**`Init` 之前就调用查询会怎样?**
+构建查询(`proxy.NewSelect()`、`proxy.NewRaw()`)没有问题,但**执行**会因为底层连接不存在而 panic。请确保在执行前完成初始化,或先用 `proxy.IsReady()` 判断。
 
-## 示例
+**`Init` 与业务查询能并发吗?**
+不推荐。`Init`/`Close` 属于生命周期操作,约定只在启动/退出阶段串行调用。
 
-仓库提供了可直接运行的示例(godoc 示例见 `bunproxy/example_test.go`):
-
-| 示例 | 说明 | 运行方式 |
-| --- | --- | --- |
-| [examples/sqlite](./examples/sqlite/main.go) | SQLite 基础用法:建表/插入/查询/健康检查 | `go run ./examples/sqlite` |
-| [examples/callbacks](./examples/callbacks/main.go) | 回调注册、并行执行、错误聚合与回滚 | `go run ./examples/callbacks` |
-| [examples/querylog](./examples/querylog/main.go) | SQL 日志开关与连接串/SQL 脱敏 | `go run ./examples/querylog` |
-
-## 从 v2 迁移
-
-模块路径改为 `/v3`,因此可以并存。绝大多数代码只需要改 import 路径;需要留意的行为变化见 [MIGRATION_v2_to_v3.md](./MIGRATION_v2_to_v3.md)。
+**需要用 `*bun.DB` 的完整能力?**
+通过 `proxy.Client()` 或内嵌字段 `proxy.DB` 都可以拿到原始 `*bun.DB`,所有 bun 的方法都可用。
 
 ## 开发
 
-```bash
-go build ./...
-go vet ./...
-gofmt -l .                           # 应为空
-go test ./...                        # 运行测试
-go test -race -covermode=atomic -coverprofile=coverage.out ./...
-go test -bench=. -benchmem -run=^$ ./...
-```
+仓库是**多模块**结构,以下命令需在对应目录执行:
 
-CI 会执行格式化检查、`go mod tidy` 校验、`go vet`、`go test -race`、覆盖率统计、benchmark,以及(非阻塞的)lint 与 `govulncheck`。
+```bash
+# 核心模块
+go build ./... && go vet ./... && go test -race ./...
+
+# 各驱动与示例
+for m in driver/postgres driver/mysql driver/sqlserver driver/sqlite driver/all example; do
+  (cd "$m" && go build ./... && go vet ./... && go test -race ./...)
+done
+```
 
 ### 真实数据库集成测试
 
-`bunproxy/integration_test.go` 中的集成测试通过环境变量开关,未配置的数据库会自动跳过:
+跨后端集成测试位于 `driver/all`,通过环境变量开关,未配置的数据库自动跳过:
 
 | 环境变量 | 示例 |
 | --- | --- |
@@ -305,19 +344,34 @@ CI 会执行格式化检查、`go mod tidy` 校验、`go vet`、`go test -race`�
 
 ```bash
 docker run -d --name sqlhelper-it-mysql \
-  -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=sqlhelper \
-  -p 13306:3306 mysql:8.4
-
+  -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=sqlhelper -p 13306:3306 mysql:8.4
 docker run -d --name sqlhelper-it-postgres \
-  -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=sqlhelper \
-  -p 15432:5432 postgres:17
+  -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=sqlhelper -p 15432:5432 postgres:17
 
+cd driver/all
+SQLHELPER_TEST_SQLITE_URL='sqlite:///tmp/sqlhelper_it.db' \
 SQLHELPER_TEST_MYSQL_URL='mysql://root:root@127.0.0.1:13306/sqlhelper?charset=utf8mb4' \
 SQLHELPER_TEST_POSTGRES_URL='postgres://postgres:postgres@127.0.0.1:15432/sqlhelper?sslmode=disable' \
-SQLHELPER_TEST_SQLITE_URL='sqlite:///tmp/sqlhelper_it.db' \
-  go test -race -count=1 -v -run 'TestIntegration' ./bunproxy/
+  go test -race -count=1 -v -run 'TestIntegration' ./...
 
 docker rm -f sqlhelper-it-mysql sqlhelper-it-postgres
 ```
 
-集成测试覆盖:回调执行、建表、批量写入、单行查询、Count、事务更新、带超时的查询上下文、重复初始化被拒、关闭后重开(不重复执行回调)。CI 中使用 GitHub Actions service 容器运行 MySQL 与 PostgreSQL。
+### 可运行示例
+
+```bash
+cd example
+go run ./sqlite      # 基础用法:建表/写入/查询/健康检查
+go run ./callbacks   # 回调注册、并行执行、错误聚合
+go run ./querylog    # SQL 日志开关与脱敏
+```
+
+CI 会按模块矩阵执行格式化检查、`go mod tidy` 校验、`go vet`、`go test -race`,并额外执行:
+
+- **依赖瘦身校验**:只引入核心 + postgres 驱动时,依赖中不得出现其它后端
+- **真实数据库集成**:MySQL 8.4 / PostgreSQL 17 / SQL Server 2022 容器
+- 非阻塞的 lint 与 `govulncheck`
+
+## 从 v3 迁移
+
+驱动 import、命名变化与行为差异见 [MIGRATION_v3_to_v4.md](./MIGRATION_v3_to_v4.md)。

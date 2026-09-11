@@ -71,23 +71,57 @@
 </head>
 <body>
 <main>
-  <h1>sqlhelper<span class="badge">v3</span></h1>
+  <h1>sqlhelper<span class="badge">v4</span></h1>
   <p class="sub">
-    <code>uptrace/bun</code> 的代理对象,用于解决 PostgreSQL、MySQL、SQL Server 与 SQLite 的连接、连接池与生命周期管理问题。
+    <code>uptrace/bun</code> 的代理对象,用于解决 PostgreSQL、MySQL、SQL Server 与 SQLite 的连接、连接池与生命周期管理问题。驱动按需引入,核心模块不依赖任何具体数据库实现。
   </p>
 
   <h2>API 文档</h2>
   <ul>
     <li>
-      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v3/bunproxy">
-        <strong>bunproxy (v3, 当前版本)</strong>
-        <span>模块的唯一入口子包,包含 Proxy、Options、Callback 等全部导出接口</span>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v4/bunproxy">
+        <strong>bunproxy (v4, 当前版本)</strong>
+        <span>核心包:Proxy、Options、驱动注册表等全部导出接口</span>
       </a>
     </li>
     <li>
-      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v2/bunproxy">
-        <strong>bunproxy (v2, 旧版本)</strong>
-        <span>历史版本文档,新项目请使用 v3</span>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v3/bunproxy">
+        <strong>bunproxy (v3, 旧版本)</strong>
+        <span>内置全部驱动的上一代实现,新项目请使用 v4</span>
+      </a>
+    </li>
+  </ul>
+
+  <h2>驱动子模块</h2>
+  <ul>
+    <li>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/driver/all/v4">
+        <strong>driver/all/v4</strong>
+        <span>一次性引入全部后端(同一个二进制支持多后端、停机切换配置)</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/driver/postgres/v4">
+        <strong>driver/postgres/v4</strong>
+        <span>启用 postgres:// 连接串</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/driver/mysql/v4">
+        <strong>driver/mysql/v4</strong>
+        <span>启用 mysql:// 连接串</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/driver/sqlserver/v4">
+        <strong>driver/sqlserver/v4</strong>
+        <span>启用 sqlserver:// 连接串</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/driver/sqlite/v4">
+        <strong>driver/sqlite/v4</strong>
+        <span>启用 sqlite:// 连接串</span>
       </a>
     </li>
   </ul>
@@ -101,9 +135,15 @@
       </a>
     </li>
     <li>
+      <a class="card" href="https://github.com/Golang-Tools/sqlhelper/blob/master/MIGRATION_v3_to_v4.md">
+        <strong>从 v3 迁移到 v4</strong>
+        <span>驱动 import 对照表、命名调整与新能力说明</span>
+      </a>
+    </li>
+    <li>
       <a class="card" href="https://github.com/Golang-Tools/sqlhelper/blob/master/MIGRATION_v2_to_v3.md">
         <strong>从 v2 迁移到 v3</strong>
-        <span>import 路径变更、默认行为变化、错误兼容性与自检清单</span>
+        <span>历史迁移说明</span>
       </a>
     </li>
     <li>

@@ -1,3 +1,36 @@
+# v4.0.0
+
+本次为**破坏性**版本:数据库驱动拆分为按需引入的独立子模块,核心模块不再依赖任何具体数据库实现;代理的用法与设计保持不变(`Proxy` 常驻、`Init` 前即可书写业务逻辑、查询继续走 `proxy.NewSelect()/ExecContext()/RunInTx()` 直调)。
+
+## 破坏性变更
+
++ 模块路径升级为 `github.com/Golang-Tools/sqlhelper/v4`
++ 驱动独立成子模块,必须空导入才能启用对应 URL scheme:
+  `driver/postgres/v4`、`driver/mysql/v4`、`driver/sqlserver/v4`、`driver/sqlite/v4`,或一次性引入 `driver/all/v4`
++ 未导入驱动时 `Init` 返回 `ErrUnsupportedSchema`,错误信息中会列出当前已注册的驱动并提示需要导入的包
++ 移除历史遗留符号 `ErrUnknownClientType`(语义与用途均不明确)
++ `Regist` 与 `IsOk` 标记为 Deprecated(仍可用),推荐 `Register` 与 `IsReady`
+
+## 新增
+
++ `Driver` 接口与驱动注册表:`RegisterDriver`、`FindDriver`、`RegisteredSchemes`,支持第三方扩展
++ `Proxy.InitContext(ctx, ...)`:可取消/带整体超时的初始化,连通性校验与重试等待都受 ctx 约束
++ `Proxy.IsReady()`:语义更明确的可用性判断
++ `Options.ApplyPool(*sql.DB)`:导出连接池配置逻辑,供驱动实现复用
++ 官方驱动子模块 `driver/{postgres,mysql,sqlserver,sqlite}` 与聚合包 `driver/all`
++ 独立示例模块 `example/`,演示驱动导入、`RegisteredSchemes` 启动自检与多后端切换
+
+## 变更
+
++ 核心模块依赖大幅精简:移除 `go-sql-driver/mysql`、`go-mssqldb`、`pgdriver`、`sqliteshim`、`modernc.org/sqlite` 等,仅保留 `bun`、`loggerhelper/v4`、`optparams`(`sqlitedialect` 仅用于测试)
++ 核心模块测试改用内置 stub driver(`memory://`),不再依赖真实数据库;真实数据库用例迁移到 `driver/sqlite` 与 `driver/all`
++ 驱动子模块使用独立版本与 tag(`driver/<name>/vX.Y.Z`),并保留 `replace` 以便本地与 CI 联调
++ CI 改为多模块矩阵,新增"依赖瘦身校验"(只引核心 + postgres 时不得出现其它后端依赖)与真实数据库集成任务
+
+## 迁移
+
+见 [MIGRATION_v3_to_v4.md](./MIGRATION_v3_to_v4.md)
+
 # v3.1.0
 
 本次为 v3 系列的功能增强版本,**不包含破坏性变更**,全部为新增能力与行为修正。
