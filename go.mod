@@ -1,13 +1,12 @@
-module github.com/Golang-Tools/sqlhelper/v2
+module github.com/Golang-Tools/sqlhelper/v3
 
 go 1.25.0
 
 require (
-	github.com/Golang-Tools/loggerhelper/v2 v2.0.2
-	github.com/Golang-Tools/optparams v0.0.1
+	github.com/Golang-Tools/loggerhelper/v4 v4.0.0
+	github.com/Golang-Tools/optparams v1.0.0
 	github.com/denisenkom/go-mssqldb v0.12.3
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/oiime/logrusbun v0.1.2
 	github.com/uptrace/bun v1.2.18
 	github.com/uptrace/bun/dialect/mssqldialect v1.2.18
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.18
@@ -30,7 +29,6 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
