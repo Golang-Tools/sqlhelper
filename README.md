@@ -178,7 +178,8 @@ bunproxy.WithQueryLog()       // 记录 操作类型/耗时/脱敏SQL
 bunproxy.WithQueryLogArgs()   // 额外记录参数值,存在泄漏风险,谨慎使用
 ```
 
-- SQL 中的字符串字面量会被替换为 `'?'`,连续空白会被压缩,超长 SQL 会被截断
+- SQL 中的字符串字面量会被替换为 `'?'`、数字字面量会被替换为 `?`,连续空白会被压缩,超长 SQL 会被截断
+- 带数字的标识符(如 `col1`、`utf8mb4`)、问号占位符与 postgres 的位置占位符(`$1`)不会被误伤,`NULL`/`TRUE` 等关键字保持原样以便对照
 - `bunproxy.RedactDSN(dsn)` 用于对连接串脱敏,`bunproxy.SanitizeSQL(sql)` 用于对 SQL 脱敏
 - `Init` 的错误信息中的连接串已经过脱敏处理,不会带出明文密码
 - 动态输入必须走 bun 的参数化 API,禁止使用 `fmt.Sprintf` 拼接 SQL

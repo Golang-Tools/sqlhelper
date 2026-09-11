@@ -542,6 +542,58 @@ func TestSanitizeSQLTruncate(t *testing.T) {
 	}
 }
 
+// TestSanitizeSQLMasksLiterals 验证脱敏既遮蔽字面量,又不误伤标识符与占位符
+func TestSanitizeSQLMasksLiterals(t *testing.T) {
+	cases := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{
+			name: "数字字面量",
+			in:   "SELECT * FROM users WHERE age > 18 AND score < 99.5",
+			want: "SELECT * FROM users WHERE age > ? AND score < ?",
+		},
+		{
+			name: "科学计数法与十六进制",
+			in:   "SELECT * FROM t WHERE a = 1e10 AND b = 0xFF",
+			want: "SELECT * FROM t WHERE a = ? AND b = ?",
+		},
+		{
+			name: "字符串中的数字一并遮蔽",
+			in:   "SELECT * FROM t WHERE phone = '13800000000'",
+			want: "SELECT * FROM t WHERE phone = '?'",
+		},
+		{
+			name: "带数字的标识符不受影响",
+			in:   "SELECT col1, utf8mb4_text FROM t_user2 WHERE id = 7",
+			want: "SELECT col1, utf8mb4_text FROM t_user2 WHERE id = ?",
+		},
+		{
+			name: "postgres位置占位符保持原样",
+			in:   "SELECT * FROM users WHERE id = $1 AND name = $2",
+			want: "SELECT * FROM users WHERE id = $1 AND name = $2",
+		},
+		{
+			name: "问号占位符与关键字保持原样",
+			in:   "SELECT * FROM t WHERE id = ? AND flag IS NOT NULL LIMIT 10",
+			want: "SELECT * FROM t WHERE id = ? AND flag IS NOT NULL LIMIT ?",
+		},
+		{
+			name: "空语句",
+			in:   "",
+			want: "",
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := SanitizeSQL(c.in); got != c.want {
+				t.Fatalf("脱敏结果不符\n输入: %s\n期望: %s\n实际: %s", c.in, c.want, got)
+			}
+		})
+	}
+}
+
 // captureLogOutput 将全局日志输出重定向到buffer,并返回恢复函数
 func captureLogOutput(t *testing.T) *bytes.Buffer {
 	t.Helper()

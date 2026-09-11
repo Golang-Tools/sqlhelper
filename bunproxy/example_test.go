@@ -163,7 +163,9 @@ func ExampleRedactDSN() {
 
 func ExampleSanitizeSQL() {
 	fmt.Println(bunproxy.SanitizeSQL("SELECT * FROM users WHERE name = 'alice' AND age > 18"))
+	fmt.Println(bunproxy.SanitizeSQL("SELECT * FROM users WHERE id = $1"))
 
 	// Output:
-	// SELECT * FROM users WHERE name = '?' AND age > 18
+	// SELECT * FROM users WHERE name = '?' AND age > ?
+	// SELECT * FROM users WHERE id = $1
 }

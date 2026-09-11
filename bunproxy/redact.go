@@ -16,8 +16,15 @@ const RedactedPlaceholder = "REDACTED"
 var (
 	//dsnPasswordPattern 匹配scheme://user:password@host形式的连接串
 	dsnPasswordPattern = regexp.MustCompile(`://([^:/?#]*):([^@/?#]*)@`)
-	//sqlStringLiteralPattern 匹配SQL中的字符串字面量
-	sqlStringLiteralPattern = regexp.MustCompile(`'(?:[^'\\]|\\.|'')*'`)
+	//sqlRedactPattern 匹配SQL中需要脱敏的字面量
+	//bun的查询构造器会把参数值内联进SQL,因此除了字符串字面量,数字字面量也需要遮蔽
+	//注意:必须把postgres的位置占位符($1)放在数字之前,避免占位符被当成数字遮蔽
+	sqlRedactPattern = regexp.MustCompile(
+		`'(?:[^'\\]|\\.|'')*'` + // 字符串字面量
+			`|\$[0-9]+` + // postgres位置占位符,保持原样
+			`|0[xX][0-9a-fA-F]+` + // 十六进制字面量
+			`|\b[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b`, // 数字字面量
+	)
 	//sqlWhitespacePattern 匹配SQL中的连续空白字符
 	sqlWhitespacePattern = regexp.MustCompile(`\s+`)
 )
@@ -50,12 +57,24 @@ func RedactDSN(dsn string) string {
 	return dsnPasswordPattern.ReplaceAllString(trimmed, "://$1:"+RedactedPlaceholder+"@")
 }
 
-// SanitizeSQL 脱敏SQL语句,遮蔽字符串字面量并压缩空白,用于日志输出
+// SanitizeSQL 脱敏SQL语句,遮蔽字面量并压缩空白,用于日志输出
+// 字符串字面量替换为'?',数字字面量替换为?;SQL关键字、标识符(含带数字的列名)与
+// 位置占位符($1)保持原样,NULL/TRUE/FALSE等关键字不做替换(不包含敏感信息)
 func SanitizeSQL(query string) string {
 	if query == "" {
 		return ""
 	}
-	sanitized := sqlStringLiteralPattern.ReplaceAllString(query, "'?'")
+	sanitized := sqlRedactPattern.ReplaceAllStringFunc(query, func(literal string) string {
+		switch {
+		case strings.HasPrefix(literal, "$"):
+			//位置占位符保持原样,便于对照日志与SQL
+			return literal
+		case strings.HasPrefix(literal, "'"):
+			return "'?'"
+		default:
+			return "?"
+		}
+	})
 	sanitized = sqlWhitespacePattern.ReplaceAllString(sanitized, " ")
 	sanitized = strings.TrimSpace(sanitized)
 	return truncateRunes(sanitized, maxLoggedSQLLength)
