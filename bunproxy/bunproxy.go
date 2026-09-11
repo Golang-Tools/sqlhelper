@@ -12,16 +12,7 @@ import (
 
 	log "github.com/Golang-Tools/loggerhelper/v4"
 	"github.com/Golang-Tools/optparams"
-
-	_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/mssqldialect"
-	"github.com/uptrace/bun/dialect/mysqldialect"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/pgdriver"
-	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
 // Logger 本包使用的日志对象
@@ -168,11 +159,17 @@ func (proxy *Proxy) PingTimeout() time.Duration {
 
 // SetPool 设置连接池信息,opts为nil时使用DefaultOpts
 func SetPool(sqldb *sql.DB, opts *Options) {
-	opts.applyPool(sqldb)
+	opts.ApplyPool(sqldb)
 }
 
 // NewDB 根据连接串创建bun.DB对象
 // opts为nil时使用DefaultOpts,调用方负责在不再使用时调用Close释放连接池
+//
+// 具体数据库由已注册的驱动决定:需要空导入对应的驱动子模块,例如
+//
+//	import _ "github.com/Golang-Tools/sqlhelper/driver/postgres/v4"
+//
+// 未注册的 scheme 会返回 ErrUnsupportedSchema,错误信息中会带上当前已注册的驱动列表
 func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 	opts := dopts
 	if opts == nil {
@@ -188,94 +185,22 @@ func NewDB(URL string, dopts *Options) (*bun.DB, error) {
 		return nil, fmt.Errorf("解析数据库连接串失败,URL: %s, %w", RedactDSN(trimmedURL), err)
 	}
 
-	var cli *bun.DB
-	switch U.Scheme {
-	case "postgres":
-		{
-			sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(trimmedURL)))
-			opts.applyPool(sqldb)
-			if opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, pgdialect.New())
-			}
-		}
-	case "mysql":
-		{
-			userinfo := ""
-			username := U.User.Username()
-			pwd, ok := U.User.Password()
-			if ok && username != "" {
-				userinfo = fmt.Sprintf("%s:%s@", username, pwd)
-			} else if ok && username == "" {
-				userinfo = fmt.Sprintf(":%s@", pwd)
-			} else if !ok && username != "" {
-				userinfo = fmt.Sprintf("%s@", username)
-			}
-			//MySQL的DSN形如 user:pass@tcp(host:port)/db?params,即使不指定库名也必须保留斜杠
-			dbPath := U.Path
-			if dbPath == "" {
-				dbPath = "/"
-			}
-			dataSourceName := fmt.Sprintf("%stcp(%s)%s?%s", userinfo, U.Host, dbPath, U.RawQuery)
-			sqldb, err := sql.Open("mysql", dataSourceName)
-			if err != nil {
-				return nil, fmt.Errorf("创建 %s 数据库连接失败,DSN: %s, %w", U.Scheme, RedactDSN(trimmedURL), err)
-			}
-			opts.applyPool(sqldb)
-			if opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, mysqldialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, mysqldialect.New())
-			}
-		}
-	case "sqlserver":
-		{
-			sqldb, err := sql.Open("sqlserver", trimmedURL)
-			if err != nil {
-				return nil, fmt.Errorf("创建 %s 数据库连接失败,DSN: %s, %w", U.Scheme, RedactDSN(trimmedURL), err)
-			}
-			opts.applyPool(sqldb)
-			if opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, mssqldialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, mssqldialect.New())
-			}
-		}
-	case "sqlite":
-		{
-			//只去掉scheme前缀,避免误伤路径中出现的同名内容
-			dataSourceName := strings.TrimPrefix(trimmedURL, fmt.Sprintf("%s://", U.Scheme))
-			//sqlite的DSN为 file:xxx?params 形式,已经带file:前缀时不再重复添加
-			dsn := dataSourceName
-			if !strings.HasPrefix(dsn, "file:") {
-				dsn = "file:" + dsn
-			}
-			sqldb, err := sql.Open(sqliteshim.ShimName, dsn)
-			if err != nil {
-				return nil, fmt.Errorf("创建 %s 数据库连接失败,DSN: %s, %w", U.Scheme, RedactDSN(trimmedURL), err)
-			}
-			switch {
-			case !strings.Contains(dataSourceName, ":memory:"),
-				strings.Contains(dataSourceName, "cache=shared"):
-				opts.applyPool(sqldb)
-			default:
-				//内存数据库的每个连接都是独立的库,需要限制为单连接以免不同连接看到不同的数据
-				sqldb.SetMaxIdleConns(1)
-				sqldb.SetMaxOpenConns(1)
-				sqldb.SetConnMaxLifetime(0)
-			}
-			if opts.DiscardUnknownColumns {
-				cli = bun.NewDB(sqldb, sqlitedialect.New(), bun.WithDiscardUnknownColumns())
-			} else {
-				cli = bun.NewDB(sqldb, sqlitedialect.New())
-			}
-		}
-	default:
-		{
-			return nil, fmt.Errorf("%w: %s", ErrUnsupportedSchema, U.Scheme)
-		}
+	d, ok := FindDriver(U.Scheme)
+	if !ok {
+		return nil, fmt.Errorf("%w: %q (当前已注册的驱动: %v,是否漏了对应 driver 子模块的导入?)",
+			ErrUnsupportedSchema, U.Scheme, RegisteredSchemes())
 	}
+
+	sqldb, err := d.NewPool(trimmedURL, opts)
+	if err != nil {
+		return nil, fmt.Errorf("创建 %s 数据库连接失败,DSN: %s, %w", U.Scheme, RedactDSN(trimmedURL), err)
+	}
+
+	bunOpts := make([]bun.DBOption, 0, 1)
+	if opts.DiscardUnknownColumns {
+		bunOpts = append(bunOpts, bun.WithDiscardUnknownColumns())
+	}
+	cli := bun.NewDB(sqldb, d.Dialect(), bunOpts...)
 
 	if opts.QueryLog {
 		cli.AddQueryHook(newQueryLogHook(opts.QueryLogArgs))

@@ -106,8 +106,9 @@ func (o *Options) attempts() int {
 	return o.ConnectRetryAttempts
 }
 
-// applyPool 将连接池配置应用到*sql.DB上
-func (o *Options) applyPool(sqldb *sql.DB) {
+// ApplyPool 将连接池配置应用到*sql.DB上,为nil时使用DefaultOpts
+// 驱动实现在创建连接池后调用它,即可复用统一的连接池配置语义
+func (o *Options) ApplyPool(sqldb *sql.DB) {
 	if sqldb == nil {
 		return
 	}

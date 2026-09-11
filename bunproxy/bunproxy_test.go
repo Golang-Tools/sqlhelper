@@ -15,12 +15,15 @@ import (
 
 	log "github.com/Golang-Tools/loggerhelper/v4"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
-const memoryURL = "sqlite://:memory:"
+// memoryURL 核心测试使用的假驱动地址,由 stub_test.go 中注册的 "memory" 驱动提供
+const memoryURL = "memory://core-test"
 
-// newTestDB 创建一个用于测试的SQLite内存库
+// unreachableURL 模拟数据库不可用的地址,用于验证连通性校验与重试
+const unreachableURL = "memory://" + unreachableHost
+
+// newTestDB 创建一个用于测试的数据库连接
 func newTestDB(t *testing.T, opts *Options) *bun.DB {
 	t.Helper()
 	cli, err := NewDB(memoryURL, opts)
@@ -60,85 +63,11 @@ func TestNewDBUnsupportedSchema(t *testing.T) {
 	}
 }
 
-type discardModel struct {
-	Id int64 `bun:"id"`
-}
+// 以下用例依赖真实数据库语义,已迁移到对应驱动子模块:
+//   - DiscardUnknownColumns / ORM 读写 -> driver/sqlite
+//   - MySQL 无库名 DSN / 密码特殊字符 -> driver/mysql
+//   - SQLite file: DSN 处理 -> driver/sqlite
 
-func TestNewDBDiscardUnknownColumns(t *testing.T) {
-	ctx := context.Background()
-	create := func(t *testing.T, discard bool) error {
-		t.Helper()
-		cli := newTestDB(t, &Options{DiscardUnknownColumns: discard})
-		if _, err := cli.ExecContext(ctx, "CREATE TABLE t_discard (id INTEGER)"); err != nil {
-			t.Fatalf("建表失败: %v", err)
-		}
-		if _, err := cli.ExecContext(ctx, "INSERT INTO t_discard (id) VALUES (1)"); err != nil {
-			t.Fatalf("插入失败: %v", err)
-		}
-		var m discardModel
-		return cli.NewRaw("SELECT id, 'extra_value' AS extra_col FROM t_discard").Scan(ctx, &m)
-	}
-	if err := create(t, false); err == nil {
-		t.Skip("当前bun版本在未开启DiscardUnknownColumns时也不会因未知列报错,该选项无可见差异")
-	}
-	if err := create(t, true); err != nil {
-		t.Fatalf("开启DiscardUnknownColumns后不应因未知列报错: %v", err)
-	}
-}
-
-// TestNewDBMySQLWithoutDatabaseName 验证不带库名的MySQL连接串不会被判定为非法DSN
-// MySQL允许不指定库名,而驱动的DSN格式要求必须存在分隔库名的斜杠
-func TestNewDBMySQLWithoutDatabaseName(t *testing.T) {
-	cli, err := NewDB("mysql://root:root@127.0.0.1:1", nil)
-	if err != nil {
-		t.Fatalf("不带库名的MySQL连接串应该可以构造连接: %v", err)
-	}
-	defer func() {
-		_ = cli.Close()
-	}()
-}
-
-// TestNewDBMySQLSpecialPassword 验证密码中的特殊字符不会被DSN解析拒绝
-func TestNewDBMySQLSpecialPassword(t *testing.T) {
-	for _, raw := range []string{
-		"mysql://root:p%40ss@127.0.0.1:1/test",
-		"mysql://root:p%3Ass@127.0.0.1:1/test",
-		"mysql://root:p%2Fss@127.0.0.1:1/test",
-	} {
-		cli, err := NewDB(raw, nil)
-		if err != nil {
-			t.Fatalf("密码含特殊字符的连接串应该可以构造连接, URL: %s, err: %v", raw, err)
-		}
-		_ = cli.Close()
-	}
-}
-
-// TestNewDBSQLiteFileDSN 验证已带file:前缀的sqlite DSN不会被重复加前缀
-// 旧实现会把 file::memory:?cache=shared 拼成 file:file::memory:?...,导致静默落盘成同名文件
-func TestNewDBSQLiteFileDSN(t *testing.T) {
-	ctx := context.Background()
-	dsn := "sqlite://file::memory:?cache=shared"
-	cli, err := NewDB(dsn, nil)
-	if err != nil {
-		t.Fatalf("构造连接失败: %v", err)
-	}
-	if err := cli.PingContext(ctx); err != nil {
-		t.Fatalf("内存库应该可用: %v", err)
-	}
-	if _, err := cli.ExecContext(ctx, "CREATE TABLE t_shared (id INTEGER)"); err != nil {
-		t.Fatalf("建表失败: %v", err)
-	}
-	if err := cli.Close(); err != nil {
-		t.Fatalf("关闭失败: %v", err)
-	}
-	//确认没有把DSN当成文件名落到磁盘上
-	if _, err := os.Stat("file::memory:"); err == nil {
-		_ = os.Remove("file::memory:")
-		t.Fatal("内存库不应在磁盘上生成名为 file::memory: 的文件")
-	}
-}
-
-// TestProxyInitFailureKeepsOptions 验证初始化失败/重复初始化不会污染已有配置
 func TestProxyInitFailureKeepsOptions(t *testing.T) {
 	proxy := New()
 	if err := proxy.Init(memoryURL, WithQueryTimeoutMS(1000)); err != nil {
@@ -376,8 +305,8 @@ func TestProxyParallelCallback(t *testing.T) {
 
 func TestProxyPingFailClosesConnection(t *testing.T) {
 	proxy := New()
-	// 127.0.0.1:1 上不会存在数据库服务,连接校验必定失败
-	err := proxy.Init("mysql://root:root@127.0.0.1:1/test", WithPingTimeoutMS(500))
+	// 假驱动的 unreachable 地址上连接必定失败
+	err := proxy.Init(unreachableURL, WithPingTimeoutMS(500))
 	if !errors.Is(err, ErrPingFailed) {
 		t.Fatalf("连接不可用时应返回ErrPingFailed, 实际: %v", err)
 	}
@@ -392,7 +321,7 @@ func TestProxyPingFailClosesConnection(t *testing.T) {
 func TestProxyDisablePingOnInit(t *testing.T) {
 	proxy := New()
 	// 关闭校验后Init不报错,便于兼容旧的惰性连接行为
-	if err := proxy.Init("mysql://root:root@127.0.0.1:1/test", WithDisablePingOnInit()); err != nil {
+	if err := proxy.Init(unreachableURL, WithDisablePingOnInit()); err != nil {
 		t.Fatalf("关闭Ping校验后Init不应失败: %v", err)
 	}
 	if !proxy.IsOk() {
@@ -471,7 +400,7 @@ func TestProxyConcurrentAccess(t *testing.T) {
 func TestSetPool(t *testing.T) {
 	// nil参数不应panic
 	SetPool(nil, nil)
-	db, err := sql.Open(sqliteshim.ShimName, "file:setpool_test?mode=memory&cache=shared")
+	db, err := sql.Open(stubSQLDriverName, "setpool")
 	if err != nil {
 		t.Fatalf("创建测试连接失败: %v", err)
 	}
@@ -704,50 +633,6 @@ func TestProxyInitAppliesOptions(t *testing.T) {
 		if c.got != c.want {
 			t.Errorf("选项 %s 未生效, 期望: %v, 实际: %v", c.name, c.want, c.got)
 		}
-	}
-}
-
-// ormUser ORM测试用的数据模型
-type ormUser struct {
-	bun.BaseModel `bun:"users,alias:u"`
-
-	ID   int64  `bun:"id,pk,autoincrement"`
-	Name string `bun:"name,notnull"`
-	Age  int    `bun:"age,notnull"`
-}
-
-// TestProxyORMRoundTrip 覆盖建表/插入/查询/统计链路
-// 该用例移植自v0版本的proxy_test.go_bak
-func TestProxyORMRoundTrip(t *testing.T) {
-	ctx := context.Background()
-	proxy := New()
-	if err := proxy.Init(memoryURL); err != nil {
-		t.Fatalf("初始化失败: %v", err)
-	}
-	defer func() {
-		_ = proxy.Close()
-	}()
-	cli := proxy.Client()
-	if _, err := cli.NewCreateTable().Model((*ormUser)(nil)).IfNotExists().Exec(ctx); err != nil {
-		t.Fatalf("建表失败: %v", err)
-	}
-	users := []ormUser{{Name: "a", Age: 11}, {Name: "b", Age: 11}}
-	if _, err := cli.NewInsert().Model(&users).Exec(ctx); err != nil {
-		t.Fatalf("插入失败: %v", err)
-	}
-	single := ormUser{}
-	if err := cli.NewSelect().Model(&single).Where("name = ?", "a").Scan(ctx); err != nil {
-		t.Fatalf("查询失败: %v", err)
-	}
-	if single.Age != 11 {
-		t.Fatalf("查询结果不符, 期望年龄11, 实际: %d", single.Age)
-	}
-	count, err := cli.NewSelect().Model((*ormUser)(nil)).Where("age = ?", 11).Count(ctx)
-	if err != nil {
-		t.Fatalf("统计失败: %v", err)
-	}
-	if count != 2 {
-		t.Fatalf("统计结果不符, 期望2, 实际: %d", count)
 	}
 }
 
@@ -1056,7 +941,7 @@ func TestCallbackTimeoutInterrupts(t *testing.T) {
 func TestConnectRetry(t *testing.T) {
 	proxy := New()
 	start := time.Now()
-	err := proxy.Init("mysql://root:root@127.0.0.1:1/test",
+	err := proxy.Init(unreachableURL,
 		WithPingTimeoutMS(200),
 		WithConnectRetry(3, 30*time.Millisecond),
 	)
@@ -1087,7 +972,7 @@ func TestConnectRetrySkipsConfigError(t *testing.T) {
 	}
 }
 
-func BenchmarkNewDBSQLiteMemory(b *testing.B) {
+func BenchmarkNewDBStub(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		cli, err := NewDB(memoryURL, nil)
