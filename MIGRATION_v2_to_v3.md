@@ -139,6 +139,30 @@ v2 的 4 个错误变量全部保留,并且与新命名**指向同一个错误�
 
 v3 要求 Go 1.25.0 及以上,这是依赖链决定的:`bun/driver/sqliteshim` → `modernc.org/sqlite` 与 `golang.org/x/*` 自身声明的最低 Go 版本为 1.25。如果需要支持更低版本,需要同步降级 sqliteshim / modernc 系列依赖。
 
+## 编译期需要留意的地方
+
+v3 保留了 v2 的全部导出符号,但有三处会让**使用方代码**在编译或 `go vet` 阶段出现差异:
+
+1. **`bunproxy.Logger` 的底层类型换了模块**
+
+   v2 是 `github.com/Golang-Tools/loggerhelper/v2` 的 `*log.Log`,v3 是 `.../loggerhelper/v4` 的 `*log.Log`。如果使用方在变量声明、函数签名或结构体字段里显式写了 v2 的类型,需要把 import 路径改成 v4;`Logger.GetLogger()` 的返回类型也由 `*logrus.Logger` 变为 `*slog.Logger`。
+
+2. **不要用位置初始化 `Options`**
+
+   v3 的 `Options` 新增了 `QueryLog`、`QueryLogArgs`、`DisablePingOnInit`、`PingTimeout`、`IgnoreCallbackError` 字段。使用 `Options{true, 0, 10}` 这种不带字段名的写法会编译失败,请改为具名字段:
+
+   ```go
+   // 不兼容写法
+   opts := bunproxy.Options{false, time.Second, 10}
+
+   // 推荐写法
+   opts := bunproxy.Options{QueryTimeout: time.Second, MaxOpenConns: 10}
+   ```
+
+3. **`Proxy` 现在包含互斥锁,按值传递会触发 `copylocks`**
+
+   v3 的 `Proxy` 内部新增了 `sync.RWMutex`,因此请始终使用 `*Proxy`(与 v2 一样通过 `bunproxy.New()` 获取)。按值拷贝会让 `go vet` 报 `copylocks`,并且拷贝出来的副本无法正确共享状态。
+
 ## 自检清单
 
 - [ ] import 路径已改为 `/v3`
@@ -147,3 +171,6 @@ v3 要求 Go 1.25.0 及以上,这是依赖链决定的:`bun/driver/sqliteshim` �
 - [ ] 确认是否有依赖 SQL 日志的逻辑(必要时加 `WithQueryLog()`)
 - [ ] SQLite 内存库确认是否受单连接限制影响
 - [ ] 使用到 `Proxy` 跨 goroutine 的代码已按并发语义检查
+- [ ] 显式引用 `loggerhelper` 类型的地方已切到 v4
+- [ ] `Options` 字面量均已改为具名字段
+- [ ] 所有 `Proxy` 均以指针方式传递
