@@ -31,6 +31,13 @@ var Logger = log.Export()
 // 回调函数中不应调用代理的Init/Close方法,否则可能造成死锁
 type Callback func(cli *bun.DB) error
 
+// CallbackContext 带上下文的回调函数
+// 适合需要超时保护的操作;超时时间由CallbackTimeout/WithCallbackTimeout配置,为0表示不限制
+type CallbackContext func(ctx context.Context, cli *bun.DB) error
+
+// callbackEntry 内部统一存储的回调条目,普通回调会被适配成相同签名
+type callbackEntry func(ctx context.Context, cli *bun.DB) error
+
 // Proxy bun客户端的代理
 // 除Init/Close外的方法都是并发安全的,Init与Close应在应用启动/退出阶段串行调用
 // 内嵌的*bun.DB在初始化成功后不再变更(Close只关闭连接池并置位closed),因此
@@ -40,7 +47,7 @@ type Proxy struct {
 	mu sync.RWMutex
 	*bun.DB
 	closed    bool
-	callBacks []Callback
+	callBacks []callbackEntry
 	Opt       Options
 }
 
@@ -71,13 +78,14 @@ func (proxy *Proxy) SetConnect(cli *bun.DB) error {
 	proxy.mu.RLock()
 	parallel := proxy.Opt.Parallelcallback
 	ignoreErr := proxy.Opt.IgnoreCallbackError
+	callbackTimeout := proxy.Opt.CallbackTimeout
 	proxy.mu.RUnlock()
-	return proxy.setConnect(cli, parallel, ignoreErr)
+	return proxy.setConnect(cli, parallel, ignoreErr, callbackTimeout)
 }
 
 // setConnect 使用显式指定的回调配置建立连接
-// parallel与ignoreErr由调用方传入,便于Init在不污染proxy.Opt的前提下使用本次入参
-func (proxy *Proxy) setConnect(cli *bun.DB, parallel bool, ignoreErr bool) error {
+// parallel/ignoreErr/callbackTimeout由调用方传入,便于Init在不污染proxy.Opt的前提下使用本次入参
+func (proxy *Proxy) setConnect(cli *bun.DB, parallel bool, ignoreErr bool, callbackTimeout time.Duration) error {
 	if cli == nil {
 		return ErrNilDB
 	}
@@ -89,12 +97,12 @@ func (proxy *Proxy) setConnect(cli *bun.DB, parallel bool, ignoreErr bool) error
 	}
 	proxy.DB = cli
 	proxy.closed = false
-	callbacks := make([]Callback, len(proxy.callBacks))
+	callbacks := make([]callbackEntry, len(proxy.callBacks))
 	copy(callbacks, proxy.callBacks)
 	proxy.mu.Unlock()
 
 	//回调在锁外执行,避免用户回调重入代理方法时死锁
-	errs := runCallbacks(cli, callbacks, parallel)
+	errs := runCallbacks(cli, callbacks, parallel, callbackTimeout)
 	if len(callbacks) > 0 {
 		for _, err := range errs {
 			log.Error("regist callback get error", log.Dict{"err": err.Error()})
@@ -141,15 +149,21 @@ func (proxy *Proxy) PingContext(ctx context.Context) error {
 	return cli.PingContext(nonNilContext(ctx))
 }
 
-// Health 检查代理是否健康,相比PingContext会额外带上默认查询超时
+// Health 检查代理是否健康
+// 超时使用配置的PingTimeout(默认DefaultPingTimeout),与Init的连通性校验保持一致
 func (proxy *Proxy) Health(ctx context.Context) error {
 	ctx = nonNilContext(ctx)
-	if timeout := proxy.DefaultQueryTimeout(); timeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, timeout)
-		defer cancel()
-	}
+	ctx, cancel := context.WithTimeout(ctx, proxy.PingTimeout())
+	defer cancel()
 	return proxy.PingContext(ctx)
+}
+
+// PingTimeout 返回实际生效的连通性探测超时时间
+func (proxy *Proxy) PingTimeout() time.Duration {
+	proxy.mu.RLock()
+	opt := proxy.Opt
+	proxy.mu.RUnlock()
+	return opt.pingTimeout()
 }
 
 // SetPool 设置连接池信息,opts为nil时使用DefaultOpts
@@ -283,23 +297,12 @@ func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
 	opt := *optparams.GetOption(&proxy.Opt, opts...)
 	proxy.mu.RUnlock()
 
-	cli, err := NewDB(URL, &opt)
+	cli, err := proxy.dial(URL, &opt)
 	if err != nil {
 		return err
 	}
 
-	if !opt.DisablePingOnInit {
-		ctx, cancel := context.WithTimeout(context.Background(), opt.pingTimeout())
-		err = cli.PingContext(ctx)
-		cancel()
-		if err != nil {
-			//校验失败时释放连接,避免连接池泄漏
-			_ = cli.Close()
-			return fmt.Errorf("%w, URL: %s, %w", ErrPingFailed, RedactDSN(URL), err)
-		}
-	}
-
-	if err := proxy.setConnect(cli, opt.Parallelcallback, opt.IgnoreCallbackError); err != nil {
+	if err := proxy.setConnect(cli, opt.Parallelcallback, opt.IgnoreCallbackError, opt.CallbackTimeout); err != nil {
 		//设置失败时释放连接,避免连接池泄漏
 		_ = cli.Close()
 		return err
@@ -312,24 +315,80 @@ func (proxy *Proxy) Init(URL string, opts ...optparams.Option[Options]) error {
 	return nil
 }
 
+// dial 建立连接并按配置做连通性校验与重试
+// 只有连通性校验失败才会重试,DSN非法等配置类错误会直接返回
+func (proxy *Proxy) dial(URL string, opt *Options) (*bun.DB, error) {
+	attempts := opt.attempts()
+	var lastErr error
+	for attempt := 1; attempt <= attempts; attempt++ {
+		if attempt > 1 {
+			interval := opt.retryInterval(attempt)
+			log.Warn("重试建立数据库连接", log.Dict{
+				"attempt":  attempt,
+				"total":    attempts,
+				"interval": interval.String(),
+				"URL":      RedactDSN(URL),
+			})
+			time.Sleep(interval)
+		}
+
+		cli, err := NewDB(URL, opt)
+		if err != nil {
+			return nil, err
+		}
+
+		if opt.DisablePingOnInit {
+			//关闭校验时没有可重试的判定依据,直接返回
+			return cli, nil
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), opt.pingTimeout())
+		lastErr = cli.PingContext(ctx)
+		cancel()
+		if lastErr == nil {
+			return cli, nil
+		}
+		//校验失败时释放连接,避免连接池泄漏
+		_ = cli.Close()
+	}
+
+	return nil, fmt.Errorf("%w, URL: %s, %w", ErrPingFailed, RedactDSN(URL), lastErr)
+}
+
 // Regist 注册回调函数,在init执行后执行回调函数
 // 如果对象已经设置了被代理客户端则无法再注册回调函数
 func (proxy *Proxy) Regist(cb Callback) error {
 	if cb == nil {
 		return ErrNilCallback
 	}
-	proxy.mu.Lock()
-	defer proxy.mu.Unlock()
-	if proxy.DB != nil && !proxy.closed {
-		return ErrProxyAlreadySetClient
-	}
-	proxy.callBacks = append(proxy.callBacks, cb)
-	return nil
+	return proxy.register(func(ctx context.Context, cli *bun.DB) error {
+		return cb(cli)
+	})
 }
 
 // Register Regist的别名,命名更符合Go的惯例
 func (proxy *Proxy) Register(cb Callback) error {
 	return proxy.Regist(cb)
+}
+
+// RegisterContext 注册带上下文的回调函数
+// 与Regist注册的回调按注册顺序统一执行,执行时会带上CallbackTimeout配置的超时
+func (proxy *Proxy) RegisterContext(cb CallbackContext) error {
+	if cb == nil {
+		return ErrNilCallback
+	}
+	return proxy.register(callbackEntry(cb))
+}
+
+// register 把回调加入待执行列表
+func (proxy *Proxy) register(entry callbackEntry) error {
+	proxy.mu.Lock()
+	defer proxy.mu.Unlock()
+	if proxy.DB != nil && !proxy.closed {
+		return ErrProxyAlreadySetClient
+	}
+	proxy.callBacks = append(proxy.callBacks, entry)
+	return nil
 }
 
 // NewCtx 根据注册的超时时间构造一个上下文
@@ -363,13 +422,20 @@ func nonNilContext(ctx context.Context) context.Context {
 }
 
 // execCallback 执行单个回调函数,捕获panic并包装错误
-func execCallback(cli *bun.DB, cb Callback, index int) (err error) {
+// timeout大于0时会为回调构造带超时的上下文
+func execCallback(cli *bun.DB, cb callbackEntry, index int, timeout time.Duration) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = &CallbackPanicError{Index: index, Panic: r}
 		}
 	}()
-	if err := cb(cli); err != nil {
+	ctx := context.Background()
+	if timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout)
+		defer cancel()
+	}
+	if err := cb(ctx, cli); err != nil {
 		return &CallbackError{Index: index, Err: err}
 	}
 	return nil
@@ -377,22 +443,22 @@ func execCallback(cli *bun.DB, cb Callback, index int) (err error) {
 
 // runCallbacks 执行回调函数,返回按注册顺序排列的错误列表
 // parallel为true时并行执行并等待全部回调结束,保证Init返回时回调已经执行完毕
-func runCallbacks(cli *bun.DB, callbacks []Callback, parallel bool) []error {
+func runCallbacks(cli *bun.DB, callbacks []callbackEntry, parallel bool, timeout time.Duration) []error {
 	if len(callbacks) == 0 {
 		return nil
 	}
 	results := make([]error, len(callbacks))
-	run := func(index int, cb Callback) {
+	run := func(index int, cb callbackEntry) {
 		if cb == nil {
 			return
 		}
-		results[index] = execCallback(cli, cb, index)
+		results[index] = execCallback(cli, cb, index, timeout)
 	}
 	if parallel {
 		var wg sync.WaitGroup
 		wg.Add(len(callbacks))
 		for index, cb := range callbacks {
-			go func(index int, cb Callback) {
+			go func(index int, cb callbackEntry) {
 				defer wg.Done()
 				run(index, cb)
 			}(index, cb)

@@ -121,6 +121,9 @@ proxy.Close()                // 关闭连接池并回到未初始化状态
 | `DisablePingOnInit` | `bool` | 关闭 `Init` 时的连通性校验 |
 | `PingTimeout` | `time.Duration` | 连通性校验超时,`0` 表示使用 `DefaultPingTimeout`(5s) |
 | `IgnoreCallbackError` | `bool` | 回调报错不影响 `Init` 的返回值(兼容旧行为) |
+| `CallbackTimeout` | `time.Duration` | 回调执行的超时,`0` 表示不限制(只对 `RegisterContext` 注册的回调生效) |
+| `ConnectRetryAttempts` | `int` | 建立连接的总尝试次数(含首次),`0`/`1` 表示不重试 |
+| `ConnectRetryInterval` | `time.Duration` | 重试的首次等待时间,`0` 表示使用 `DefaultConnectRetryInterval`(500ms) |
 
 `NewDB(url, nil)` 时会使用 `bunproxy.DefaultOpts`(最大连接 10、最大空闲 10、存活 1h、空闲 10min)。
 
@@ -140,6 +143,9 @@ WithQueryLog() / WithQueryLogArgs()
 WithPingTimeoutMS(ms int) / WithDisablePingOnInit()
 WithIgnoreCallbackError()
 WithOptions(opts Options)     // 整体覆盖配置,用于把布尔开关改回false
+WithDefaultOpts()             // 一键套用DefaultOpts(与NewDB(url,nil)一致)
+WithCallbackTimeout(d) / WithCallbackTimeoutMS(ms)
+WithConnectRetry(attempts int, interval time.Duration)
 ```
 
 ## 回调
@@ -159,6 +165,20 @@ _ = proxy.Init("sqlite://test.db")
 - 回调返回的错误会被聚合,可以通过 `errors.Is/As` 获取到原始错误与回调下标(`*CallbackError`)
 - 需要兼容旧版本"回调错误只记日志"的行为时,使用 `WithIgnoreCallbackError()`
 
+需要做带超时保护的操作时,用 `RegisterContext` 注册带上下文的回调:
+
+```go
+_ = proxy.RegisterContext(func(ctx context.Context, cli *bun.DB) error {
+	// ctx 会带上 CallbackTimeout 配置的超时,可用于建表、预热、健康探测等操作
+	return cli.PingContext(ctx)
+})
+_ = proxy.Init(url, bunproxy.WithCallbackTimeoutMS(5000))
+```
+
+- `RegisterContext` 与 `Regist` 注册的回调**按注册顺序统一执行**,并行模式下也一并并行
+- 只有 `RegisterContext` 注册的回调会收到带超时的上下文;`CallbackTimeout` 为 `0`(默认)表示不限制
+- 超时后回调会收到 `context.DeadlineExceeded`,`Init` 会因此失败并回滚连接
+
 ## 超时与上下文
 
 ```go
@@ -168,6 +188,32 @@ timeout := proxy.DefaultQueryTimeout()
 ```
 
 `Init` 之后由调用方自行把 `ctx` 传给 `bun` 的 `ExecContext/QueryContext` 等方法。**不要使用不带 `ctx` 的 `Exec/Query`**,否则超时与取消会失效。
+
+各类超时的适用对象:
+
+| 配置 | 适用范围 |
+| --- | --- |
+| `QueryTimeout` | `NewCtx`/`NewCtxWithParent` 生成的上下文,供业务查询使用 |
+| `PingTimeout` | `Init` 的连通性校验与 `Health`,默认 5s,可用 `proxy.PingTimeout()` 读取 |
+| `CallbackTimeout` | `RegisterContext` 注册的回调 |
+| `ConnectRetryInterval` | `Init` 重试连接时的等待间隔 |
+
+## 连接建立重试
+
+数据库容器或实例启动晚于应用时,可以用重试避免"启动即失败":
+
+```go
+if err := proxy.Init(url,
+	bunproxy.WithConnectRetry(5, 500*time.Millisecond), // 总尝试5次,首次等待500ms
+	bunproxy.WithPingTimeoutMS(2000),
+); err != nil {
+	// 重试耗尽后会返回 ErrPingFailed
+}
+```
+
+- 重试只针对**连通性校验失败**(`ErrPingFailed`);DSN 非法、scheme 不支持等配置类错误会立即返回,不会重试
+- 等待时间按指数退避增长,单次上限 5s;`ConnectRetryAttempts` 为 `0`/`1` 时保持原有的一次性行为
+- `WithDisablePingOnInit()` 关闭了连通性校验时没有可重试的判定依据,重试不会生效
 
 ## 日志与安全
 

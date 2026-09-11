@@ -5,6 +5,16 @@
 ## 增强
 
 + `SanitizeSQL` 现在除字符串字面量外还会遮蔽数字字面量(含小数、科学计数法与十六进制),避免 bun 查询构造器内联的数值进入日志;同时保证带数字的标识符(`col1`、`utf8mb4`)、问号占位符与 postgres 位置占位符(`$1`)不被误伤
++ 新增 `CallbackContext` 类型与 `RegisterContext` 方法,支持注册带上下文的回调;与 `Regist` 注册的回调按注册顺序统一执行
++ 新增 `CallbackTimeout` 与选项 `WithCallbackTimeout`/`WithCallbackTimeoutMS`,为带上下文的回调提供超时保护(默认不限制)
++ 新增连接建立重试:`ConnectRetryAttempts`/`ConnectRetryInterval` 与选项 `WithConnectRetry`,只对连通性校验失败重试,间隔按指数退避增长(默认不重试)
++ 新增选项 `WithDefaultOpts`,可一键套用 `DefaultOpts` 中的推荐默认值,与 `NewDB(url, nil)` 的行为对齐
++ 新增 `Proxy.PingTimeout()` 方法,用于读取实际生效的连通性探测超时
+
+## 修正
+
++ `Health` 的超时来源由 `QueryTimeout` 改为 `PingTimeout`,与 `Init` 的连通性校验保持一致;此前 `WithPingTimeoutMS` 对 `Health` 无效,而 `QueryTimeout` 为 0 时 `Health` 完全没有超时保护
++ 修复 `Init` 首次执行时读不到本次入参中回调相关配置的问题(`CallbackTimeout` 等会在连接建立成功后才写入 `proxy.Opt`)
 
 # v3.0.0
 

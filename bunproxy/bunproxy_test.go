@@ -892,6 +892,201 @@ func TestProxyCloseRaceWithQuery(t *testing.T) {
 	}
 }
 
+// TestWithDefaultOpts 验证WithDefaultOpts会整体套用推荐默认值
+func TestWithDefaultOpts(t *testing.T) {
+	proxy := New()
+	if err := proxy.Init(memoryURL, WithDefaultOpts()); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = proxy.Close()
+	}()
+	opt := proxy.Opt
+	if opt.MaxOpenConns != DefaultOpts.MaxOpenConns ||
+		opt.MaxIdleConns != DefaultOpts.MaxIdleConns ||
+		opt.ConnMaxLifetime != DefaultOpts.ConnMaxLifetime ||
+		opt.ConnMaxIdleTime != DefaultOpts.ConnMaxIdleTime {
+		t.Fatalf("WithDefaultOpts应套用DefaultOpts, 实际: %+v", opt)
+	}
+}
+
+// TestHealthUsesPingTimeout 验证Health的超时来自PingTimeout而不是QueryTimeout
+func TestHealthUsesPingTimeout(t *testing.T) {
+	ctx := context.Background()
+
+	//QueryTimeout极小但PingTimeout充足时,健康检查应该成功
+	proxy := New()
+	if err := proxy.Init(memoryURL, WithOptions(Options{
+		QueryTimeout: time.Nanosecond,
+		PingTimeout:  30 * time.Second,
+	})); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = proxy.Close()
+	}()
+	if got := proxy.PingTimeout(); got != 30*time.Second {
+		t.Fatalf("PingTimeout应为30s, 实际: %v", got)
+	}
+	if err := proxy.Health(ctx); err != nil {
+		t.Fatalf("Health应使用PingTimeout, 不应受QueryTimeout影响: %v", err)
+	}
+
+	//PingTimeout已过期时健康检查应失败
+	expired := New()
+	if err := expired.Init(memoryURL, WithOptions(Options{
+		PingTimeout:       time.Nanosecond,
+		DisablePingOnInit: true,
+	})); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = expired.Close()
+	}()
+	err := expired.Health(ctx)
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("PingTimeout过期时Health应返回DeadlineExceeded, 实际: %v", err)
+	}
+}
+
+// TestRegisterContext 验证带上下文的回调按注册顺序执行并带上超时
+func TestRegisterContext(t *testing.T) {
+	proxy := New()
+	order := make([]string, 0, 2)
+	var (
+		gotDeadline bool
+		gotTimeout  time.Duration
+	)
+	if err := proxy.Regist(func(cli *bun.DB) error {
+		order = append(order, "plain")
+		return nil
+	}); err != nil {
+		t.Fatalf("注册回调失败: %v", err)
+	}
+	if err := proxy.RegisterContext(func(ctx context.Context, cli *bun.DB) error {
+		order = append(order, "context")
+		if deadline, ok := ctx.Deadline(); ok {
+			gotDeadline = true
+			gotTimeout = time.Until(deadline)
+		}
+		var one int
+		return cli.QueryRowContext(ctx, "SELECT 1").Scan(&one)
+	}); err != nil {
+		t.Fatalf("注册带上下文回调失败: %v", err)
+	}
+	if err := proxy.Init(memoryURL, WithCallbackTimeoutMS(2000)); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = proxy.Close()
+	}()
+
+	if len(order) != 2 || order[0] != "plain" || order[1] != "context" {
+		t.Fatalf("回调应按注册顺序执行, 实际: %v", order)
+	}
+	if !gotDeadline {
+		t.Fatal("配置CallbackTimeout后回调上下文应带超时")
+	}
+	if gotTimeout <= 0 || gotTimeout > 2*time.Second {
+		t.Fatalf("回调超时时间不符, 实际剩余: %v", gotTimeout)
+	}
+
+	//未配置CallbackTimeout时回调上下文不设超时
+	plain := New()
+	hasDeadline := false
+	if err := plain.RegisterContext(func(ctx context.Context, cli *bun.DB) error {
+		_, hasDeadline = ctx.Deadline()
+		return nil
+	}); err != nil {
+		t.Fatalf("注册带上下文回调失败: %v", err)
+	}
+	if err := plain.Init(memoryURL); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = plain.Close()
+	}()
+	if hasDeadline {
+		t.Fatal("未配置CallbackTimeout时回调上下文不应带超时")
+	}
+}
+
+// TestRegisterContextErrors 验证RegisterContext的入参校验与状态校验
+func TestRegisterContextErrors(t *testing.T) {
+	proxy := New()
+	if err := proxy.RegisterContext(nil); !errors.Is(err, ErrNilCallback) {
+		t.Fatalf("注册nil回调应返回ErrNilCallback, 实际: %v", err)
+	}
+	if err := proxy.Init(memoryURL); err != nil {
+		t.Fatalf("初始化失败: %v", err)
+	}
+	defer func() {
+		_ = proxy.Close()
+	}()
+	err := proxy.RegisterContext(func(ctx context.Context, cli *bun.DB) error { return nil })
+	if !errors.Is(err, ErrProxyAlreadySetClient) {
+		t.Fatalf("初始化后注册带上下文回调应失败, 实际: %v", err)
+	}
+}
+
+// TestCallbackTimeoutInterrupts 验证回调超时能中断卡住的回调
+func TestCallbackTimeoutInterrupts(t *testing.T) {
+	proxy := New()
+	if err := proxy.RegisterContext(func(ctx context.Context, cli *bun.DB) error {
+		<-ctx.Done()
+		return ctx.Err()
+	}); err != nil {
+		t.Fatalf("注册带上下文回调失败: %v", err)
+	}
+	start := time.Now()
+	err := proxy.Init(memoryURL, WithCallbackTimeoutMS(50))
+	elapsed := time.Since(start)
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("回调超时应返回DeadlineExceeded, 实际: %v", err)
+	}
+	if elapsed > 5*time.Second {
+		t.Fatalf("回调超时未生效, 耗时: %v", elapsed)
+	}
+	if proxy.IsOk() {
+		t.Fatal("回调失败后代理不应处于可用状态")
+	}
+}
+
+// TestConnectRetry 验证连通性校验失败会按配置重试
+func TestConnectRetry(t *testing.T) {
+	proxy := New()
+	start := time.Now()
+	err := proxy.Init("mysql://root:root@127.0.0.1:1/test",
+		WithPingTimeoutMS(200),
+		WithConnectRetry(3, 30*time.Millisecond),
+	)
+	elapsed := time.Since(start)
+	if !errors.Is(err, ErrPingFailed) {
+		t.Fatalf("重试耗尽后应返回ErrPingFailed, 实际: %v", err)
+	}
+	//重试间隔为30ms与60ms,总耗时必然大于等于60ms
+	if elapsed < 60*time.Millisecond {
+		t.Fatalf("重试未生效, 耗时: %v", elapsed)
+	}
+	if proxy.IsOk() {
+		t.Fatal("重试全部失败后代理不应处于可用状态")
+	}
+}
+
+// TestConnectRetrySkipsConfigError 验证配置类错误不会触发重试
+func TestConnectRetrySkipsConfigError(t *testing.T) {
+	proxy := New()
+	start := time.Now()
+	err := proxy.Init("redis://127.0.0.1:6379", WithConnectRetry(5, 600*time.Millisecond))
+	elapsed := time.Since(start)
+	if !errors.Is(err, ErrUnsupportedSchema) {
+		t.Fatalf("应返回ErrUnsupportedSchema, 实际: %v", err)
+	}
+	if elapsed > time.Second {
+		t.Fatalf("配置类错误不应重试, 耗时: %v", elapsed)
+	}
+}
+
 func BenchmarkNewDBSQLiteMemory(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {

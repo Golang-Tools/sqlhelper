@@ -10,6 +10,12 @@ import (
 // DefaultPingTimeout Init时探测连接可用性的默认超时时间
 const DefaultPingTimeout = 5 * time.Second
 
+// DefaultConnectRetryInterval 建立连接重试的默认首次等待时间
+const DefaultConnectRetryInterval = 500 * time.Millisecond
+
+// maxConnectRetryInterval 单次重试等待时间的上限
+const maxConnectRetryInterval = 5 * time.Second
+
 // Options 数据库代理的配置项
 type Options struct {
 	//Parallelcallback 为true时Init执行后的回调函数并行执行,默认串行执行
@@ -45,6 +51,17 @@ type Options struct {
 	//IgnoreCallbackError 为true时Init不会因为回调函数报错而失败
 	//该配置用于兼容旧版本"回调错误只记日志"的行为
 	IgnoreCallbackError bool
+
+	//CallbackTimeout 回调函数执行的超时时间,为0表示不限制
+	//只对RegisterContext注册的带上下文回调真正生效(普通Callback不接收上下文)
+	CallbackTimeout time.Duration
+
+	//ConnectRetryAttempts 建立连接的总尝试次数(含首次),0或1表示不重试
+	//只有连通性校验失败才会重试,DSN非法等配置类错误不会重试
+	ConnectRetryAttempts int
+	//ConnectRetryInterval 重试的首次等待时间,为0时使用DefaultConnectRetryInterval
+	//后续重试按指数退避增长,单次等待上限为maxConnectRetryInterval
+	ConnectRetryInterval time.Duration
 }
 
 // DefaultOpts 当NewDB未传入配置时使用的默认配置
@@ -63,6 +80,30 @@ func (o *Options) pingTimeout() time.Duration {
 		return DefaultPingTimeout
 	}
 	return o.PingTimeout
+}
+
+// retryInterval 返回第attempt次尝试(1基)前应等待的时间,按指数退避增长
+func (o *Options) retryInterval(attempt int) time.Duration {
+	base := DefaultConnectRetryInterval
+	if o != nil && o.ConnectRetryInterval > 0 {
+		base = o.ConnectRetryInterval
+	}
+	interval := base
+	for i := 2; i < attempt; i++ {
+		interval *= 2
+		if interval >= maxConnectRetryInterval {
+			return maxConnectRetryInterval
+		}
+	}
+	return interval
+}
+
+// attempts 返回实际生效的连接尝试次数,至少为1
+func (o *Options) attempts() int {
+	if o == nil || o.ConnectRetryAttempts < 1 {
+		return 1
+	}
+	return o.ConnectRetryAttempts
 }
 
 // applyPool 将连接池配置应用到*sql.DB上
@@ -221,5 +262,45 @@ func WithIgnoreCallbackError() optparams.Option[Options] {
 func WithOptions(opts Options) optparams.Option[Options] {
 	return optparams.NewFuncOption(func(o *Options) {
 		*o = opts
+	})
+}
+
+// WithDefaultOpts 整体套用DefaultOpts中的推荐默认值(连接池参数等)
+// Init在未显式指定连接池参数时不会干预database/sql的默认行为,需要一键套用推荐
+// 默认值(与NewDB(url, nil)一致)时使用本选项;由于是整体覆盖,建议放在选项列表最前
+func WithDefaultOpts() optparams.Option[Options] {
+	return optparams.NewFuncOption(func(o *Options) {
+		*o = DefaultOpts
+	})
+}
+
+// WithCallbackTimeout 设置回调函数执行的超时时间,只对RegisterContext注册的回调生效
+func WithCallbackTimeout(d time.Duration) optparams.Option[Options] {
+	return optparams.NewFuncOption(func(o *Options) {
+		if d > 0 {
+			o.CallbackTimeout = d
+		}
+	})
+}
+
+// WithCallbackTimeoutMS 设置回调函数执行的超时时间,单位ms
+func WithCallbackTimeoutMS(ms int) optparams.Option[Options] {
+	return optparams.NewFuncOption(func(o *Options) {
+		if ms > 0 {
+			o.CallbackTimeout = time.Duration(ms) * time.Millisecond
+		}
+	})
+}
+
+// WithConnectRetry 设置建立连接的重试次数与首次重试等待时间
+// attempts为总尝试次数(含首次),interval为0时使用DefaultConnectRetryInterval
+func WithConnectRetry(attempts int, interval time.Duration) optparams.Option[Options] {
+	return optparams.NewFuncOption(func(o *Options) {
+		if attempts > 0 {
+			o.ConnectRetryAttempts = attempts
+		}
+		if interval > 0 {
+			o.ConnectRetryInterval = interval
+		}
 	})
 }
