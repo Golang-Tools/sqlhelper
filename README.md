@@ -4,7 +4,7 @@
 
 v3 是在 v2 基础上做的一次现代化改造:**尽量保持 API 形状不变,重点修 bug、补并发与生命周期能力、补齐工程基线**。模块路径为 `github.com/Golang-Tools/sqlhelper/v3`,可以与 v2 在同一个项目中并存,便于灰度迁移。
 
-> 迁移请参考 [MIGRATION_v2_to_v3.md](./MIGRATION_v2_to_v3.md),变更明细见 [CHANGELOG.md](./CHANGELOG.md)。
+> API 文档见 [pkg.go.dev](https://pkg.go.dev/github.com/Golang-Tools/sqlhelper/v3/bunproxy);迁移请参考 [MIGRATION_v2_to_v3.md](./MIGRATION_v2_to_v3.md),变更明细见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ## 为什么选择 bun
 
@@ -235,7 +235,7 @@ v2 的历史命名(`ErrProxyAllreadySettedUniversalClient`、`ErrProxyNotYetSett
 ```bash
 go build ./...
 go vet ./...
-gofmt -l . | grep -v '^docs/'        # 应为空
+gofmt -l .                           # 应为空
 go test ./...                        # 运行测试
 go test -race -covermode=atomic -coverprofile=coverage.out ./...
 go test -bench=. -benchmem -run=^$ ./...

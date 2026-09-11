@@ -29,7 +29,7 @@ jobs:
 
       - name: Verify formatting
         run: |
-          unformatted=$(gofmt -l . | grep -v '^docs/' || true)
+          unformatted=$(gofmt -l . || true)
           if [ -n "$unformatted" ]; then
             echo "以下文件未通过 gofmt:"
             echo "$unformatted"

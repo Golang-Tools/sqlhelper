@@ -53,6 +53,7 @@
 + 重复 `Init` 现在会在创建连接前直接返回 `ErrProxyAlreadySetClient`
 + `Init` 成功后才写入本次选项,失败不会污染已有配置
 + 移除 v0 时代的废弃测试备份 `bunproxy/proxy_test.go_bak`,其 ORM 场景已移植为 v3 测试
++ 移除 `docs/` 下 1996 个 v0 时代生成的静态 godoc 文件(约 146MB),替换为指向 pkg.go.dev 的落地页,保留 `docs/.nojekyll` 以兼容 GitHub Pages
 
 ## 兼容性
 
