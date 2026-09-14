@@ -329,6 +329,20 @@ for m in driver/postgres driver/mysql driver/sqlserver driver/sqlite driver/all 
 done
 ```
 
+### 一键本地校验
+
+仓库不依赖 GitHub Actions,校验全部在本地完成,只需 Go 工具链:
+
+```bash
+./scripts/check.sh
+```
+
+脚本会逐个模块执行 `gofmt` 检查、`go mod tidy` 差异校验、`go build`、`go vet`、`go test -race`,任一环节失败即返回非零状态。此外还有:
+
+- **依赖瘦身校验**:核心模块与各驱动模块的依赖中不得出现其它后端(如 postgres 模块里不得有 `modernc.org/sqlite`)
+- **真实数据库集成测试**:设置了 `SQLHELPER_TEST_*_URL` 时自动追加执行(用法见下节)
+- **漏洞扫描**:本机 PATH 中存在 `govulncheck` 时自动执行(`go install golang.org/x/vuln/cmd/govulncheck@latest`);默认只报告不阻断,设置 `SQLHELPER_STRICT_VULN=1` 可让发现漏洞时校验失败。若命中的是 **Go 标准库**漏洞,升级本地 Go 工具链即可(仓库代码本身应保持 0 漏洞)
+
 ### 真实数据库集成测试
 
 跨后端集成测试位于 `driver/all`,通过环境变量开关,未配置的数据库自动跳过:
@@ -366,11 +380,11 @@ go run ./callbacks   # 回调注册、并行执行、错误聚合
 go run ./querylog    # SQL 日志开关与脱敏
 ```
 
-CI 会按模块矩阵执行格式化检查、`go mod tidy` 校验、`go vet`、`go test -race`,并额外执行:
+`./scripts/check.sh` 覆盖的检查项:
 
-- **依赖瘦身校验**:只引入核心 + postgres 驱动时,依赖中不得出现其它后端
-- **真实数据库集成**:MySQL 8.4 / PostgreSQL 17 / SQL Server 2022 容器
-- 非阻塞的 lint 与 `govulncheck`
+- **依赖瘦身校验**:核心与各驱动模块的依赖中不得出现其它后端
+- **真实数据库集成**:设置了 `SQLHELPER_TEST_*_URL` 时额外执行 MySQL / PostgreSQL / SQLite 用例
+- **漏洞扫描**:本机装有 `govulncheck` 时逐模块扫描
 
 ## 从 v3 迁移
 

@@ -24,8 +24,8 @@
 
 + 核心模块依赖大幅精简:移除 `go-sql-driver/mysql`、`go-mssqldb`、`pgdriver`、`sqliteshim`、`modernc.org/sqlite` 等,仅保留 `bun`、`loggerhelper/v4`、`optparams`(`sqlitedialect` 仅用于测试)
 + 核心模块测试改用内置 stub driver(`memory://`),不再依赖真实数据库;真实数据库用例迁移到 `driver/sqlite` 与 `driver/all`
-+ 驱动子模块使用独立版本与 tag(`driver/<name>/vX.Y.Z`),并保留 `replace` 以便本地与 CI 联调
-+ CI 改为多模块矩阵,新增"依赖瘦身校验"(只引核心 + postgres 时不得出现其它后端依赖)与真实数据库集成任务
++ 驱动子模块使用独立版本与 tag(`driver/<name>/vX.Y.Z`),并保留 `replace` 便于本地多模块联调
++ 移除对 GitHub Actions 的依赖(`.github/`、`.golangci.yml`),校验改为仓库内置的 `scripts/check.sh`:逐模块执行 gofmt 校验、`go mod tidy` 差异校验、`go build`、`go vet`、`go test -race`,并包含依赖瘦身校验、可选的真实数据库集成测试与可选的 `govulncheck` 漏洞扫描
 
 ## 迁移
 
